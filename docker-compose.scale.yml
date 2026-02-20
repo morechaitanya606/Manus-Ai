@@ -1,0 +1,203 @@
+
+services:
+  mongodb:
+    image: mongo:7
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongodb-rs-init:
+    image: mongo:7
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: 'no'
+    command:
+      - /bin/bash
+      - -c
+      - >
+        mongosh --host mongodb:27017 --quiet --eval "try { rs.status() } catch (e) { rs.initiate({_id:'rs0', members:[{_id:0, host:'mongodb:27017'}]}) }";
+        mongosh --host mongodb:27017 --quiet --eval "rs.status().ok";
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  backend-node-1:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: npm run start
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongodb:27017/fashion_ecommerce?replicaSet=rs0
+      MONGO_REPLICA_SET: rs0
+      MONGO_READ_PREFERENCE: primaryPreferred
+      MONGO_RETRY_READS: true
+      MONGO_RETRY_WRITES: true
+      MONGO_SYNC_INDEXES: false
+      JWT_SECRET: change_me_for_production
+      JWT_EXPIRE: 24h
+      ACCESS_TOKEN_EXPIRE: 15m
+      ENABLE_REFRESH_TOKENS: true
+      REFRESH_TOKEN_SECRET: change_me_refresh_secret
+      REFRESH_TOKEN_EXPIRE: 7d
+      MAX_REFRESH_TOKENS_PER_USER: 5
+      REDIS_ENABLED: true
+      REDIS_REQUIRED: false
+      REDIS_URL: redis://redis:6379
+      REDIS_PREFIX: fashion
+      RATE_LIMIT_REDIS_ENABLED: true
+      RATE_LIMIT_REDIS_URL: redis://redis:6379
+      RATE_LIMIT_WINDOW_SECONDS: 60
+      AUTH_RATE_LIMIT_WINDOW_SECONDS: 300
+      LOGIN_RATE_LIMIT: 5
+      REDIS_CATALOG_LIST_TTL_SECONDS: 120
+      REDIS_CATALOG_PRODUCT_TTL_SECONDS: 300
+      REDIS_CATALOG_CATEGORIES_TTL_SECONDS: 600
+      ORDER_EVENTS_ASYNC_ENABLED: true
+      ORDER_EVENTS_QUEUE_REQUIRED: false
+      QUEUE_REDIS_URL: redis://redis:6379
+      QUEUE_REDIS_DB: 0
+      ORDER_EVENTS_QUEUE_NAME: order-events
+      ORDER_EVENTS_QUEUE_ATTEMPTS: 3
+      ORDER_EVENTS_QUEUE_BACKOFF_MS: 1000
+      ORDER_EVENTS_WORKER_CONCURRENCY: 5
+      LOG_LEVEL: info
+      SENTRY_DSN: ''
+      SENTRY_TRACES_SAMPLE_RATE: 0
+      CLIENT_URL: http://localhost:8080
+      CORS_ALLOWED_ORIGINS: http://localhost:8080
+      CORS_ALLOW_NO_ORIGIN: true
+      API_RATE_LIMIT: 100
+      AUTH_RATE_LIMIT: 30
+      ENABLE_DB_TRANSACTIONS: true
+      FORCE_HTTPS: false
+      SHUTDOWN_TIMEOUT_MS: 15000
+      CIRCUIT_BREAKER_ENABLED: false
+      CIRCUIT_BREAKER_FAILURE_THRESHOLD: 5
+      CIRCUIT_BREAKER_RESET_TIMEOUT_MS: 30000
+      REQUIRE_IDEMPOTENCY_KEY: true
+      IDEMPOTENCY_TTL_SECONDS: 86400
+      IDEMPOTENCY_LOCK_SECONDS: 90
+      AUDIT_LOG_TTL_SECONDS: 15552000
+      STORAGE_PROVIDER: local
+      PAYMENT_PROVIDER: mock
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - mongodb
+      - mongodb-rs-init
+      - redis
+
+  backend-node-2:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: npm run start
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongodb:27017/fashion_ecommerce?replicaSet=rs0
+      MONGO_REPLICA_SET: rs0
+      MONGO_READ_PREFERENCE: primaryPreferred
+      MONGO_RETRY_READS: true
+      MONGO_RETRY_WRITES: true
+      MONGO_SYNC_INDEXES: false
+      JWT_SECRET: change_me_for_production
+      JWT_EXPIRE: 24h
+      ACCESS_TOKEN_EXPIRE: 15m
+      ENABLE_REFRESH_TOKENS: true
+      REFRESH_TOKEN_SECRET: change_me_refresh_secret
+      REFRESH_TOKEN_EXPIRE: 7d
+      MAX_REFRESH_TOKENS_PER_USER: 5
+      REDIS_ENABLED: true
+      REDIS_REQUIRED: false
+      REDIS_URL: redis://redis:6379
+      REDIS_PREFIX: fashion
+      RATE_LIMIT_REDIS_ENABLED: true
+      RATE_LIMIT_REDIS_URL: redis://redis:6379
+      RATE_LIMIT_WINDOW_SECONDS: 60
+      AUTH_RATE_LIMIT_WINDOW_SECONDS: 300
+      LOGIN_RATE_LIMIT: 5
+      REDIS_CATALOG_LIST_TTL_SECONDS: 120
+      REDIS_CATALOG_PRODUCT_TTL_SECONDS: 300
+      REDIS_CATALOG_CATEGORIES_TTL_SECONDS: 600
+      ORDER_EVENTS_ASYNC_ENABLED: true
+      ORDER_EVENTS_QUEUE_REQUIRED: false
+      QUEUE_REDIS_URL: redis://redis:6379
+      QUEUE_REDIS_DB: 0
+      ORDER_EVENTS_QUEUE_NAME: order-events
+      ORDER_EVENTS_QUEUE_ATTEMPTS: 3
+      ORDER_EVENTS_QUEUE_BACKOFF_MS: 1000
+      ORDER_EVENTS_WORKER_CONCURRENCY: 5
+      LOG_LEVEL: info
+      SENTRY_DSN: ''
+      SENTRY_TRACES_SAMPLE_RATE: 0
+      CLIENT_URL: http://localhost:8080
+      CORS_ALLOWED_ORIGINS: http://localhost:8080
+      CORS_ALLOW_NO_ORIGIN: true
+      API_RATE_LIMIT: 100
+      AUTH_RATE_LIMIT: 30
+      ENABLE_DB_TRANSACTIONS: true
+      FORCE_HTTPS: false
+      SHUTDOWN_TIMEOUT_MS: 15000
+      CIRCUIT_BREAKER_ENABLED: false
+      CIRCUIT_BREAKER_FAILURE_THRESHOLD: 5
+      CIRCUIT_BREAKER_RESET_TIMEOUT_MS: 30000
+      REQUIRE_IDEMPOTENCY_KEY: true
+      IDEMPOTENCY_TTL_SECONDS: 86400
+      IDEMPOTENCY_LOCK_SECONDS: 90
+      AUDIT_LOG_TTL_SECONDS: 15552000
+      STORAGE_PROVIDER: local
+      PAYMENT_PROVIDER: mock
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - mongodb
+      - mongodb-rs-init
+      - redis
+
+  order-worker:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: npm run worker:orders
+    environment:
+      NODE_ENV: production
+      ORDER_EVENTS_ASYNC_ENABLED: true
+      ORDER_EVENTS_QUEUE_REQUIRED: false
+      QUEUE_REDIS_URL: redis://redis:6379
+      QUEUE_REDIS_DB: 0
+      ORDER_EVENTS_QUEUE_NAME: order-events
+      ORDER_EVENTS_QUEUE_ATTEMPTS: 3
+      ORDER_EVENTS_QUEUE_BACKOFF_MS: 1000
+      ORDER_EVENTS_WORKER_CONCURRENCY: 5
+      SHUTDOWN_TIMEOUT_MS: 15000
+    depends_on:
+      - redis
+
+  nginx-lb:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '5000:80'
+    volumes:
+      - ./infra/nginx/load-balancer.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend-node-1
+      - backend-node-2
+
+volumes:
+  mongo_data:

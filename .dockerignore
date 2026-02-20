@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.github
+*.md
+!README.md
+.env*
+!.env.example
+.vscode
+dist
+coverage
+.turbo
+.vercel

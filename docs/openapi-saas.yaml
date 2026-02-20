@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Atelier SaaS AI Fashion API
+  version: 1.0.0
+  description: Multi-tenant API-first backend for custom fashion commerce.
+servers:
+  - url: http://localhost:5001
+paths:
+  /api/v1/auth/signup:
+    post:
+      summary: Sign up customer in tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenantSlug, email, password, displayName]
+              properties:
+                tenantSlug: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                displayName: { type: string }
+      responses:
+        '201':
+          description: Tokens issued
+  /api/v1/auth/login:
+    post:
+      summary: Login user
+      responses:
+        '200': { description: Success }
+  /api/v1/products:
+    get:
+      summary: List products (paginated)
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50 }
+      responses:
+        '200': { description: Product list }
+    post:
+      summary: Create product (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Created }
+  /api/v1/designs/generate:
+    post:
+      summary: Create AI design generation job
+      security:
+        - bearerAuth: []
+      responses:
+        '202': { description: Job queued }
+  /api/v1/designs/status/{jobId}:
+    get:
+      summary: Poll AI design job status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Status response }
+  /api/v1/designs/mockup:
+    post:
+      summary: Render realistic apparel mockup
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Mockup created }
+  /api/v1/cart:
+    get:
+      summary: Get cart by store
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Clear cart
+      security:
+        - bearerAuth: []
+  /api/v1/cart/items:
+    post:
+      summary: Add item to cart
+      security:
+        - bearerAuth: []
+  /api/v1/orders/checkout:
+    post:
+      summary: Create order with stock reservation and payment intent
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string }
+      responses:
+        '201': { description: Order pending payment }
+  /api/v1/orders/webhooks/stripe:
+    post:
+      summary: Stripe webhook for payment confirmation/failure
+      responses:
+        '200': { description: Webhook processed }
+  /api/v1/admin/metrics:
+    get:
+      summary: Tenant-level admin metrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Metrics }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atelier-web
+  namespace: atelier-saas
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: atelier-web
+  template:
+    metadata:
+      labels:
+        app: atelier-web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/your-org/atelier-web:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: https://api.your-domain.com/api/v1
+            - name: NEXT_PUBLIC_TENANT_SLUG
+              value: atelier-thread
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atelier-web
+  namespace: atelier-saas
+spec:
+  selector:
+    app: atelier-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
