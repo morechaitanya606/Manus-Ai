@@ -14,7 +14,7 @@ COPY . .
 
 # Build args for Next.js public env vars (baked at build time)
 ARG NEXT_PUBLIC_API_URL=http://localhost:5001/api/v1
-ARG NEXT_PUBLIC_TENANT_SLUG=atelier-thread
+ARG NEXT_PUBLIC_TENANT_SLUG=manusai
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_TENANT_SLUG=$NEXT_PUBLIC_TENANT_SLUG
 

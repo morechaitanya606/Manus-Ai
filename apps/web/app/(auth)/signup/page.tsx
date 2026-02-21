@@ -15,7 +15,7 @@ export default function SignupPage() {
     const router = useRouter();
     const auth = useAuthStore();
     const [form, setForm] = useState({
-        tenantSlug: process.env.NEXT_PUBLIC_TENANT_SLUG || 'atelier-thread',
+        tenantSlug: process.env.NEXT_PUBLIC_TENANT_SLUG || 'manusai',
         displayName: '',
         email: '',
         password: '',

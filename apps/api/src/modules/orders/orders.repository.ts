@@ -112,14 +112,18 @@ export class OrdersRepository {
       const expiry = new Date(Date.now() + 15 * 60 * 1000);
 
       for (const item of input.cartItems) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            reservedStock: {
-              increment: item.quantity
-            }
-          }
-        });
+        const reservedRows = await tx.$executeRaw`
+          UPDATE "Product"
+          SET "reservedStock" = "reservedStock" + ${item.quantity}
+          WHERE "id" = ${item.productId}
+            AND "tenantId" = ${input.tenantId}
+            AND "isActive" = true
+            AND ("stock" - "reservedStock") >= ${item.quantity}
+        `;
+
+        if (reservedRows === 0) {
+          throw new Error(`Insufficient stock during reservation for ${item.title}`);
+        }
 
         await tx.stockReservation.create({
           data: {
@@ -225,7 +229,15 @@ export class OrdersRepository {
     });
   }
 
-  async markPaymentSuccess(orderId: string) {
+  async markPaymentSuccess(orderId: string): Promise<{
+    order: {
+      id: string;
+      tenantId: string;
+      userId: string;
+      storeId: string;
+    };
+    alreadyPaid: boolean;
+  }> {
     return this.prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
         where: { id: orderId },
@@ -240,7 +252,15 @@ export class OrdersRepository {
       }
 
       if (order.paymentStatus === 'SUCCEEDED') {
-        return order;
+        return {
+          order: {
+            id: order.id,
+            tenantId: order.tenantId,
+            userId: order.userId,
+            storeId: order.storeId
+          },
+          alreadyPaid: true
+        };
       }
 
       for (const reservation of order.reservations) {
@@ -266,7 +286,7 @@ export class OrdersRepository {
         }
       });
 
-      await tx.order.update({
+      const updatedOrder = await tx.order.update({
         where: { id: orderId },
         data: {
           paymentStatus: 'SUCCEEDED',
@@ -284,7 +304,15 @@ export class OrdersRepository {
         }
       });
 
-      return order;
+      return {
+        order: {
+          id: updatedOrder.id,
+          tenantId: updatedOrder.tenantId,
+          userId: updatedOrder.userId,
+          storeId: updatedOrder.storeId
+        },
+        alreadyPaid: false
+      };
     });
   }
 

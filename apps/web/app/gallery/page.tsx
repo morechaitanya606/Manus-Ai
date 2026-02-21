@@ -32,7 +32,7 @@ type ProductsResponse = {
 };
 
 const CATEGORIES = ['All', 'Men', 'Women', 'Unisex'];
-const APPAREL_TYPES = ['All', 'T-Shirt', 'Hoodie', 'Shirt', 'Jacket', 'Tank Top'];
+const APPAREL_TYPES = ['All', 'T-Shirt', 'Hoodie', 'Shirt', 'Jacket', 'Tank Top', 'Dress'];
 
 export default function GalleryPage() {
     const [category, setCategory] = useState('All');

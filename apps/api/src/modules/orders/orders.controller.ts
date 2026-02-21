@@ -38,9 +38,9 @@ export class OrdersController {
       idempotencyKey: (idempotencyKey as string) || `auto-${request.id}`
     });
 
-    const checkoutData = data as { orderId?: string };
+    const checkoutData = data as { orderId?: string; idempotentReplay?: boolean };
 
-    if (checkoutData.orderId) {
+    if (checkoutData.orderId && !checkoutData.idempotentReplay) {
       await request.server.queues.orderEventsQueue.add('order.pending', {
         eventName: 'order.pending_payment',
         tenantId: user.tenantId,

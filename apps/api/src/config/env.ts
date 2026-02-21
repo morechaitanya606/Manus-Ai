@@ -31,12 +31,12 @@ const envSchema = z.object({
   STABLE_DIFFUSION_API_KEY: z.string().optional(),
   AI_PROVIDER: z.enum(['mock', 'openai', 'stable-diffusion']).default('mock'),
 
-  S3_ENDPOINT: z.string().url(),
+  S3_ENDPOINT: z.string().url().default('https://s3.amazonaws.com'),
   S3_REGION: z.string().default('us-east-1'),
-  S3_ACCESS_KEY: z.string().min(3),
-  S3_SECRET_KEY: z.string().min(3),
-  S3_BUCKET: z.string().min(3),
-  S3_PUBLIC_BASE_URL: z.string().url(),
+  S3_ACCESS_KEY: z.string().default('placeholder'),
+  S3_SECRET_KEY: z.string().default('placeholder'),
+  S3_BUCKET: z.string().default('manusai-uploads'),
+  S3_PUBLIC_BASE_URL: z.string().url().default('https://s3.amazonaws.com'),
 
   OTEL_ENABLED: z.coerce.boolean().default(false),
   OTEL_SERVICE_NAME: z.string().default('atelier-api'),

@@ -38,10 +38,12 @@ type MockupResponse = { success: boolean; data: { id: string; previewUrl: string
 type ProductsResponse = { success: boolean; data: Array<{ id: string; title: string; type: string }> };
 
 const APPAREL_TYPES = [
-  { value: 'T-Shirt', label: 'T-Shirt', icon: '👕' },
-  { value: 'Hoodie', label: 'Hoodie', icon: '🧥' },
-  { value: 'Shirt', label: 'Shirt', icon: '👔' },
-  { value: 'Tank Top', label: 'Tank Top', icon: '🎽' },
+  { value: 'T-Shirt', label: 'T-Shirt', icon: 'TS' },
+  { value: 'Hoodie', label: 'Hoodie', icon: 'HD' },
+  { value: 'Shirt', label: 'Shirt', icon: 'SH' },
+  { value: 'Jacket', label: 'Jacket', icon: 'JK' },
+  { value: 'Tank Top', label: 'Tank Top', icon: 'TK' },
+  { value: 'Dress', label: 'Dress', icon: 'DR' },
 ];
 
 const COLOR_OPTIONS = [
@@ -215,7 +217,7 @@ export function DesignStudio() {
         method: 'POST',
         body: { shippingAddress, idempotencyKey, designJobId: jobId },
       });
-      toast('success', 'Order Placed! 🎉', 'We\'ll print your custom design and ship it soon.');
+      toast('success', 'Order Placed!', 'We\'ll print your custom design and ship it soon.');
       router.push('/orders');
     } catch (err) {
       toast('error', 'Order Failed', err instanceof Error ? err.message : 'Please try again.');
@@ -537,3 +539,4 @@ export function DesignStudio() {
     </div>
   );
 }
+

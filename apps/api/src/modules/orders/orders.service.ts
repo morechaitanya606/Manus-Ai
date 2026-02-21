@@ -33,6 +33,14 @@ export class OrdersService {
 
     const existing = await this.repository.findIdempotency(input.tenantId, endpoint, input.idempotencyKey);
     if (existing) {
+      if (existing.requestHash !== requestHash) {
+        throw new AppError(
+          'Idempotency key was already used with a different payload',
+          409,
+          'IDEMPOTENCY_KEY_CONFLICT'
+        );
+      }
+
       return {
         ...(existing.responseBody as Record<string, unknown>),
         idempotentReplay: true
@@ -144,8 +152,18 @@ export class OrdersService {
     let paymentIntentId: string | undefined;
     let orderId: string | undefined;
 
-    if (stripe && env.STRIPE_WEBHOOK_SECRET && input.signature) {
-      const event = stripe.webhooks.constructEvent(input.rawBody, input.signature, env.STRIPE_WEBHOOK_SECRET);
+    if (stripe && env.STRIPE_WEBHOOK_SECRET) {
+      if (!input.signature) {
+        throw new AppError('Missing Stripe signature', 401, 'WEBHOOK_SIGNATURE_MISSING');
+      }
+
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(input.rawBody, input.signature, env.STRIPE_WEBHOOK_SECRET);
+      } catch {
+        throw new AppError('Invalid Stripe signature', 401, 'WEBHOOK_SIGNATURE_INVALID');
+      }
+
       eventType = event.type;
 
       if (event.type.startsWith('payment_intent.')) {
@@ -154,6 +172,9 @@ export class OrdersService {
         orderId = data.metadata?.orderId;
       }
     } else {
+      if (!input.fallbackBody?.eventType) {
+        throw new AppError('Webhook event type missing', 400, 'WEBHOOK_INVALID');
+      }
       eventType = input.fallbackBody?.eventType;
       paymentIntentId = input.fallbackBody?.paymentIntentId;
       orderId = input.fallbackBody?.orderId;
@@ -173,15 +194,19 @@ export class OrdersService {
     }
 
     if (eventType === 'payment_intent.succeeded' || eventType === 'checkout.session.completed') {
-      await this.repository.markPaymentSuccess(order.id);
+      const paymentResult = await this.repository.markPaymentSuccess(order.id);
+      if (paymentResult.alreadyPaid) {
+        return { processed: true, state: 'duplicate_ignored' };
+      }
+
       return {
         processed: true,
         state: 'success',
         orderEvent: {
           eventName: 'order.created',
-          tenantId: order.tenantId,
-          orderId: order.id,
-          userId: order.userId
+          tenantId: paymentResult.order.tenantId,
+          orderId: paymentResult.order.id,
+          userId: paymentResult.order.userId
         }
       };
     }

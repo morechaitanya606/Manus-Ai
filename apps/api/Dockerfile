@@ -7,7 +7,7 @@ RUN apk add --no-cache openssl
 
 COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/package.json
-COPY packages/types/package.json ./packages/types/package.json 2>/dev/null || true
+COPY packages/types/package.json ./packages/types/package.json
 RUN npm ci --ignore-scripts && npm cache clean --force
 
 # ── Stage 2: Build ───────────────────────────────────────────────
