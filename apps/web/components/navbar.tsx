@@ -31,7 +31,7 @@ const AUTH_LINKS = [
 ];
 
 const SECONDARY_LINKS = [
-  { href: '/products', label: 'Shop', icon: Package },
+  { href: '/manage', label: 'Manage', icon: Package },
 ];
 
 const ADMIN_LINKS = [
