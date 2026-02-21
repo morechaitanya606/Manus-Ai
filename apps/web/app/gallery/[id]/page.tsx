@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiFetch } from '../../../lib/api-client';
-import { SAMPLE_PRODUCTS } from '../../../lib/sample-products';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -46,14 +45,8 @@ export default function GalleryDetailPage() {
     const productQuery = useQuery({
         queryKey: ['gallery-product', params.id],
         queryFn: async () => {
-            try {
-                const res = await apiFetch<ProductResponse>(`/products/${params.id}`);
-                return res.data;
-            } catch {
-                // Fallback to sample data
-                const found = SAMPLE_PRODUCTS.find((p) => p.id === params.id);
-                return found || null;
-            }
+            const res = await apiFetch<ProductResponse>(`/products/${params.id}`);
+            return res.data;
         },
         retry: false,
     });

@@ -5,12 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { apiFetch } from '../../lib/api-client';
-import { SAMPLE_PRODUCTS } from '../../lib/sample-products';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
-import { Images, Filter, Sparkles } from 'lucide-react';
+import { Images, Filter, Sparkles, Upload } from 'lucide-react';
 
 type Product = {
     id: string;
@@ -47,16 +46,14 @@ export default function GalleryPage() {
                 const res = await apiFetch<ProductsResponse>('/products', { params });
                 return res.data;
             } catch {
-                // API not available — use sample data
-                return null;
+                return [];
             }
         },
         retry: false,
         staleTime: 60_000,
     });
 
-    // Use API data if available, otherwise fall back to sample products
-    const products: Product[] = productsQuery.data || SAMPLE_PRODUCTS;
+    const products: Product[] = productsQuery.data || [];
 
     const filtered = products.filter((p) => {
         if (category !== 'All' && p.category?.name !== category) return false;
@@ -145,10 +142,20 @@ export default function GalleryPage() {
                     ))}
                 </div>
             ) : filtered.length === 0 ? (
-                <div className="text-center py-16 space-y-3">
-                    <Images className="h-12 w-12 text-[hsl(var(--muted-foreground))] mx-auto" />
-                    <p className="text-lg font-medium">No designs match your filters</p>
-                    <p className="text-sm text-[hsl(var(--muted-foreground))]">Try adjusting your category or type filters</p>
+                <div className="text-center py-16 space-y-4">
+                    <div className="rounded-full bg-[hsl(var(--muted))] p-6 w-fit mx-auto">
+                        <Upload className="h-12 w-12 text-[hsl(var(--muted-foreground))]" />
+                    </div>
+                    <h2 className="text-xl font-semibold">No designs yet</h2>
+                    <p className="text-[hsl(var(--muted-foreground))] max-w-md mx-auto">
+                        New designs will appear here once they are uploaded. Check back soon or create your own using the AI Design Studio!
+                    </p>
+                    <Link href="/studio">
+                        <Button variant="gradient">
+                            <Sparkles className="h-4 w-4" />
+                            Open Design Studio
+                        </Button>
+                    </Link>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

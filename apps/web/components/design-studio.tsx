@@ -138,6 +138,11 @@ export function DesignStudio() {
 
   const generateDesign = useMutation({
     mutationFn: async () => {
+      if (!auth.accessToken) {
+        toast('warning', 'Sign In Required', 'Please sign in to generate designs.');
+        router.push('/login');
+        throw new Error('Sign in required');
+      }
       const response = await apiFetch<DesignJobResponse>('/designs/generate', {
         method: 'POST',
         body: { prompt, apparelType: selectedApparel, color: selectedColor },
@@ -153,6 +158,7 @@ export function DesignStudio() {
       toast('info', 'Design Queued', 'Your design is being generated...');
     },
     onError: (err) => {
+      if (err.message === 'Sign in required') return;
       toast('error', 'Error', err instanceof Error ? err.message : 'Failed to queue design');
     },
   });
@@ -198,6 +204,11 @@ export function DesignStudio() {
   };
 
   const handleOrderDesign = async () => {
+    if (!auth.accessToken) {
+      toast('warning', 'Sign In Required', 'Please sign in to place an order.');
+      router.push('/login');
+      return;
+    }
     if (!shippingAddress.trim()) {
       toast('warning', 'Address Required', 'Please enter your shipping address.');
       return;
@@ -235,15 +246,8 @@ export function DesignStudio() {
     });
   };
 
-  if (!canCallApi) {
-    return (
-      <div className="text-center py-20 space-y-4">
-        <Sparkles className="h-12 w-12 mx-auto text-[hsl(var(--primary))] animate-pulse" />
-        <h2 className="text-xl font-semibold">Sign in to access the Design Studio</h2>
-        <p className="text-[hsl(var(--muted-foreground))]">Create AI-powered designs for your custom apparel</p>
-      </div>
-    );
-  }
+  // Studio is now fully accessible without sign-in
+  // Auth is only required at generate/order time
 
   return (
     <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
@@ -394,8 +398,8 @@ export function DesignStudio() {
                   key={size}
                   onClick={() => setSelectedSize(size)}
                   className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${selectedSize === size
-                      ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]'
-                      : 'border-[hsl(var(--border))] hover:border-[hsl(var(--foreground)/0.3)]'
+                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]'
+                    : 'border-[hsl(var(--border))] hover:border-[hsl(var(--foreground)/0.3)]'
                     }`}
                 >
                   {size}
