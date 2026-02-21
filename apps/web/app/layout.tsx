@@ -20,14 +20,14 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Atelier Thread — AI-Powered Custom Fashion',
-    template: '%s | Atelier Thread',
+    default: 'ManusAI — AI-Powered Custom Fashion',
+    template: '%s | ManusAI',
   },
   description:
     'Create stunning AI-generated designs, preview them on realistic apparel mockups, and launch your custom fashion brand. The future of fashion is here.',
   keywords: ['AI fashion', 'custom clothing', 'design studio', 'apparel mockup', 'streetwear'],
   openGraph: {
-    title: 'Atelier Thread — AI-Powered Custom Fashion',
+    title: 'ManusAI — AI-Powered Custom Fashion',
     description: 'Create stunning AI-generated designs and launch your custom fashion brand.',
     type: 'website',
   },

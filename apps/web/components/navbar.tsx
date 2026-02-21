@@ -57,7 +57,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 group">
           <Sparkles className="h-6 w-6 text-[hsl(var(--primary))] group-hover:animate-pulse transition" />
           <span className="font-display text-xl font-bold tracking-tight">
-            Atelier<span className="text-[hsl(var(--primary))]">Thread</span>
+            Manus<span className="text-[hsl(var(--primary))]">AI</span>
           </span>
         </Link>
 
