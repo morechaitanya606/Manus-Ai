@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiFetch } from '../../../lib/api-client';
+import { SAMPLE_PRODUCTS } from '../../../lib/sample-products';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -45,9 +46,16 @@ export default function GalleryDetailPage() {
     const productQuery = useQuery({
         queryKey: ['gallery-product', params.id],
         queryFn: async () => {
-            const res = await apiFetch<ProductResponse>(`/products/${params.id}`);
-            return res.data;
+            try {
+                const res = await apiFetch<ProductResponse>(`/products/${params.id}`);
+                return res.data;
+            } catch {
+                // Fallback to sample data
+                const found = SAMPLE_PRODUCTS.find((p) => p.id === params.id);
+                return found || null;
+            }
         },
+        retry: false,
     });
 
     const product = productQuery.data;
@@ -145,9 +153,9 @@ export default function GalleryDetailPage() {
 
                     <p className="text-[hsl(var(--muted-foreground))] leading-relaxed">{product.description}</p>
 
-                    {product.metadata?.fabric && (
+                    {(product.metadata as Record<string, string>)?.material && (
                         <div className="text-sm text-[hsl(var(--muted-foreground))]">
-                            <span className="font-medium text-[hsl(var(--foreground))]">Fabric:</span> {product.metadata.fabric}
+                            <span className="font-medium text-[hsl(var(--foreground))]">Material:</span> {String((product.metadata as Record<string, string>).material)}
                         </div>
                     )}
 
@@ -162,8 +170,8 @@ export default function GalleryDetailPage() {
                                     key={size}
                                     onClick={() => setSelectedSize(size)}
                                     className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${selectedSize === size
-                                            ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]'
-                                            : 'border-[hsl(var(--border))] hover:border-[hsl(var(--foreground)/0.3)]'
+                                        ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]'
+                                        : 'border-[hsl(var(--border))] hover:border-[hsl(var(--foreground)/0.3)]'
                                         }`}
                                 >
                                     {size}
@@ -183,8 +191,8 @@ export default function GalleryDetailPage() {
                                     key={color}
                                     onClick={() => setSelectedColor(color)}
                                     className={`rounded-full h-8 w-8 border-2 transition ${selectedColor === color
-                                            ? 'border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary)/0.3)]'
-                                            : 'border-[hsl(var(--border))]'
+                                        ? 'border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary)/0.3)]'
+                                        : 'border-[hsl(var(--border))]'
                                         }`}
                                     style={{ backgroundColor: color.toLowerCase() }}
                                     title={color}

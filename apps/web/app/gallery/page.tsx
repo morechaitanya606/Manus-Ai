@@ -5,11 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { apiFetch } from '../../lib/api-client';
+import { SAMPLE_PRODUCTS } from '../../lib/sample-products';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
-import { Images, Filter, ShoppingBag, Sparkles } from 'lucide-react';
+import { Images, Filter, Sparkles } from 'lucide-react';
 
 type Product = {
     id: string;
@@ -41,13 +42,21 @@ export default function GalleryPage() {
     const productsQuery = useQuery({
         queryKey: ['gallery-products', category, apparelType],
         queryFn: async () => {
-            const params: Record<string, string | number> = { page: 1, limit: 50 };
-            const res = await apiFetch<ProductsResponse>('/products', { params });
-            return res.data;
+            try {
+                const params: Record<string, string | number> = { page: 1, limit: 50 };
+                const res = await apiFetch<ProductsResponse>('/products', { params });
+                return res.data;
+            } catch {
+                // API not available — use sample data
+                return null;
+            }
         },
+        retry: false,
+        staleTime: 60_000,
     });
 
-    const products = productsQuery.data || [];
+    // Use API data if available, otherwise fall back to sample products
+    const products: Product[] = productsQuery.data || SAMPLE_PRODUCTS;
 
     const filtered = products.filter((p) => {
         if (category !== 'All' && p.category?.name !== category) return false;
@@ -66,7 +75,7 @@ export default function GalleryPage() {
                     <div>
                         <h1 className="text-3xl font-display font-bold">Design Gallery</h1>
                         <p className="text-[hsl(var(--muted-foreground))]">
-                            Browse curated designs for men & women — order your favorites
+                            Browse curated designs for men &amp; women — order your favorites
                         </p>
                     </div>
                 </div>
@@ -89,8 +98,8 @@ export default function GalleryPage() {
                                 key={c}
                                 onClick={() => setCategory(c)}
                                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${category === c
-                                        ? 'bg-[hsl(var(--primary))] text-white'
-                                        : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted-foreground)/0.1)]'
+                                    ? 'bg-[hsl(var(--primary))] text-white'
+                                    : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted-foreground)/0.1)]'
                                     }`}
                             >
                                 {c}
@@ -106,8 +115,8 @@ export default function GalleryPage() {
                                 key={t}
                                 onClick={() => setApparelType(t)}
                                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${apparelType === t
-                                        ? 'bg-[hsl(var(--primary))] text-white'
-                                        : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted-foreground)/0.1)]'
+                                    ? 'bg-[hsl(var(--primary))] text-white'
+                                    : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted-foreground)/0.1)]'
                                     }`}
                             >
                                 {t}
@@ -148,7 +157,7 @@ export default function GalleryPage() {
                             <Card variant="interactive" className="overflow-hidden group cursor-pointer">
                                 <div className="relative aspect-square bg-[hsl(var(--muted))] overflow-hidden">
                                     <Image
-                                        src={product.images[0] || `https://picsum.photos/seed/${product.slug}/600/600`}
+                                        src={product.images[0] || `https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop`}
                                         alt={product.title}
                                         fill
                                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
