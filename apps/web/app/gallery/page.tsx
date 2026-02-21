@@ -1,13 +1,24 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useProductStore } from '../../stores/product-store';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
-import { Images, Filter, Sparkles, Plus, Package } from 'lucide-react';
+import { Images, Filter, Sparkles, Plus, Package, Loader2 } from 'lucide-react';
+
+interface Product {
+    _id: string;
+    title: string;
+    description?: string;
+    type?: string;
+    category?: string;
+    basePrice?: number;
+    images?: string[];
+    colors?: string[];
+    sizes?: string[];
+    fabric?: string;
+}
 
 const CATEGORIES = ['All', 'Men', 'Women', 'Unisex'];
 const APPAREL_TYPES = ['All', 'T-Shirt', 'Hoodie', 'Shirt', 'Jacket', 'Tank Top', 'Dress'];
@@ -15,13 +26,31 @@ const APPAREL_TYPES = ['All', 'T-Shirt', 'Hoodie', 'Shirt', 'Jacket', 'Tank Top'
 export default function GalleryPage() {
     const [category, setCategory] = useState('All');
     const [apparelType, setApparelType] = useState('All');
-    const { products } = useProductStore();
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const filtered = products.filter((p) => {
-        if (category !== 'All' && p.category !== category) return false;
-        if (apparelType !== 'All' && p.type !== apparelType) return false;
-        return true;
-    });
+    const fetchProducts = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (category !== 'All') params.set('category', category);
+            if (apparelType !== 'All') params.set('type', apparelType);
+
+            const res = await fetch(`/api/products?${params.toString()}`);
+            const data = await res.json();
+            if (data.success) {
+                setProducts(data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [category, apparelType]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -94,19 +123,26 @@ export default function GalleryPage() {
             </div>
 
             {/* Results count */}
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                {filtered.length} design{filtered.length !== 1 ? 's' : ''} found
-            </p>
+            {!loading && (
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                    {products.length} design{products.length !== 1 ? 's' : ''} found
+                </p>
+            )}
 
             {/* Grid */}
-            {filtered.length === 0 ? (
+            {loading ? (
+                <div className="text-center py-16">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-[hsl(var(--primary))]" />
+                    <p className="mt-3 text-[hsl(var(--muted-foreground))]">Loading designs...</p>
+                </div>
+            ) : products.length === 0 ? (
                 <div className="text-center py-16 space-y-4">
                     <div className="rounded-full bg-[hsl(var(--muted))] p-6 w-fit mx-auto">
                         <Package className="h-12 w-12 text-[hsl(var(--muted-foreground))]" />
                     </div>
                     <h2 className="text-xl font-semibold">No designs yet</h2>
                     <p className="text-[hsl(var(--muted-foreground))] max-w-md mx-auto">
-                        Add your first design to see it here. You can add products manually or create with AI.
+                        Add your first design to see it here.
                     </p>
                     <div className="flex gap-2 justify-center">
                         <Link href="/manage">
@@ -125,17 +161,16 @@ export default function GalleryPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {filtered.map((product) => (
-                        <Link key={product.id} href={`/gallery/${product.id}`}>
+                    {products.map((product) => (
+                        <Link key={product._id} href={`/gallery/${product._id}`}>
                             <Card variant="interactive" className="overflow-hidden group cursor-pointer">
                                 <div className="relative aspect-square bg-[hsl(var(--muted))] overflow-hidden">
-                                    {product.images[0] ? (
-                                        <Image
+                                    {product.images?.[0] ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
                                             src={product.images[0]}
                                             alt={product.title}
-                                            fill
-                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center h-full">
@@ -143,7 +178,7 @@ export default function GalleryPage() {
                                         </div>
                                     )}
                                     <div className="absolute top-2 left-2 flex gap-1">
-                                        <Badge variant="secondary" className="text-xs">{product.type}</Badge>
+                                        {product.type && <Badge variant="secondary" className="text-xs">{product.type}</Badge>}
                                         {product.category && (
                                             <Badge variant="outline" className="text-xs bg-[hsl(var(--background)/0.7)] backdrop-blur-sm">{product.category}</Badge>
                                         )}
@@ -152,12 +187,12 @@ export default function GalleryPage() {
                                 <div className="p-3 space-y-1">
                                     <h3 className="text-sm font-semibold line-clamp-1 group-hover:text-[hsl(var(--primary))] transition">{product.title}</h3>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-bold text-[hsl(var(--primary))]">₹{product.basePrice}</span>
+                                        <span className="text-sm font-bold text-[hsl(var(--primary))]">₹{product.basePrice || 599}</span>
                                         {product.fabric && (
                                             <span className="text-[10px] text-[hsl(var(--muted-foreground))]">{product.fabric}</span>
                                         )}
                                     </div>
-                                    {product.colors.length > 0 && (
+                                    {product.colors && product.colors.length > 0 && (
                                         <div className="flex gap-0.5 pt-0.5">
                                             {product.colors.slice(0, 5).map((color) => (
                                                 <span

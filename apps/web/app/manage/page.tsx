@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { useProductStore, LocalProduct } from '../../stores/product-store';
+import Link from 'next/link';
 import { Button } from '../../components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card';
 import { Input, Textarea } from '../../components/ui/input';
@@ -17,9 +15,25 @@ import {
     Package,
     Upload,
     Eye,
-    ArrowLeft,
     ImageIcon,
+    Loader2,
+    RefreshCw,
 } from 'lucide-react';
+
+interface Product {
+    _id: string;
+    title: string;
+    description: string;
+    type: string;
+    category: string;
+    basePrice: number;
+    images: string[];
+    colors: string[];
+    sizes: string[];
+    fabric: string;
+    stock: number;
+    createdAt: string;
+}
 
 const APPAREL_TYPES = ['T-Shirt', 'Hoodie', 'Shirt', 'Jacket', 'Tank Top', 'Dress', 'Polo', 'Sweatshirt'];
 const CATEGORIES = ['Men', 'Women', 'Unisex'];
@@ -28,8 +42,9 @@ const COLOR_OPTIONS = ['Black', 'White', 'Navy', 'Red', 'Green', 'Blue', 'Gray',
 const FABRIC_OPTIONS = ['Cotton', 'Silk', 'Polyester', 'Linen', 'Organic Cotton', 'Fleece', 'Rayon', 'Nylon', 'Denim'];
 
 export default function ManageProductsPage() {
-    const router = useRouter();
-    const { products, addProduct, deleteProduct } = useProductStore();
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -43,6 +58,26 @@ export default function ManageProductsPage() {
     const [selectedSizes, setSelectedSizes] = useState<string[]>(['S', 'M', 'L', 'XL']);
     const [selectedColors, setSelectedColors] = useState<string[]>(['Black', 'White']);
     const [fabric, setFabric] = useState('Cotton');
+
+    const fetchProducts = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/products');
+            const data = await res.json();
+            if (data.success) {
+                setProducts(data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch products:', err);
+            toast('error', 'Failed to Load', 'Could not connect to the database.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     const resetForm = () => {
         setTitle('');
@@ -69,54 +104,80 @@ export default function ManageProductsPage() {
         );
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!title.trim()) {
             toast('warning', 'Title Required', 'Please enter a product name.');
             return;
         }
 
-        const product = {
-            title: title.trim(),
-            description: description.trim() || `Beautiful ${type} from ManusAI`,
-            type,
-            basePrice: Number(basePrice) || 599,
-            images: imageUrl.trim() ? [imageUrl.trim()] : [],
-            colors: selectedColors.length > 0 ? selectedColors : ['Black'],
-            sizes: selectedSizes.length > 0 ? selectedSizes : ['M'],
-            fabric: fabric || undefined,
-            category: category || 'Unisex',
-            stock: 100,
-        };
+        setSaving(true);
+        try {
+            const body = {
+                title: title.trim(),
+                description: description.trim(),
+                type,
+                category,
+                basePrice: Number(basePrice) || 599,
+                images: imageUrl.trim() ? [imageUrl.trim()] : [],
+                colors: selectedColors.length > 0 ? selectedColors : ['Black'],
+                sizes: selectedSizes.length > 0 ? selectedSizes : ['M'],
+                fabric,
+                stock: 100,
+            };
 
-        if (editingId) {
-            useProductStore.getState().updateProduct(editingId, product);
-            toast('success', 'Updated!', `${title} has been updated.`);
-        } else {
-            addProduct(product);
-            toast('success', 'Added!', `${title} added to your store.`);
+            const url = editingId ? `/api/products/${editingId}` : '/api/products';
+            const method = editingId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                toast('success', editingId ? 'Updated!' : 'Added!', `${title} saved to database.`);
+                resetForm();
+                setShowForm(false);
+                fetchProducts();
+            } else {
+                toast('error', 'Error', data.error || 'Failed to save.');
+            }
+        } catch (err) {
+            console.error('Save error:', err);
+            toast('error', 'Error', 'Failed to save product.');
+        } finally {
+            setSaving(false);
         }
-
-        resetForm();
-        setShowForm(false);
     };
 
-    const handleEdit = (product: LocalProduct) => {
+    const handleEdit = (product: Product) => {
         setTitle(product.title);
-        setDescription(product.description);
-        setType(product.type);
+        setDescription(product.description || '');
+        setType(product.type || 'T-Shirt');
         setCategory(product.category || 'Unisex');
-        setBasePrice(String(product.basePrice));
-        setImageUrl(product.images[0] || '');
-        setSelectedSizes(product.sizes);
-        setSelectedColors(product.colors);
+        setBasePrice(String(product.basePrice || 599));
+        setImageUrl(product.images?.[0] || '');
+        setSelectedSizes(product.sizes?.length ? product.sizes : ['M']);
+        setSelectedColors(product.colors?.length ? product.colors : ['Black']);
         setFabric(product.fabric || 'Cotton');
-        setEditingId(product.id);
+        setEditingId(product._id);
         setShowForm(true);
     };
 
-    const handleDelete = (id: string, title: string) => {
-        deleteProduct(id);
-        toast('info', 'Deleted', `${title} removed from store.`);
+    const handleDelete = async (id: string, name: string) => {
+        try {
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                toast('info', 'Deleted', `${name} removed.`);
+                fetchProducts();
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+            toast('error', 'Error', 'Failed to delete.');
+        }
     };
 
     return (
@@ -130,11 +191,15 @@ export default function ManageProductsPage() {
                     <div>
                         <h1 className="text-3xl font-display font-bold">Manage Products</h1>
                         <p className="text-[hsl(var(--muted-foreground))]">
-                            Add, edit, and remove your designs — {products.length} product{products.length !== 1 ? 's' : ''}
+                            {loading ? 'Loading...' : `${products.length} product${products.length !== 1 ? 's' : ''} in database`}
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={fetchProducts} disabled={loading}>
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        Refresh
+                    </Button>
                     <Link href="/gallery">
                         <Button variant="outline" size="sm">
                             <Eye className="h-4 w-4" />
@@ -161,7 +226,7 @@ export default function ManageProductsPage() {
                             {editingId ? 'Edit Product' : 'Add New Product'}
                         </CardTitle>
                         <CardDescription>
-                            Fill in the details below. Only the name is required — everything else is optional.
+                            Only the name is required — everything else is optional and has defaults.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-5">
@@ -210,7 +275,8 @@ export default function ManageProductsPage() {
                             />
                             {imageUrl && (
                                 <div className="relative h-32 w-32 rounded-lg overflow-hidden border border-[hsl(var(--border))] mt-2">
-                                    <Image src={imageUrl} alt="Preview" fill className="object-cover" sizes="128px" />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={imageUrl} alt="Preview" className="h-full w-full object-cover" />
                                 </div>
                             )}
                         </div>
@@ -310,7 +376,8 @@ export default function ManageProductsPage() {
 
                         {/* Actions */}
                         <div className="flex gap-2 pt-2">
-                            <Button variant="gradient" onClick={handleSubmit}>
+                            <Button variant="gradient" onClick={handleSubmit} disabled={saving}>
+                                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                                 {editingId ? 'Update Product' : 'Add Product'}
                             </Button>
                             <Button variant="outline" onClick={() => { resetForm(); setShowForm(false); }}>
@@ -322,7 +389,12 @@ export default function ManageProductsPage() {
             )}
 
             {/* Product List */}
-            {products.length === 0 ? (
+            {loading ? (
+                <div className="text-center py-16">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-[hsl(var(--primary))]" />
+                    <p className="mt-3 text-[hsl(var(--muted-foreground))]">Loading products from database...</p>
+                </div>
+            ) : products.length === 0 ? (
                 <Card className="text-center py-16">
                     <CardContent className="space-y-4">
                         <div className="rounded-full bg-[hsl(var(--muted))] p-6 w-fit mx-auto">
@@ -330,24 +402,23 @@ export default function ManageProductsPage() {
                         </div>
                         <h2 className="text-xl font-semibold">No products yet</h2>
                         <p className="text-[hsl(var(--muted-foreground))] max-w-md mx-auto">
-                            Click &quot;Add Product&quot; above to add your first design. You only need a name — everything else is optional!
+                            Click &quot;Add Product&quot; above to add your first design. Only a name is required!
                         </p>
                     </CardContent>
                 </Card>
             ) : (
                 <div className="grid gap-3">
                     {products.map((product) => (
-                        <Card key={product.id} className="overflow-hidden">
+                        <Card key={product._id} className="overflow-hidden">
                             <div className="flex items-center gap-4 p-4">
                                 {/* Image */}
                                 <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-[hsl(var(--muted))] flex-shrink-0">
-                                    {product.images[0] ? (
-                                        <Image
+                                    {product.images?.[0] ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
                                             src={product.images[0]}
                                             alt={product.title}
-                                            fill
-                                            className="object-cover"
-                                            sizes="80px"
+                                            className="h-full w-full object-cover"
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center h-full">
@@ -360,17 +431,14 @@ export default function ManageProductsPage() {
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold truncate">{product.title}</h3>
                                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                        <Badge variant="secondary" className="text-xs">{product.type}</Badge>
-                                        {product.category && (
-                                            <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                                        )}
-                                        {product.fabric && (
-                                            <Badge variant="outline" className="text-xs">{product.fabric}</Badge>
-                                        )}
-                                        <span className="text-sm font-bold text-[hsl(var(--primary))]">₹{product.basePrice}</span>
+                                        {product.type && <Badge variant="secondary" className="text-xs">{product.type}</Badge>}
+                                        {product.category && <Badge variant="outline" className="text-xs">{product.category}</Badge>}
+                                        {product.fabric && <Badge variant="outline" className="text-xs">{product.fabric}</Badge>}
+                                        <span className="text-sm font-bold text-[hsl(var(--primary))]">₹{product.basePrice || 599}</span>
                                     </div>
                                     <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1 truncate">
-                                        Sizes: {product.sizes.join(', ')} • Colors: {product.colors.slice(0, 4).join(', ')}{product.colors.length > 4 ? ` +${product.colors.length - 4}` : ''}
+                                        {product.sizes?.length > 0 && `Sizes: ${product.sizes.join(', ')}`}
+                                        {product.colors?.length > 0 && ` • Colors: ${product.colors.slice(0, 4).join(', ')}${product.colors.length > 4 ? ` +${product.colors.length - 4}` : ''}`}
                                     </p>
                                 </div>
 
@@ -383,7 +451,7 @@ export default function ManageProductsPage() {
                                         variant="outline"
                                         size="sm"
                                         className="text-red-500 hover:bg-red-500/10"
-                                        onClick={() => handleDelete(product.id, product.title)}
+                                        onClick={() => handleDelete(product._id, product.title)}
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>

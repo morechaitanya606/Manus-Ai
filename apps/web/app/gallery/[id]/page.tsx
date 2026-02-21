@@ -1,31 +1,60 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useProductStore } from '../../../stores/product-store';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { Textarea } from '../../../components/ui/input';
 import { toast } from '../../../components/ui/toast';
-import { ArrowLeft, ShoppingBag, Shirt, Palette, MapPin, Ruler, Package } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Palette, MapPin, Ruler, Package, Loader2 } from 'lucide-react';
+
+interface Product {
+    _id: string;
+    title: string;
+    description?: string;
+    type?: string;
+    category?: string;
+    basePrice?: number;
+    images?: string[];
+    colors?: string[];
+    sizes?: string[];
+    fabric?: string;
+}
 
 export default function GalleryDetailPage() {
     const params = useParams();
     const router = useRouter();
     const auth = useAuthStore();
-    const { getProduct } = useProductStore();
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [notFound, setNotFound] = useState(false);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
     const [isOrdering, setIsOrdering] = useState(false);
     const [showOrderForm, setShowOrderForm] = useState(false);
 
-    const product = getProduct(params.id as string);
+    useEffect(() => {
+        async function fetchProduct() {
+            try {
+                const res = await fetch(`/api/products/${params.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    setProduct(data.data);
+                } else {
+                    setNotFound(true);
+                }
+            } catch {
+                setNotFound(true);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchProduct();
+    }, [params.id]);
 
     const handleOrder = async () => {
         if (!auth.accessToken) {
@@ -50,8 +79,16 @@ export default function GalleryDetailPage() {
         }
     };
 
-    // Loading / not found
-    if (!product) {
+    if (loading) {
+        return (
+            <div className="text-center py-20 animate-fade-in">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-[hsl(var(--primary))]" />
+                <p className="mt-3 text-[hsl(var(--muted-foreground))]">Loading design...</p>
+            </div>
+        );
+    }
+
+    if (notFound || !product) {
         return (
             <div className="text-center py-20 space-y-4 animate-fade-in">
                 <Package className="h-16 w-16 mx-auto text-[hsl(var(--muted-foreground)/0.4)]" />
@@ -69,6 +106,8 @@ export default function GalleryDetailPage() {
         );
     }
 
+    const price = product.basePrice || 599;
+
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Back */}
@@ -83,14 +122,12 @@ export default function GalleryDetailPage() {
             <div className="grid gap-8 lg:grid-cols-2">
                 {/* Image */}
                 <div className="relative aspect-square rounded-2xl overflow-hidden bg-[hsl(var(--muted))]">
-                    {product.images[0] ? (
-                        <Image
+                    {product.images?.[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
                             src={product.images[0]}
                             alt={product.title}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                            className="object-cover"
-                            priority
+                            className="w-full h-full object-cover"
                         />
                     ) : (
                         <div className="flex items-center justify-center h-full">
@@ -101,24 +138,22 @@ export default function GalleryDetailPage() {
 
                 {/* Details */}
                 <div className="space-y-5">
-                    {/* Title & Badges */}
                     <div>
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <Badge variant="secondary">{product.type}</Badge>
+                            {product.type && <Badge variant="secondary">{product.type}</Badge>}
                             {product.category && <Badge variant="outline">{product.category}</Badge>}
                             {product.fabric && <Badge variant="outline">{product.fabric}</Badge>}
                         </div>
                         <h1 className="text-3xl font-display font-bold">{product.title}</h1>
-                        <p className="text-3xl font-bold text-[hsl(var(--primary))] mt-1">₹{product.basePrice}</p>
+                        <p className="text-3xl font-bold text-[hsl(var(--primary))] mt-1">₹{price}</p>
                     </div>
 
-                    {/* Description */}
                     {product.description && (
                         <p className="text-[hsl(var(--muted-foreground))] leading-relaxed">{product.description}</p>
                     )}
 
                     {/* Sizes */}
-                    {product.sizes.length > 0 && (
+                    {product.sizes && product.sizes.length > 0 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-sm">
@@ -146,7 +181,7 @@ export default function GalleryDetailPage() {
                     )}
 
                     {/* Colors */}
-                    {product.colors.length > 0 && (
+                    {product.colors && product.colors.length > 0 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-sm">
@@ -179,7 +214,7 @@ export default function GalleryDetailPage() {
                             {!showOrderForm ? (
                                 <Button variant="gradient" className="w-full" size="lg" onClick={() => setShowOrderForm(true)}>
                                     <ShoppingBag className="h-5 w-5" />
-                                    Order This Design — ₹{product.basePrice}
+                                    Order This Design — ₹{price}
                                 </Button>
                             ) : (
                                 <div className="space-y-3 animate-fade-in">
@@ -200,9 +235,10 @@ export default function GalleryDetailPage() {
                                         />
                                     </div>
                                     <div className="flex gap-2">
-                                        <Button variant="gradient" className="flex-1" loading={isOrdering} onClick={handleOrder}>
+                                        <Button variant="gradient" className="flex-1" disabled={isOrdering} onClick={handleOrder}>
+                                            {isOrdering && <Loader2 className="h-4 w-4 animate-spin" />}
                                             <ShoppingBag className="h-4 w-4" />
-                                            Place Order — ₹{product.basePrice}
+                                            Place Order — ₹{price}
                                         </Button>
                                         <Button variant="outline" onClick={() => setShowOrderForm(false)}>
                                             Cancel
