@@ -126,8 +126,8 @@ export default function StudioPage() {
                     key={style}
                     onClick={() => setStylePreset(stylePreset === style ? '' : style)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${stylePreset === style
-                        ? 'bg-[hsl(var(--primary))] text-white shadow-md'
-                        : 'bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border))]'
+                      ? 'bg-[hsl(var(--primary))] text-white shadow-md'
+                      : 'bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border))]'
                       }`}
                   >
                     {style}
@@ -211,7 +211,7 @@ export default function StudioPage() {
                         className="flex items-center gap-2 p-2 rounded-lg border border-[hsl(var(--border))] hover:border-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.05)] transition text-sm"
                       >
                         <span className="capitalize">{p.category}</span>
-                        <span className="text-[hsl(var(--muted-foreground))] ml-auto">${Number(p.base_price).toFixed(0)}</span>
+                        <span className="text-[hsl(var(--muted-foreground))] ml-auto">₹{Number(p.base_price).toFixed(0)}</span>
                       </Link>
                     ))}
                   </div>

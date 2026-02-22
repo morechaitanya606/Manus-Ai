@@ -103,7 +103,7 @@ function DashboardOrdersContent() {
                                     <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${STATUS_COLORS[order.status] || ''}`}>
                                         {order.status}
                                     </span>
-                                    <span className="font-bold text-sm">${Number(order.total_amount).toFixed(2)}</span>
+                                    <span className="font-bold text-sm">₹{Number(order.total_amount).toFixed(0)}</span>
                                     {order.status === 'pending' && (
                                         <Button
                                             variant="gradient"

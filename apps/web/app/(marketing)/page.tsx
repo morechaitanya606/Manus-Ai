@@ -4,13 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '../../components/ui/button';
 import { useProducts } from '../../hooks/use-products';
-import { Sparkles, Palette, Zap, ShoppingBag, ArrowRight, Star } from 'lucide-react';
+import { Sparkles, Palette, Zap, ShoppingBag, ArrowRight, Star, Printer, Package, Upload } from 'lucide-react';
 
 const FEATURES = [
-  { icon: Sparkles, title: 'AI Design Generation', desc: 'Describe your vision, our AI creates stunning designs in seconds' },
-  { icon: Palette, title: 'Realistic Mockups', desc: 'Preview your designs on T-shirts, hoodies, caps, totes & posters' },
-  { icon: Zap, title: 'Instant Checkout', desc: 'Seamless ordering with automatic order fulfillment' },
-  { icon: ShoppingBag, title: 'Print & Ship', desc: 'Professional printing and worldwide shipping via Printful' },
+  { icon: Sparkles, title: 'Generate AI Design', desc: 'Describe your vision and our AI engine creates stunning, print-ready designs in seconds' },
+  { icon: Upload, title: 'Upload Your Own', desc: 'Already have a design? Upload it directly and preview on any product instantly' },
+  { icon: Palette, title: 'Choose Your Product', desc: 'T-Shirts, Hoodies, Caps, Totes, Posters & more — premium quality guaranteed' },
+  { icon: Printer, title: 'We Print & Ship', desc: 'Printed on our own high-quality machines and shipped across India to your doorstep' },
 ];
 
 export default function HomePage() {
@@ -29,18 +29,18 @@ export default function HomePage() {
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary)/0.1)] px-4 py-1.5 text-sm font-medium text-[hsl(var(--primary))] mb-6 animate-fade-in">
               <Sparkles className="h-4 w-4" />
-              AI-Powered Custom Fashion
+              India&apos;s AI-Powered Custom Printing Platform
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold font-display leading-tight animate-slide-up">
-              Design Your
+              Design. Print.
               <br />
-              <span className="gradient-text-hero">Dream Merch</span>
+              <span className="gradient-text-hero">Deliver.</span>
             </h1>
 
             <p className="mt-6 text-lg md:text-xl text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto animate-slide-up animation-delay-100">
-              Create stunning AI-generated designs, preview on realistic apparel mockups,
-              and launch your custom fashion brand — all in one platform.
+              Create stunning AI-generated designs or upload your own, preview on premium apparel,
+              and we print &amp; ship across India — with our own printing machines.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up animation-delay-200">
@@ -52,16 +52,17 @@ export default function HomePage() {
               </Link>
               <Link href="/gallery">
                 <Button variant="outline" size="lg" className="rounded-full px-8 text-base">
-                  Browse Gallery
+                  Explore Products
                 </Button>
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto animate-fade-in animation-delay-300">
+            <div className="mt-16 grid grid-cols-4 gap-6 max-w-lg mx-auto animate-fade-in animation-delay-300">
               {[
-                { value: '500+', label: 'Designs Created' },
-                { value: '5', label: 'Product Types' },
+                { value: '100+', label: 'Ready Designs' },
+                { value: '10+', label: 'Product Types' },
+                { value: '🇮🇳', label: 'Made in India' },
                 { value: '24/7', label: 'AI Available' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
@@ -82,7 +83,7 @@ export default function HomePage() {
               How <span className="gradient-text">Custyle</span> Works
             </h2>
             <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
-              From imagination to doorstep in four simple steps
+              From imagination to doorstep — create, customize, and get it printed on premium products
             </p>
           </div>
 
@@ -104,6 +105,29 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Bulk Order / Printing Banner */}
+      <section className="py-12 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <Package className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">Bulk Orders</h3>
+              <p className="text-sm text-white/80 mt-1">Order in bulk with ease — corporate branding, events, merch</p>
+            </div>
+            <div>
+              <Printer className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">High Quality Printing</h3>
+              <p className="text-sm text-white/80 mt-1">Printed on our own machines — DTF, sublimation, screen print</p>
+            </div>
+            <div>
+              <Zap className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">Fast Delivery</h3>
+              <p className="text-sm text-white/80 mt-1">Quick turnaround — shipped across India within 3-5 days</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Products Preview */}
       {products && products.length > 0 && (
         <section className="py-24 bg-[hsl(var(--muted))]">
@@ -111,10 +135,10 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-12">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold font-display">
-                  Our <span className="gradient-text">Products</span>
+                  Explore Our <span className="gradient-text">Products</span>
                 </h2>
                 <p className="mt-2 text-[hsl(var(--muted-foreground))]">
-                  Premium apparel ready for your custom designs
+                  Browse through our catalogue and design your own product
                 </p>
               </div>
               <Link href="/gallery">
@@ -148,11 +172,11 @@ export default function HomePage() {
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-sm group-hover:text-[hsl(var(--primary))] transition-colors">
+                    <h3 className="font-semibold text-sm group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-1">
                       {product.name}
                     </h3>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold">${Number(product.base_price).toFixed(2)}</span>
+                      <span className="text-sm font-bold">₹{Number(product.base_price).toFixed(0)}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium capitalize">
                         {product.category}
                       </span>
@@ -174,13 +198,13 @@ export default function HomePage() {
             <div className="relative">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium mb-6">
                 <Star className="h-4 w-4" />
-                Start for free — 10 AI credits included
+                Start for free — AI credits included
               </div>
               <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">
                 Ready to Create Something Amazing?
               </h2>
               <p className="text-white/80 mb-8 max-w-lg mx-auto">
-                Join thousands of creators who are designing and selling custom apparel with AI
+                Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep
               </p>
               <Link href="/signup">
                 <Button size="lg" className="rounded-full px-10 bg-white text-[hsl(var(--primary))] hover:bg-white/90 font-semibold shadow-xl">

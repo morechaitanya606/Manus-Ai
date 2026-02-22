@@ -46,7 +46,7 @@ function DashboardProductsContent() {
                                     <div>
                                         <p className="font-medium">{product.name}</p>
                                         <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                                            {product.category} · ${Number(product.base_price).toFixed(2)} · {product.variant_count} variants · {product.colors.length} colors · {product.sizes.length} sizes
+                                            {product.category} · ₹{Number(product.base_price).toFixed(0)} · {product.colors.length} colors · {product.sizes.length} sizes
                                         </p>
                                     </div>
                                 </div>

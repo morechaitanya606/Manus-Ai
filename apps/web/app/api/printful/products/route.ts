@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY || '';
+const USD_TO_INR = 85;
 
 // Printful product IDs we want to show (T-Shirts, Hoodies, Caps, Totes, Posters)
 const FEATURED_PRODUCT_IDS = [
@@ -57,7 +58,7 @@ export async function GET() {
             name: product.title,
             description: product.description || `Premium ${product.title} ready for your custom AI design`,
             category,
-            base_price: basePrice.toFixed(2),
+            base_price: (basePrice * USD_TO_INR).toFixed(0),
             image_url: product.image,
             colors: colors.slice(0, 8), // Limit to 8 colors
             sizes,

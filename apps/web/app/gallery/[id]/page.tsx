@@ -103,10 +103,10 @@ export default function ProductDetailPage() {
                         </p>
 
                         <div className="mt-6">
-                            <span className="text-3xl font-bold gradient-text">${Number(displayPrice).toFixed(2)}</span>
+                            <span className="text-3xl font-bold gradient-text">₹{Number(displayPrice).toFixed(0)}</span>
                             {product.base_price !== product.max_price && (
                                 <span className="text-sm text-[hsl(var(--muted-foreground))] ml-2">
-                                    – ${Number(product.max_price).toFixed(2)}
+                                    – ₹{Number(product.max_price).toFixed(0)}
                                 </span>
                             )}
                         </div>
@@ -157,10 +157,21 @@ export default function ProductDetailPage() {
                             </div>
                         )}
 
-                        {/* Variant count */}
-                        <p className="text-xs text-[hsl(var(--muted-foreground))] mt-4">
-                            {product.variant_count} variants available via Printful
-                        </p>
+                        {/* Product Details */}
+                        <div className="mt-6 space-y-2 text-sm text-[hsl(var(--muted-foreground))]">
+                            {(product as any).fabric && <p>🧵 <strong>Fabric:</strong> {(product as any).fabric}</p>}
+                            {(product as any).fit && <p>📐 <strong>Fit:</strong> {(product as any).fit}</p>}
+                            {(product as any).printing_methods?.length > 0 && (
+                                <p>🖨️ <strong>Printing:</strong> {(product as any).printing_methods.join(', ')}</p>
+                            )}
+                            {(product as any).features?.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                    {(product as any).features.map((f: string) => (
+                                        <span key={f} className="text-xs px-2 py-1 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]">{f}</span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Actions */}
                         <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -173,7 +184,7 @@ export default function ProductDetailPage() {
                                 {added ? (
                                     <><Check className="mr-2 h-5 w-5" /> Added to Cart</>
                                 ) : (
-                                    <><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart — ${Number(displayPrice).toFixed(2)}</>
+                                    <><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart — ₹{Number(displayPrice).toFixed(0)}</>
                                 )}
                             </Button>
                             <Link href="/studio" className="flex-1">

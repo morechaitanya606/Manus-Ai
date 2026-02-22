@@ -105,15 +105,15 @@ function OrderDetailContent() {
                                             {item.color} · {item.size} · Qty: {item.quantity}
                                         </p>
                                     </div>
-                                    <span className="font-medium">${(Number(item.unit_price) * item.quantity).toFixed(2)}</span>
+                                    <span className="font-medium">₹{(Number(item.unit_price) * item.quantity).toFixed(0)}</span>
                                 </div>
                             ))}
                         </div>
                         <hr className="my-4 border-[hsl(var(--border))]" />
                         <div className="space-y-1 text-sm">
-                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Subtotal</span><span>${Number(order.subtotal).toFixed(2)}</span></div>
-                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Shipping</span><span>${Number(order.shipping_cost).toFixed(2)}</span></div>
-                            <div className="flex justify-between font-bold text-base mt-2"><span>Total</span><span>${Number(order.total_amount).toFixed(2)}</span></div>
+                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Subtotal</span><span>₹{Number(order.subtotal).toFixed(0)}</span></div>
+                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Shipping</span><span>₹{Number(order.shipping_cost).toFixed(0)}</span></div>
+                            <div className="flex justify-between font-bold text-base mt-2"><span>Total</span><span>₹{Number(order.total_amount).toFixed(0)}</span></div>
                         </div>
                     </div>
 

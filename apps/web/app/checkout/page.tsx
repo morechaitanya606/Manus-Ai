@@ -1,181 +1,246 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Script from 'next/script';
 import { useCartStore } from '../../stores/cart-store';
 import { useAuthStore } from '../../stores/auth-store';
-import { useCreateOrder } from '../../hooks/use-orders';
 import { Button } from '../../components/ui/button';
-import { Lock, ShoppingBag as ShoppingBagIcon, Loader2, CheckCircle, ShoppingBag } from 'lucide-react';
+import { Lock, ShoppingBag, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
 
 export default function CheckoutPage() {
     const router = useRouter();
     const { items, getTotal, clearCart } = useCartStore();
-    const { session } = useAuthStore();
-    const createOrder = useCreateOrder();
+    const { user, session } = useAuthStore();
 
     const [form, setForm] = useState({
-        name: '', email: '', address: '', city: '', state: '', zip: '', country: 'IN',
+        name: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: 'IN',
     });
-    const [step, setStep] = useState<'shipping' | 'payment' | 'success'>('shipping');
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [orderId, setOrderId] = useState('');
+    const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
-    if (!session) {
+    useEffect(() => {
+        if (user) {
+            setForm((f) => ({ ...f, name: user.user_metadata?.full_name || '', email: user.email || '' }));
+        }
+    }, [user]);
+
+    const shippingCost = 99;
+    const subtotal = getTotal();
+    const total = subtotal + shippingCost;
+
+    const handlePlaceOrder = async () => {
+        if (!user || !session) { router.push('/login'); return; }
+        if (!form.name || !form.address || !form.city || !form.state || !form.zip || !form.phone) return;
+        if (!razorpayLoaded) { alert('Payment system is loading, please wait...'); return; }
+
+        setLoading(true);
+        try {
+            // 1. Create Razorpay order via API
+            const res = await fetch('/api/razorpay/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: items.map((item) => ({
+                        product_id: item.productId,
+                        design_id: item.designId,
+                        quantity: item.quantity,
+                        unit_price: item.unitPrice,
+                        color: item.color,
+                        size: item.size,
+                    })),
+                    shipping_address: {
+                        name: form.name,
+                        email: form.email,
+                        phone: form.phone,
+                        address: form.address,
+                        city: form.city,
+                        state: form.state,
+                        zip: form.zip,
+                        country: form.country,
+                    },
+                    user_id: user.id,
+                }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to create order');
+
+            // 2. Open Razorpay popup
+            const options = {
+                key: data.key_id,
+                amount: data.amount * 100,
+                currency: data.currency,
+                name: 'Custyle',
+                description: `Order #${data.order_id.slice(0, 8)}`,
+                order_id: data.razorpay_order_id,
+                prefill: {
+                    name: form.name,
+                    email: form.email,
+                    contact: form.phone,
+                },
+                theme: { color: '#7c3aed' },
+                handler: async function (response: any) {
+                    // 3. Verify payment
+                    const verifyRes = await fetch('/api/razorpay/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            order_id: data.order_id,
+                        }),
+                    });
+
+                    if (verifyRes.ok) {
+                        setSuccess(true);
+                        setOrderId(data.order_id);
+                        clearCart();
+                    } else {
+                        alert('Payment verification failed. Please contact support.');
+                    }
+                    setLoading(false);
+                },
+                modal: {
+                    ondismiss: function () {
+                        setLoading(false);
+                    },
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } catch (err: any) {
+            console.error('Checkout error:', err);
+            alert(err.message || 'Something went wrong');
+            setLoading(false);
+        }
+    };
+
+    if (success) {
         return (
             <div className="min-h-[70vh] flex items-center justify-center px-4">
-                <div className="text-center">
-                    <Lock className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)] mx-auto mb-4" />
-                    <h1 className="text-xl font-bold mb-2">Sign in to checkout</h1>
-                    <Link href="/login"><Button variant="gradient">Sign In</Button></Link>
+                <div className="text-center animate-fade-in">
+                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                    <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
+                    <p className="text-[hsl(var(--muted-foreground))] mb-6">
+                        Order #{orderId.slice(0, 8)} has been placed. We&apos;ll start printing soon!
+                    </p>
+                    <Link href={`/orders/${orderId}`}>
+                        <Button variant="gradient" className="rounded-full">View Order</Button>
+                    </Link>
                 </div>
             </div>
         );
     }
 
-    if (items.length === 0 && step !== 'success') {
+    if (items.length === 0) {
         return (
             <div className="min-h-[70vh] flex items-center justify-center px-4">
                 <div className="text-center">
                     <ShoppingBag className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)] mx-auto mb-4" />
                     <h1 className="text-xl font-bold mb-2">Your cart is empty</h1>
-                    <Link href="/gallery"><Button variant="outline">Browse Gallery</Button></Link>
+                    <Link href="/gallery"><Button variant="outline">Browse Products</Button></Link>
                 </div>
             </div>
         );
     }
-
-    const handlePlaceOrder = async () => {
-        try {
-            await createOrder.mutateAsync({
-                items: items.map((item) => ({
-                    product_id: item.productId,
-                    mockup_id: item.mockupId,
-                    design_id: item.designId,
-                    quantity: item.quantity,
-                    unit_price: item.unitPrice,
-                    color: item.color,
-                    size: item.size,
-                })),
-                shipping_address: form,
-            });
-            clearCart();
-            setStep('success');
-        } catch {
-            // Error handled by mutation
-        }
-    };
-
-    if (step === 'success') {
-        return (
-            <div className="min-h-[70vh] flex items-center justify-center px-4">
-                <div className="text-center max-w-md animate-scale-in">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-                        <CheckCircle className="h-8 w-8 text-green-600" />
-                    </div>
-                    <h1 className="text-2xl font-bold font-display mb-2">Order Placed!</h1>
-                    <p className="text-[hsl(var(--muted-foreground))] mb-6">
-                        Your order is being processed. You&apos;ll receive an email with tracking details.
-                    </p>
-                    <div className="flex gap-3 justify-center">
-                        <Link href="/orders"><Button variant="gradient">View Orders</Button></Link>
-                        <Link href="/gallery"><Button variant="outline">Continue Shopping</Button></Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    const subtotal = getTotal();
-    const shipping = 4.99;
-    const platformFee = subtotal * 0.15;
-    const total = subtotal + shipping + platformFee;
 
     return (
-        <div className="min-h-screen bg-[hsl(var(--muted))]">
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-                <h1 className="text-3xl font-bold font-display mb-8 animate-fade-in">
-                    <span className="gradient-text">Checkout</span>
-                </h1>
+        <>
+            <Script
+                src="https://checkout.razorpay.com/v1/checkout.js"
+                onLoad={() => setRazorpayLoaded(true)}
+            />
+            <div className="min-h-screen bg-[hsl(var(--muted))]">
+                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+                    <h1 className="text-3xl font-bold font-display mb-8">
+                        <span className="gradient-text">Checkout</span>
+                    </h1>
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2">
+                    <div className="grid md:grid-cols-5 gap-8">
                         {/* Shipping Form */}
-                        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up">
-                            <h3 className="font-semibold mb-4">Shipping Address</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {[
-                                    { key: 'name', label: 'Full Name', span: 2 },
-                                    { key: 'email', label: 'Email', span: 2, type: 'email' },
-                                    { key: 'address', label: 'Address', span: 2 },
-                                    { key: 'city', label: 'City', span: 1 },
-                                    { key: 'state', label: 'State', span: 1 },
-                                    { key: 'zip', label: 'ZIP Code', span: 1 },
-                                    { key: 'country', label: 'Country', span: 1 },
-                                ].map((field) => (
-                                    <div key={field.key} className={field.span === 2 ? 'sm:col-span-2' : ''}>
-                                        <label className="block text-sm font-medium mb-1.5">{field.label}</label>
-                                        <input
-                                            type={field.type || 'text'}
-                                            value={(form as Record<string, string>)[field.key]}
-                                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                                            required
-                                            className="w-full px-4 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            <Button
-                                variant="gradient"
-                                className="w-full mt-6 shadow-lg"
-                                onClick={handlePlaceOrder}
-                                disabled={createOrder.isPending || !form.name || !form.email || !form.address}
-                            >
-                                {createOrder.isPending ? (
-                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
-                                ) : (
-                                    <><ShoppingBagIcon className="mr-2 h-4 w-4" /> Place Order — ${total.toFixed(2)}</>
-                                )}
-                            </Button>
-
-                            {createOrder.isError && (
-                                <p className="mt-3 text-sm text-red-600">{createOrder.error.message}</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Summary */}
-                    <div>
-                        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
-                            <h3 className="font-semibold mb-4">Order Summary</h3>
-                            <div className="space-y-3 mb-4">
-                                {items.map((item) => (
-                                    <div key={item.id} className="flex justify-between text-sm">
-                                        <span className="text-[hsl(var(--muted-foreground))] truncate mr-2">
-                                            {item.productName} × {item.quantity}
-                                        </span>
-                                        <span className="font-medium">${(item.unitPrice * item.quantity).toFixed(2)}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <hr className="border-[hsl(var(--border))] mb-3" />
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-                                <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Shipping</span><span>${shipping.toFixed(2)}</span></div>
-                                <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Platform fee</span><span>${platformFee.toFixed(2)}</span></div>
-                                <hr className="border-[hsl(var(--border))]" />
-                                <div className="flex justify-between font-bold text-base">
-                                    <span>Total</span><span>${total.toFixed(2)}</span>
+                        <div className="md:col-span-3 bg-white rounded-2xl border border-[hsl(var(--border))] p-6">
+                            <h2 className="font-semibold mb-4">Shipping Address</h2>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <input placeholder="Full Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="col-span-2 px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                    <input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                    <input placeholder="Phone *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                </div>
+                                <input placeholder="Address *" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                <div className="grid grid-cols-3 gap-4">
+                                    <input placeholder="City *" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                    <input placeholder="State *" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                                    <input placeholder="PIN Code *" value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
                                 </div>
                             </div>
-                            <div className="mt-4 flex items-center gap-2 text-xs text-[hsl(var(--muted-foreground))]">
-                                <Lock className="h-3 w-3" />
-                                Secure checkout powered by Custyle
+                        </div>
+
+                        {/* Order Summary */}
+                        <div className="md:col-span-2">
+                            <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
+                                <h2 className="font-semibold mb-4">Order Summary</h2>
+                                <div className="space-y-3 mb-4">
+                                    {items.map((item) => (
+                                        <div key={item.id} className="flex justify-between text-sm">
+                                            <span className="text-[hsl(var(--muted-foreground))]">
+                                                {item.productName} × {item.quantity}
+                                            </span>
+                                            <span className="font-medium">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <hr className="my-4 border-[hsl(var(--border))]" />
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span>Subtotal</span>
+                                        <span>₹{subtotal.toFixed(0)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Shipping</span>
+                                        <span>₹{shippingCost}</span>
+                                    </div>
+                                    <hr className="my-2 border-[hsl(var(--border))]" />
+                                    <div className="flex justify-between text-lg font-bold">
+                                        <span>Total</span>
+                                        <span className="gradient-text">₹{total.toFixed(0)}</span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    variant="gradient"
+                                    size="lg"
+                                    className="w-full mt-6 rounded-xl shadow-lg"
+                                    onClick={handlePlaceOrder}
+                                    disabled={loading || !form.name || !form.address || !form.city || !form.state || !form.zip || !form.phone}
+                                >
+                                    {loading ? (
+                                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
+                                    ) : (
+                                        <><Lock className="mr-2 h-5 w-5" /> Pay ₹{total.toFixed(0)}</>
+                                    )}
+                                </Button>
+
+                                <p className="text-xs text-center text-[hsl(var(--muted-foreground))] mt-3">
+                                    <Lock className="inline h-3 w-3 mr-1" />
+                                    Secure payment powered by Razorpay
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

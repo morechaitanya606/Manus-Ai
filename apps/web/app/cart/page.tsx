@@ -64,7 +64,7 @@ export default function CartPage() {
                                             </button>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="font-bold">${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                                            <span className="font-bold">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
                                             <button
                                                 onClick={() => removeItem(item.id)}
                                                 className="p-1.5 rounded-lg hover:bg-red-50 text-[hsl(var(--muted-foreground))] hover:text-red-500 transition"
@@ -85,7 +85,7 @@ export default function CartPage() {
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-[hsl(var(--muted-foreground))]">Subtotal</span>
-                                    <span>${getTotal().toFixed(2)}</span>
+                                    <span>₹{getTotal().toFixed(0)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-[hsl(var(--muted-foreground))]">Shipping</span>
@@ -94,7 +94,7 @@ export default function CartPage() {
                                 <hr className="border-[hsl(var(--border))]" />
                                 <div className="flex justify-between text-base font-bold">
                                     <span>Total</span>
-                                    <span>${(getTotal() + 4.99).toFixed(2)}</span>
+                                    <span>₹{(getTotal() + 99).toFixed(0)}</span>
                                 </div>
                             </div>
                             <Link href="/checkout">

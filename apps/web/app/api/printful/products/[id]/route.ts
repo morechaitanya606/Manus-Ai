@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY || '';
+const USD_TO_INR = 85;
 
 export async function GET(
     _request: Request,
@@ -68,7 +69,7 @@ export async function GET(
             size: v.size,
             color: v.color,
             color_code: v.color_code,
-            price: v.price,
+            price: (parseFloat(v.price) * USD_TO_INR).toFixed(0),
             in_stock: v.in_stock,
         }));
 
@@ -78,8 +79,8 @@ export async function GET(
             name: product.title,
             description: product.description || `Premium ${product.title} ready for your custom AI design`,
             category,
-            base_price: minPrice.toFixed(2),
-            max_price: maxPrice.toFixed(2),
+            base_price: (minPrice * USD_TO_INR).toFixed(0),
+            max_price: (maxPrice * USD_TO_INR).toFixed(0),
             image_url: product.image,
             colors,
             sizes,
