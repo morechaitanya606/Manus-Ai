@@ -1,69 +1,121 @@
 'use client';
 
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-
-type SessionUser = {
-  id: string;
-  email: string;
-  role: string;
-  tenantId: string;
-  displayName?: string;
-};
+import { getSupabase, type Profile } from '../lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
 
 type AuthState = {
-  accessToken: string | null;
-  refreshToken: string | null;
-  user: SessionUser | null;
-  setSession: (input: { accessToken: string; refreshToken: string; user: SessionUser }) => void;
-  updateToken: (accessToken: string) => void;
-  clear: () => void;
+  session: Session | null;
+  user: User | null;
+  profile: Profile | null;
+  loading: boolean;
+  initialized: boolean;
+
+  // Actions
+  initialize: () => Promise<void>;
+  setSession: (session: Session | null) => void;
+  fetchProfile: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUpWithEmail: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: string | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null }>;
+  signOut: () => Promise<void>;
+
+  // Computed
   isAuthenticated: () => boolean;
   isAdmin: () => boolean;
+  isCreator: () => boolean;
 };
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      accessToken: null,
-      refreshToken: null,
-      user: null,
-      setSession: (input) =>
-        set({
-          accessToken: input.accessToken,
-          refreshToken: input.refreshToken,
-          user: input.user,
-        }),
-      updateToken: (accessToken) => set({ accessToken }),
-      clear: () =>
-        set({
-          accessToken: null,
-          refreshToken: null,
-          user: null,
-        }),
-      isAuthenticated: () => Boolean(get().accessToken && get().user),
-      isAdmin: () => {
-        const role = get().user?.role;
-        return role === 'PLATFORM_ADMIN' || role === 'STORE_OWNER' || role === 'STORE_MANAGER';
-      },
-    }),
-    {
-      name: 'atelier-auth',
-      storage: createJSONStorage(() => {
-        if (typeof window === 'undefined') {
-          return {
-            getItem: () => null,
-            setItem: () => { },
-            removeItem: () => { },
-          };
-        }
-        return localStorage;
-      }),
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
-        user: state.user,
-      }),
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  session: null,
+  user: null,
+  profile: null,
+  loading: true,
+  initialized: false,
+
+  initialize: async () => {
+    if (get().initialized) return;
+    const supabase = getSupabase();
+
+    // Get initial session
+    const { data: { session } } = await supabase.auth.getSession();
+    set({ session, user: session?.user ?? null, loading: false, initialized: true });
+
+    if (session?.user) {
+      get().fetchProfile();
     }
-  )
-);
+
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange((_event, session) => {
+      set({ session, user: session?.user ?? null });
+      if (session?.user) {
+        get().fetchProfile();
+      } else {
+        set({ profile: null });
+      }
+    });
+  },
+
+  setSession: (session) => {
+    set({ session, user: session?.user ?? null });
+  },
+
+  fetchProfile: async () => {
+    const user = get().user;
+    if (!user) return;
+
+    const supabase = getSupabase();
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (data) {
+      set({ profile: data as Profile });
+    }
+  },
+
+  signInWithEmail: async (email, password) => {
+    set({ loading: true });
+    const supabase = getSupabase();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    set({ loading: false });
+    return { error: error?.message ?? null };
+  },
+
+  signUpWithEmail: async (email, password, metadata) => {
+    set({ loading: true });
+    const supabase = getSupabase();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: metadata,
+      },
+    });
+    set({ loading: false });
+    return { error: error?.message ?? null };
+  },
+
+  signInWithGoogle: async () => {
+    const supabase = getSupabase();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    return { error: error?.message ?? null };
+  },
+
+  signOut: async () => {
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    set({ session: null, user: null, profile: null });
+  },
+
+  isAuthenticated: () => Boolean(get().session),
+  isAdmin: () => get().profile?.role === 'admin',
+  isCreator: () => get().profile?.role === 'creator' || get().profile?.role === 'admin',
+}));

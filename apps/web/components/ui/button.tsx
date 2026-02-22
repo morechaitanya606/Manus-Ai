@@ -20,7 +20,9 @@ const buttonVariants = cva(
         success:
           'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] shadow-md shadow-[hsl(var(--success)/0.25)] hover:brightness-110',
         gradient:
-          'bg-gradient-to-r from-[hsl(17,92%,52%)] to-[hsl(330,81%,60%)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]',
+          'bg-gradient-to-r from-[hsl(262,83%,58%)] to-[hsl(280,80%,65%)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]',
+        'gradient-warm':
+          'bg-gradient-to-r from-[hsl(25,95%,55%)] to-[hsl(280,80%,55%)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]',
       },
       size: {
         sm: 'h-8 px-3 text-xs',

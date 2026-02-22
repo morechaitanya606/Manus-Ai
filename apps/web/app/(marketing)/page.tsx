@@ -1,183 +1,220 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  ArrowRight,
-  Sparkles,
-  Palette,
-  Shirt,
-  Package,
-  Zap,
-  Eye,
-  ShoppingBag,
-} from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '../../components/ui/button';
-import { Card } from '../../components/ui/card';
+import { useProducts } from '../../hooks/use-products';
+import { Sparkles, Palette, Zap, ShoppingBag, ArrowRight, Star, Printer, Package, Upload } from 'lucide-react';
 
-const STEPS = [
-  {
-    step: '01',
-    icon: Sparkles,
-    title: 'Describe Your Vision',
-    description: 'Write a prompt describing your dream design — abstract art, typography, patterns, anything.',
-  },
-  {
-    step: '02',
-    icon: Palette,
-    title: 'AI Generates It',
-    description: 'Our AI engine creates a unique, high-resolution design from your prompt in seconds.',
-  },
-  {
-    step: '03',
-    icon: Eye,
-    title: 'Preview on Apparel',
-    description: 'See your design on T-shirts, hoodies, and more. Adjust placement, size, and color.',
-  },
-  {
-    step: '04',
-    icon: Package,
-    title: 'Place Your Order',
-    description: 'Love it? Order it. We print and ship your custom apparel directly to your door.',
-  },
-];
-
-const STATS = [
-  { value: '1000+', label: 'Ready Designs' },
-  { value: '6', label: 'Apparel Types' },
-  { value: '24h', label: 'Fast Shipping' },
-  { value: '∞', label: 'AI Possibilities' },
+const FEATURES = [
+  { icon: Sparkles, title: 'Generate AI Design', desc: 'Describe your vision and our AI engine creates stunning, print-ready designs in seconds' },
+  { icon: Upload, title: 'Upload Your Own', desc: 'Already have a design? Upload it directly and preview on any product instantly' },
+  { icon: Palette, title: 'Choose Your Product', desc: 'T-Shirts, Hoodies, Caps, Totes, Posters & more — premium quality guaranteed' },
+  { icon: Printer, title: 'We Print & Ship', desc: 'Printed on our own high-quality machines and shipped across India to your doorstep' },
 ];
 
 export default function HomePage() {
+  const { data: products } = useProducts();
+
   return (
-    <div className="space-y-20 animate-fade-in">
-      {/* ── Hero ──────────────────────────────────────────────────── */}
-      <section className="relative text-center py-16 sm:py-24 space-y-6">
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-[hsl(var(--primary)/0.08)] blur-[120px]" />
+    <div className="relative">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] via-white to-[hsl(var(--muted))]">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-[hsl(var(--primary)/0.08)] blur-3xl" />
+          <div className="absolute bottom-10 right-20 h-96 w-96 rounded-full bg-[hsl(var(--accent)/0.06)] blur-3xl" />
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--muted))] px-4 py-1.5 text-sm">
-          <Sparkles className="h-4 w-4 text-[hsl(var(--primary))]" />
-          <span>AI-Powered Custom Fashion</span>
-        </div>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary)/0.1)] px-4 py-1.5 text-sm font-medium text-[hsl(var(--primary))] mb-6 animate-fade-in">
+              <Sparkles className="h-4 w-4" />
+              India&apos;s AI-Powered Custom Printing Platform
+            </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-tight tracking-tight">
-          Your Imagination,{' '}
-          <span className="bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--chart-1))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
-            Worn
-          </span>
-        </h1>
+            <h1 className="text-5xl md:text-7xl font-bold font-display leading-tight animate-slide-up">
+              Design. Print.
+              <br />
+              <span className="gradient-text-hero">Deliver.</span>
+            </h1>
 
-        <p className="mx-auto max-w-2xl text-lg sm:text-xl text-[hsl(var(--muted-foreground))] leading-relaxed">
-          Describe your dream design, let AI bring it to life, preview it on premium apparel, and order it — all in minutes.
-        </p>
+            <p className="mt-6 text-lg md:text-xl text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto animate-slide-up animation-delay-100">
+              Create stunning AI-generated designs or upload your own, preview on premium apparel,
+              and we print &amp; ship across India — with our own printing machines.
+            </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link href="/studio">
-            <Button variant="gradient" size="lg" className="text-base px-8">
-              <Palette className="h-5 w-5" />
-              Create Your Design
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/gallery">
-            <Button variant="outline" size="lg" className="text-base px-8">
-              <Shirt className="h-5 w-5" />
-              Browse 1000+ Designs
-            </Button>
-          </Link>
-        </div>
-      </section>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up animation-delay-200">
+              <Link href="/studio">
+                <Button variant="gradient" size="lg" className="rounded-full px-8 text-base shadow-lg shadow-[hsl(var(--primary)/0.3)]">
+                  Start Creating
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/gallery">
+                <Button variant="outline" size="lg" className="rounded-full px-8 text-base">
+                  Explore Products
+                </Button>
+              </Link>
+            </div>
 
-      {/* ── Stats ─────────────────────────────────────────────────── */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {STATS.map((stat) => (
-          <Card key={stat.label} variant="glass" className="text-center p-6">
-            <p className="text-3xl sm:text-4xl font-display font-bold text-[hsl(var(--primary))]">{stat.value}</p>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">{stat.label}</p>
-          </Card>
-        ))}
-      </section>
-
-      {/* ── How It Works ──────────────────────────────────────────── */}
-      <section className="space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl font-display font-bold">How It Works</h2>
-          <p className="text-[hsl(var(--muted-foreground))] mt-2 max-w-lg mx-auto">
-            From idea to doorstep in four simple steps
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {STEPS.map((step) => {
-            const Icon = step.icon;
-            return (
-              <Card key={step.step} variant="interactive" className="p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono text-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] rounded-full px-2 py-0.5">
-                    {step.step}
-                  </span>
+            {/* Stats */}
+            <div className="mt-16 grid grid-cols-4 gap-6 max-w-lg mx-auto animate-fade-in animation-delay-300">
+              {[
+                { value: '100+', label: 'Ready Designs' },
+                { value: '10+', label: 'Product Types' },
+                { value: '🇮🇳', label: 'Made in India' },
+                { value: '24/7', label: 'AI Available' },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-2xl font-bold font-display gradient-text">{stat.value}</div>
+                  <div className="text-xs text-[hsl(var(--muted-foreground))] mt-1">{stat.label}</div>
                 </div>
-                <div className="rounded-xl bg-[hsl(var(--primary)/0.08)] p-3 w-fit">
-                  <Icon className="h-6 w-6 text-[hsl(var(--primary))]" />
-                </div>
-                <h3 className="text-lg font-semibold">{step.title}</h3>
-                <p className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed">{step.description}</p>
-              </Card>
-            );
-          })}
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── Dual CTA ──────────────────────────────────────────────── */}
-      <section className="grid sm:grid-cols-2 gap-6">
-        <Card variant="elevated" className="p-8 space-y-4 bg-gradient-to-br from-[hsl(var(--primary)/0.05)] to-transparent">
-          <div className="rounded-xl bg-[hsl(var(--primary)/0.1)] p-3 w-fit">
-            <Sparkles className="h-8 w-8 text-[hsl(var(--primary))]" />
+      {/* Features Section */}
+      <section className="py-24 bg-[hsl(var(--card))]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold font-display">
+              How <span className="gradient-text">The Quote Shop</span> Works
+            </h2>
+            <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
+              From imagination to doorstep — create, customize, and get it printed on premium products
+            </p>
           </div>
-          <h3 className="text-2xl font-display font-bold">Create with AI</h3>
-          <p className="text-[hsl(var(--muted-foreground))]">
-            Write a prompt and watch AI transform your idea into a print-ready design. Unique, every time.
-          </p>
-          <Link href="/studio">
-            <Button variant="gradient">
-              Open Design Studio
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </Card>
 
-        <Card variant="elevated" className="p-8 space-y-4 bg-gradient-to-br from-[hsl(var(--chart-1)/0.05)] to-transparent">
-          <div className="rounded-xl bg-[hsl(var(--chart-1)/0.1)] p-3 w-fit">
-            <ShoppingBag className="h-8 w-8 text-[hsl(var(--chart-1))]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {FEATURES.map((feature, i) => (
+              <div
+                key={feature.title}
+                className="group relative bg-[hsl(var(--muted))] rounded-2xl p-6 hover:bg-[hsl(var(--card))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 border border-transparent hover:border-[hsl(var(--border))]"
+              >
+                <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white mb-4 shadow-lg shadow-[hsl(var(--primary)/0.2)] group-hover:scale-110 transition-transform">
+                  <feature.icon className="h-6 w-6" />
+                </div>
+                <div className="text-xs font-bold text-[hsl(var(--primary))] mb-2">STEP {i + 1}</div>
+                <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">{feature.desc}</p>
+              </div>
+            ))}
           </div>
-          <h3 className="text-2xl font-display font-bold">Browse Ready Designs</h3>
-          <p className="text-[hsl(var(--muted-foreground))]">
-            Explore 1000+ curated designs for men and women. Pick your favorite and order instantly.
-          </p>
-          <Link href="/gallery">
-            <Button variant="outline">
-              View Gallery
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </Card>
+        </div>
       </section>
 
-      {/* ── Bottom CTA ────────────────────────────────────────────── */}
-      <section className="text-center py-16 space-y-4 rounded-2xl bg-gradient-to-r from-[hsl(var(--primary)/0.08)] via-[hsl(var(--chart-1)/0.05)] to-[hsl(var(--primary)/0.08)]">
-        <Zap className="h-10 w-10 text-[hsl(var(--primary))] mx-auto" />
-        <h2 className="text-3xl sm:text-4xl font-display font-bold">Ready to Wear Your Imagination?</h2>
-        <p className="text-[hsl(var(--muted-foreground))] max-w-md mx-auto">
-          Join thousands of creators designing their own fashion.
-        </p>
-        <Link href="/signup">
-          <Button variant="gradient" size="lg" className="mt-4">
-            Get Started — It&apos;s Free
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+      {/* Bulk Order / Printing Banner */}
+      <section className="py-12 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <Package className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">Bulk Orders</h3>
+              <p className="text-sm text-white/80 mt-1">Order in bulk with ease — corporate branding, events, merch</p>
+            </div>
+            <div>
+              <Printer className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">High Quality Printing</h3>
+              <p className="text-sm text-white/80 mt-1">Printed on our own machines — DTF, sublimation, screen print</p>
+            </div>
+            <div>
+              <Zap className="h-8 w-8 mx-auto mb-3 opacity-90" />
+              <h3 className="font-bold text-lg">Fast Delivery</h3>
+              <p className="text-sm text-white/80 mt-1">Quick turnaround — shipped across India within 3-5 days</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products Preview */}
+      {products && products.length > 0 && (
+        <section className="py-24 bg-[hsl(var(--muted))]">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold font-display">
+                  Explore Our <span className="gradient-text">Products</span>
+                </h2>
+                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
+                  Browse through our catalogue and design your own product
+                </p>
+              </div>
+              <Link href="/gallery">
+                <Button variant="outline" className="rounded-full">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {products.slice(0, 5).map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/gallery/${product.id}`}
+                  className="group bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="aspect-square bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] relative overflow-hidden">
+                    {product.image_url ? (
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        fill
+                        className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                        sizes="20vw"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <ShoppingBag className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)]" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-sm group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm font-bold">₹{Number(product.base_price).toFixed(0)}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium capitalize">
+                        {product.category}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA Section */}
+      <section className="py-24 bg-[hsl(var(--card))]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-[hsl(var(--card))]/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[hsl(var(--card))]/10 blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--card))]/20 px-4 py-1.5 text-sm font-medium mb-6">
+                <Star className="h-4 w-4" />
+                Start for free — AI credits included
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">
+                Ready to Create Something Amazing?
+              </h2>
+              <p className="text-white/80 mb-8 max-w-lg mx-auto">
+                Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep
+              </p>
+              <Link href="/signup">
+                <Button size="lg" className="rounded-full px-10 bg-[hsl(var(--card))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--card))]/90 font-semibold shadow-xl">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -1,203 +1,141 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
-import { apiFetch } from '../../../lib/api-client';
+import { useOrder, useOrderRealtime } from '../../../hooks/use-orders';
 import { AuthGuard } from '../../../components/auth-guard';
-import { Card } from '../../../components/ui/card';
-import { StatusBadge } from '../../../components/ui/badge';
-import { Skeleton } from '../../../components/ui/skeleton';
-import { Button } from '../../../components/ui/button';
-import { ArrowLeft, Package, CreditCard, MapPin, Clock } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, CreditCard, MapPin, ExternalLink } from 'lucide-react';
 
-type OrderDetail = {
-    id: string;
-    orderNumber: string;
-    status: string;
-    paymentStatus: string;
-    subtotal: string;
-    tax: string;
-    totalAmount: string;
-    currency: string;
-    stripePaymentIntentId: string | null;
-    placedAt: string;
-    updatedAt: string;
-    items: Array<{
-        id: string;
-        title: string;
-        unitPrice: string;
-        quantity: number;
-        size: string | null;
-        color: string | null;
-    }>;
-    shippingAddress?: {
-        name: string;
-        phone: string;
-        line1: string;
-        line2: string | null;
-        city: string;
-        state: string;
-        postalCode: string;
-        country: string;
-    };
-};
+const STEPS = [
+    { key: 'pending', label: 'Order Placed', icon: Clock },
+    { key: 'paid', label: 'Payment Confirmed', icon: CreditCard },
+    { key: 'fulfilled', label: 'In Production', icon: Package },
+    { key: 'shipped', label: 'Shipped', icon: Truck },
+    { key: 'delivered', label: 'Delivered', icon: CheckCircle },
+];
 
-const STATUS_STEPS = ['CREATED', 'PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
-
-function OrderDetailContent() {
-    const { id } = useParams<{ id: string }>();
-
-    const orderQuery = useQuery({
-        queryKey: ['order', id],
-        queryFn: async () => {
-            const res = await apiFetch<{ success: boolean; data: OrderDetail }>(`/orders/${id}`);
-            return res.data;
-        },
-    });
-
-    if (orderQuery.isLoading) {
-        return (
-            <div className="space-y-4">
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-48 w-full rounded-xl" />
-                <Skeleton className="h-32 w-full rounded-xl" />
-            </div>
-        );
-    }
-
-    const order = orderQuery.data;
-    if (!order) {
-        return (
-            <div className="text-center py-20 space-y-4">
-                <p className="text-xl font-semibold">Order Not Found</p>
-                <Link href="/orders"><Button variant="outline">Back to Orders</Button></Link>
-            </div>
-        );
-    }
-
-    const currentStep = STATUS_STEPS.indexOf(order.status);
-
-    return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-display font-bold">{order.orderNumber}</h1>
-                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        Placed {new Date(order.placedAt).toLocaleString()}
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <StatusBadge status={order.status} />
-                    <StatusBadge status={order.paymentStatus} />
-                </div>
-            </div>
-
-            {/* Progress */}
-            {order.status !== 'CANCELLED' && order.status !== 'PAYMENT_FAILED' && (
-                <Card className="p-6">
-                    <div className="flex items-center justify-between">
-                        {STATUS_STEPS.map((step, i) => (
-                            <div key={step} className="flex-1 flex flex-col items-center relative">
-                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${i <= currentStep
-                                        ? 'bg-[hsl(var(--primary))] text-white'
-                                        : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]'
-                                    }`}>
-                                    {i + 1}
-                                </div>
-                                <p className={`mt-1 text-xs ${i <= currentStep ? 'font-medium' : 'text-[hsl(var(--muted-foreground))]'}`}>
-                                    {step.replace('_', ' ')}
-                                </p>
-                                {i < STATUS_STEPS.length - 1 && (
-                                    <div className={`absolute top-4 left-[60%] right-[-40%] h-0.5 ${i < currentStep ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]'
-                                        }`} />
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </Card>
-            )}
-
-            <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-                {/* Items */}
-                <Card className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-[hsl(var(--primary))]" />
-                        <h2 className="text-lg font-semibold">Items</h2>
-                    </div>
-                    <div className="divide-y divide-[hsl(var(--border))]">
-                        {order.items.map((item) => (
-                            <div key={item.id} className="flex items-center justify-between py-3">
-                                <div>
-                                    <p className="font-medium">{item.title}</p>
-                                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                                        {[item.size, item.color].filter(Boolean).join(' / ')} · Qty {item.quantity}
-                                    </p>
-                                </div>
-                                <p className="font-semibold">${(Number(item.unitPrice) * item.quantity).toFixed(2)}</p>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
-
-                <div className="space-y-4">
-                    {/* Payment */}
-                    <Card className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5 text-[hsl(var(--primary))]" />
-                            <h3 className="font-semibold">Payment Summary</h3>
-                        </div>
-                        <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-[hsl(var(--muted-foreground))]">Subtotal</span>
-                                <span>${Number(order.subtotal).toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-[hsl(var(--muted-foreground))]">Tax</span>
-                                <span>${Number(order.tax).toFixed(2)}</span>
-                            </div>
-                            <hr className="border-[hsl(var(--border))]" />
-                            <div className="flex justify-between font-bold text-base">
-                                <span>Total</span>
-                                <span className="text-[hsl(var(--primary))]">${Number(order.totalAmount).toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Address */}
-                    {order.shippingAddress && (
-                        <Card className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <MapPin className="h-5 w-5 text-[hsl(var(--primary))]" />
-                                <h3 className="font-semibold">Shipping Address</h3>
-                            </div>
-                            <div className="text-sm text-[hsl(var(--muted-foreground))]">
-                                <p className="font-medium text-[hsl(var(--foreground))]">{order.shippingAddress.name}</p>
-                                <p>{order.shippingAddress.line1}</p>
-                                {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
-                                <p>
-                                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
-                                </p>
-                                <p>{order.shippingAddress.country}</p>
-                                <p className="mt-1">{order.shippingAddress.phone}</p>
-                            </div>
-                        </Card>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
+const stepIndex = (status: string) => STEPS.findIndex((s) => s.key === status);
 
 export default function OrderDetailPage() {
     return (
         <AuthGuard>
-            <div className="space-y-6 animate-fade-in">
-                <Link href="/orders" className="inline-flex items-center gap-1 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition">
-                    <ArrowLeft className="h-4 w-4" /> Back to Orders
-                </Link>
-                <OrderDetailContent />
-            </div>
+            <OrderDetailContent />
         </AuthGuard>
+    );
+}
+
+function OrderDetailContent() {
+    const { id } = useParams<{ id: string }>();
+    const { data: order, isLoading } = useOrder(id);
+    const { subscribe } = useOrderRealtime(id);
+
+    useEffect(() => {
+        const unsub = subscribe();
+        return unsub;
+    }, [subscribe]);
+
+    if (isLoading) {
+        return (
+            <div className="mx-auto max-w-4xl px-4 py-8 space-y-4">
+                <div className="h-8 w-1/2 skeleton" />
+                <div className="h-40 skeleton rounded-2xl" />
+            </div>
+        );
+    }
+
+    if (!order) {
+        return <div className="text-center py-20"><p>Order not found</p></div>;
+    }
+
+    const currentStep = stepIndex(order.status);
+    const address = order.shipping_address as Record<string, string> | null;
+
+    return (
+        <div className="min-h-screen bg-[hsl(var(--muted))]">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+                <div className="mb-8 animate-fade-in">
+                    <h1 className="text-2xl font-bold font-display">Order #{order.id.slice(0, 8)}...</h1>
+                    <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                        Placed on {new Date(order.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                </div>
+
+                {/* Status Tracker */}
+                <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 mb-6 animate-slide-up">
+                    <div className="flex items-center justify-between mb-8">
+                        {STEPS.map((step, i) => (
+                            <div key={step.key} className="flex flex-col items-center flex-1 relative">
+                                {i > 0 && (
+                                    <div className={`absolute top-5 right-1/2 w-full h-0.5 ${i <= currentStep ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--border))]'}`} />
+                                )}
+                                <div className={`relative z-10 h-10 w-10 rounded-full flex items-center justify-center ${i <= currentStep ? 'bg-[hsl(var(--primary))] text-white' : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]'
+                                    }`}>
+                                    <step.icon className="h-5 w-5" />
+                                </div>
+                                <span className={`text-xs mt-2 text-center ${i <= currentStep ? 'text-[hsl(var(--primary))] font-medium' : 'text-[hsl(var(--muted-foreground))]'}`}>
+                                    {step.label}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {order.tracking_number && (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                            <Truck className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm text-blue-700">Tracking: {order.tracking_number}</span>
+                            {order.tracking_url && (
+                                <a href={order.tracking_url} target="_blank" rel="noopener" className="ml-auto text-blue-600 hover:underline text-sm flex items-center gap-1">
+                                    Track <ExternalLink className="h-3 w-3" />
+                                </a>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Items */}
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-100">
+                        <h3 className="font-semibold mb-4">Items</h3>
+                        <div className="space-y-3">
+                            {order.order_items?.map((item) => (
+                                <div key={item.id} className="flex justify-between items-center text-sm">
+                                    <div>
+                                        <p className="font-medium">{(item.product as unknown as { name: string })?.name || 'Product'}</p>
+                                        <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                                            {item.color} · {item.size} · Qty: {item.quantity}
+                                        </p>
+                                    </div>
+                                    <span className="font-medium">₹{(Number(item.unit_price) * item.quantity).toFixed(0)}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <hr className="my-4 border-[hsl(var(--border))]" />
+                        <div className="space-y-1 text-sm">
+                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Subtotal</span><span>₹{Number(order.subtotal).toFixed(0)}</span></div>
+                            <div className="flex justify-between"><span className="text-[hsl(var(--muted-foreground))]">Shipping</span><span>₹{Number(order.shipping_cost).toFixed(0)}</span></div>
+                            <div className="flex justify-between font-bold text-base mt-2"><span>Total</span><span>₹{Number(order.total_amount).toFixed(0)}</span></div>
+                        </div>
+                    </div>
+
+                    {/* Shipping Address */}
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-200">
+                        <h3 className="font-semibold mb-4 flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            Shipping Address
+                        </h3>
+                        {address ? (
+                            <div className="text-sm text-[hsl(var(--muted-foreground))] space-y-1">
+                                <p className="font-medium text-[hsl(var(--foreground))]">{address.name}</p>
+                                <p>{address.address}</p>
+                                <p>{address.city}, {address.state} {address.zip}</p>
+                                <p>{address.country}</p>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-[hsl(var(--muted-foreground))]">No address provided</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
