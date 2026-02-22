@@ -67,7 +67,7 @@ export default function SignupPage() {
                 </div>
 
                 {/* Form */}
-                <div className="bg-white border border-[hsl(var(--border))] rounded-2xl p-8 shadow-sm animate-slide-up">
+                <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-2xl p-8 shadow-sm animate-slide-up">
                     {error && (
                         <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
                             {error}
@@ -139,13 +139,13 @@ export default function SignupPage() {
                             <div className="w-full border-t border-[hsl(var(--border))]" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-3 text-[hsl(var(--muted-foreground))]">or continue with</span>
+                            <span className="bg-[hsl(var(--card))] px-3 text-[hsl(var(--muted-foreground))]">or continue with</span>
                         </div>
                     </div>
 
                     <button
                         onClick={handleGoogle}
-                        className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[hsl(var(--border))] bg-white hover:bg-[hsl(var(--muted))] transition text-sm font-medium"
+                        className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] hover:bg-[hsl(var(--muted))] transition text-sm font-medium"
                     >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />

@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../stores/auth-store';
+import { ThemeProvider } from './theme-provider';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const initialize = useAuthStore((s) => s.initialize);
@@ -16,8 +17,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center animate-pulse">
-            <span className="text-white font-bold text-lg">C</span>
+          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--foreground))] flex items-center justify-center animate-pulse">
+            <span className="text-white font-bold text-lg">.</span>
           </div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">Loading...</p>
         </div>
@@ -43,7 +44,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthInitializer>{children}</AuthInitializer>
+      <ThemeProvider>
+        <AuthInitializer>{children}</AuthInitializer>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

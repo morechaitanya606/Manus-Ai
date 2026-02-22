@@ -36,7 +36,7 @@ export default function CartPage() {
                         {items.map((item, i) => (
                             <div
                                 key={item.id}
-                                className="bg-white rounded-2xl border border-[hsl(var(--border))] p-4 flex gap-4 animate-fade-in"
+                                className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-4 flex gap-4 animate-fade-in"
                                 style={{ animationDelay: `${i * 50}ms` }}
                             >
                                 <div className="h-24 w-24 rounded-xl bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] flex-shrink-0 flex items-center justify-center">
@@ -80,7 +80,7 @@ export default function CartPage() {
 
                     {/* Summary */}
                     <div>
-                        <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
+                        <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
                             <h3 className="font-semibold mb-4">Order Summary</h3>
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
@@ -89,12 +89,12 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-[hsl(var(--muted-foreground))]">Shipping</span>
-                                    <span>$4.99</span>
+                                    <span>₹99</span>
                                 </div>
                                 <hr className="border-[hsl(var(--border))]" />
                                 <div className="flex justify-between text-base font-bold">
                                     <span>Total</span>
-                                    <span>₹{(getTotal() + 99).toFixed(0)}</span>
+                                    <span>₹{(getTotal() + 99).toLocaleString()}</span>
                                 </div>
                             </div>
                             <Link href="/checkout">

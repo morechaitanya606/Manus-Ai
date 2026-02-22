@@ -15,8 +15,11 @@ import {
   Menu,
   X,
   Package,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTheme } from './theme-provider';
 
 const NAV_LINKS = [
   { href: '/gallery', label: 'Gallery' },
@@ -28,18 +31,19 @@ export function Navbar() {
   const pathname = usePathname();
   const { session, user, profile, signOut, isAdmin } = useAuthStore();
   const itemCount = useCartStore((s) => s.getItemCount());
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[hsl(var(--border))] bg-white/90 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 border-b border-[hsl(var(--border))] bg-[hsl(var(--background)/0.9)] backdrop-blur-lg">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center">
-            <span className="text-white font-bold text-lg leading-none">C</span>
+          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--foreground))] flex items-center justify-center">
+            <span className="text-white font-bold text-lg leading-none">.</span>
           </div>
           <span className="font-display text-xl font-bold tracking-tight">
-            Custyle<sup className="text-[10px] font-medium text-[hsl(var(--primary))] ml-0.5">Beta</sup>
+            thequoteshop
           </span>
         </Link>
 
@@ -66,6 +70,15 @@ export function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+
           {/* Cart */}
           <Link
             href="/cart"
@@ -147,7 +160,7 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden animate-slide-down border-t border-[hsl(var(--border))] bg-white px-4 py-4 space-y-2">
+        <div className="md:hidden animate-slide-down border-t border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-4 space-y-2">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}

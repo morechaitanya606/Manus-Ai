@@ -76,11 +76,11 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[hsl(var(--card))]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold font-display">
-              How <span className="gradient-text">Custyle</span> Works
+              How <span className="gradient-text">The Quote Shop</span> Works
             </h2>
             <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
               From imagination to doorstep — create, customize, and get it printed on premium products
@@ -91,7 +91,7 @@ export default function HomePage() {
             {FEATURES.map((feature, i) => (
               <div
                 key={feature.title}
-                className="group relative bg-[hsl(var(--muted))] rounded-2xl p-6 hover:bg-white hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 border border-transparent hover:border-[hsl(var(--border))]"
+                className="group relative bg-[hsl(var(--muted))] rounded-2xl p-6 hover:bg-[hsl(var(--card))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 border border-transparent hover:border-[hsl(var(--border))]"
               >
                 <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white mb-4 shadow-lg shadow-[hsl(var(--primary)/0.2)] group-hover:scale-110 transition-transform">
                   <feature.icon className="h-6 w-6" />
@@ -154,7 +154,7 @@ export default function HomePage() {
                 <Link
                   key={product.id}
                   href={`/gallery/${product.id}`}
-                  className="group bg-white rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 hover:-translate-y-1"
+                  className="group bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="aspect-square bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] relative overflow-hidden">
                     {product.image_url ? (
@@ -190,13 +190,13 @@ export default function HomePage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[hsl(var(--card))]">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-white/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-white/10 blur-3xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-[hsl(var(--card))]/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[hsl(var(--card))]/10 blur-3xl translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--card))]/20 px-4 py-1.5 text-sm font-medium mb-6">
                 <Star className="h-4 w-4" />
                 Start for free — AI credits included
               </div>
@@ -207,7 +207,7 @@ export default function HomePage() {
                 Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep
               </p>
               <Link href="/signup">
-                <Button size="lg" className="rounded-full px-10 bg-white text-[hsl(var(--primary))] hover:bg-white/90 font-semibold shadow-xl">
+                <Button size="lg" className="rounded-full px-10 bg-[hsl(var(--card))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--card))]/90 font-semibold shadow-xl">
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>

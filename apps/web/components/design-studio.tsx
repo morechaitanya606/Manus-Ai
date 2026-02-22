@@ -205,7 +205,7 @@ export function DesignStudio() {
         <div className="p-4">
           <button
             onClick={resetStudio}
-            className="flex items-center gap-2 w-full rounded-lg border border-[hsl(var(--border))] bg-white px-4 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition"
+            className="flex items-center gap-2 w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition"
           >
             <Plus className="h-4 w-4" />
             New Design
@@ -222,7 +222,7 @@ export function DesignStudio() {
               key={item.id}
               className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-left hover:bg-[hsl(var(--muted))] transition group"
             >
-              <div className="h-8 w-8 rounded-lg bg-[hsl(var(--muted))] flex items-center justify-center flex-shrink-0 group-hover:bg-white transition">
+              <div className="h-8 w-8 rounded-lg bg-[hsl(var(--muted))] flex items-center justify-center flex-shrink-0 group-hover:bg-[hsl(var(--card))] transition">
                 <Sparkles className="h-4 w-4 text-[hsl(var(--primary))]" />
               </div>
               <div className="flex-1 min-w-0">
@@ -280,7 +280,7 @@ export function DesignStudio() {
 
           {/* Creation Progress / Steps */}
           {(isGenerating || generatedImage) && (
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-white overflow-hidden animate-fade-in">
+            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] overflow-hidden animate-fade-in">
               {/* Status Bar */}
               <div className="px-5 py-3 border-b border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.3)]">
                 <div className="flex items-center gap-2 text-sm">
@@ -290,7 +290,7 @@ export function DesignStudio() {
                     <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
                   )}
                   <span className="font-medium">
-                    {generatedImage ? 'Custyle completed the creation' : 'Custyle is creating your design...'}
+                    {generatedImage ? 'Design generation complete' : 'Creating your design...'}
                   </span>
                 </div>
               </div>
@@ -404,7 +404,7 @@ export function DesignStudio() {
                         </div>
                       )}
                     </div>
-                    <div className="p-3 bg-white">
+                    <div className="p-3 bg-[hsl(var(--card))]">
                       <p className="font-semibold text-sm">{apparel.emoji} {apparel.label}</p>
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">From ₹{BASE_PRICES[apparel.value]}</p>
                     </div>
@@ -547,7 +547,7 @@ export function DesignStudio() {
               {generatedImage && (
                 <a
                   href={generatedImage}
-                  download={`custyle-design-${Date.now()}.png`}
+                  download={`quoteshop-design-${Date.now()}.png`}
                   className="flex items-center justify-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition"
                 >
                   <Download className="h-4 w-4" />

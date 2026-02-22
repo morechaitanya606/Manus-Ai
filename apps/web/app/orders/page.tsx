@@ -35,7 +35,7 @@ function OrdersContent() {
                 {isLoading ? (
                     <div className="space-y-4">
                         {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="bg-white rounded-2xl h-24 skeleton" />
+                            <div key={i} className="bg-[hsl(var(--card))] rounded-2xl h-24 skeleton" />
                         ))}
                     </div>
                 ) : orders && orders.length > 0 ? (
@@ -44,7 +44,7 @@ function OrdersContent() {
                             <Link
                                 key={order.id}
                                 href={`/orders/${order.id}`}
-                                className="block bg-white rounded-2xl border border-[hsl(var(--border))] p-5 hover:shadow-lg hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 animate-fade-in"
+                                className="block bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-5 hover:shadow-lg hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 animate-fade-in"
                                 style={{ animationDelay: `${i * 50}ms` }}
                             >
                                 <div className="flex items-center justify-between">

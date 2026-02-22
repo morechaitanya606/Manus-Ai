@@ -61,7 +61,7 @@ function OrderDetailContent() {
                 </div>
 
                 {/* Status Tracker */}
-                <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 mb-6 animate-slide-up">
+                <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 mb-6 animate-slide-up">
                     <div className="flex items-center justify-between mb-8">
                         {STEPS.map((step, i) => (
                             <div key={step.key} className="flex flex-col items-center flex-1 relative">
@@ -94,7 +94,7 @@ function OrderDetailContent() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* Items */}
-                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-100">
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-100">
                         <h3 className="font-semibold mb-4">Items</h3>
                         <div className="space-y-3">
                             {order.order_items?.map((item) => (
@@ -118,7 +118,7 @@ function OrderDetailContent() {
                     </div>
 
                     {/* Shipping Address */}
-                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-200">
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-200">
                         <h3 className="font-semibold mb-4 flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
                             Shipping Address

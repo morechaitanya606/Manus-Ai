@@ -46,7 +46,7 @@ export default function GalleryPage() {
                             </p>
                         </div>
                         <div className="hidden md:block">
-                            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                            <div className="bg-[hsl(var(--card))]/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
                                 <Printer className="h-12 w-12 text-white/90" />
                             </div>
                         </div>
@@ -55,7 +55,7 @@ export default function GalleryPage() {
             </section>
 
             {/* Category Heading */}
-            <section className="bg-white py-10 md:py-14">
+            <section className="bg-[hsl(var(--card))] py-10 md:py-14">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold font-display">
                         T-shirt Printing for <span className="gradient-text">Everyone</span>
@@ -115,7 +115,7 @@ export default function GalleryPage() {
                                 placeholder="Search products..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 rounded-full border border-[hsl(var(--border))] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition shadow-sm"
+                                className="w-full pl-11 pr-4 py-3 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition shadow-sm"
                             />
                         </div>
                     </div>
@@ -124,7 +124,7 @@ export default function GalleryPage() {
                     {isLoading ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} className="bg-white rounded-2xl overflow-hidden border border-[hsl(var(--border))] animate-pulse">
+                                <div key={i} className="bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] animate-pulse">
                                     <div className="aspect-square bg-[hsl(var(--muted))]" />
                                     <div className="p-4 space-y-2">
                                         <div className="h-4 bg-[hsl(var(--muted))] rounded w-3/4" />
@@ -139,7 +139,7 @@ export default function GalleryPage() {
                                 <Link
                                     key={product.id}
                                     href={`/gallery/${product.id}`}
-                                    className="group bg-white rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 hover:-translate-y-1"
+                                    className="group bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 hover:-translate-y-1"
                                 >
                                     <div className="aspect-square bg-[hsl(var(--muted))] relative overflow-hidden">
                                         {product.image_url ? (
@@ -194,7 +194,7 @@ export default function GalleryPage() {
             </section>
 
             {/* High Quality Printing Banner */}
-            <section className="py-8 bg-white">
+            <section className="py-8 bg-[hsl(var(--card))]">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-center gap-5 text-center">
                         <span className="text-2xl md:text-4xl gradient-text font-bold">★</span>
@@ -222,13 +222,13 @@ export default function GalleryPage() {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link href="/studio">
-                                <Button size="lg" className="rounded-full px-8 bg-white text-[hsl(var(--primary))] hover:bg-white/90 font-semibold shadow-xl">
+                                <Button size="lg" className="rounded-full px-8 bg-[hsl(var(--card))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--card))]/90 font-semibold shadow-xl">
                                     <Sparkles className="mr-2 h-5 w-5" />
                                     Start Designing
                                 </Button>
                             </Link>
                             <Link href="/signup">
-                                <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white/10">
+                                <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-[hsl(var(--card))]/10">
                                     Try It Free
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
@@ -239,7 +239,7 @@ export default function GalleryPage() {
             </section>
 
             {/* USP Features Section */}
-            <section className="bg-white py-12 md:py-16">
+            <section className="bg-[hsl(var(--card))] py-12 md:py-16">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                         <div className="flex flex-col items-center gap-3">

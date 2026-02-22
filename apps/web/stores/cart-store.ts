@@ -8,6 +8,7 @@ export type CartItem = {
     productId: string;
     productName: string;
     designId?: string;
+    designImage?: string;
     mockupId?: string;
     mockupUrl?: string;
     color: string;

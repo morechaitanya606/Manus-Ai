@@ -80,7 +80,7 @@ export default function CheckoutPage() {
                 key: data.key_id,
                 amount: data.amount * 100,
                 currency: data.currency,
-                name: 'Custyle',
+                name: 'The Quote Shop',
                 description: `Order #${data.order_id.slice(0, 8)}`,
                 order_id: data.razorpay_order_id,
                 prefill: {
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
 
                     <div className="grid md:grid-cols-5 gap-8">
                         {/* Shipping Form */}
-                        <div className="md:col-span-3 bg-white rounded-2xl border border-[hsl(var(--border))] p-6">
+                        <div className="md:col-span-3 bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6">
                             <h2 className="font-semibold mb-4">Shipping Address</h2>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
 
                         {/* Order Summary */}
                         <div className="md:col-span-2">
-                            <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
+                            <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
                                 <h2 className="font-semibold mb-4">Order Summary</h2>
                                 <div className="space-y-3 mb-4">
                                     {items.map((item) => (

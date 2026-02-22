@@ -42,7 +42,7 @@ function ProfileContent() {
 
                 <div className="space-y-6">
                     {/* Avatar & Role */}
-                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up">
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up">
                         <div className="flex items-center gap-4">
                             <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] flex items-center justify-center shadow-lg">
                                 <span className="text-white text-2xl font-bold">
@@ -66,7 +66,7 @@ function ProfileContent() {
                     </div>
 
                     {/* Edit Form */}
-                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-100">
+                    <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-100">
                         <h3 className="font-semibold mb-4">Account Details</h3>
                         <div className="space-y-4">
                             <div>

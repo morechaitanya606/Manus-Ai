@@ -1,22 +1,45 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useProduct } from '../../../hooks/use-products';
+import { useDesign } from '../../../hooks/use-designs';
 import { useCartStore } from '../../../stores/cart-store';
+import { useAuthStore } from '../../../stores/auth-store';
 import { Button } from '../../../components/ui/button';
-import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus } from 'lucide-react';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
+    const searchParams = useSearchParams();
+    const designParam = searchParams.get('design');
     const { data: product, isLoading } = useProduct(id);
+    const { data: linkedDesign } = useDesign(designParam || '');
     const addItem = useCartStore((s) => s.addItem);
+    const { user } = useAuthStore();
 
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [added, setAdded] = useState(false);
+
+    // Design upload state
+    const [designImage, setDesignImage] = useState<string | null>(null);
+    const [designId, setDesignId] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [designTab, setDesignTab] = useState<'none' | 'upload'>('none');
+    const [isAiDesign, setIsAiDesign] = useState(false);
+    const fileRef = useRef<HTMLInputElement>(null);
+
+    // Auto-apply design from ?design= query param (coming from Studio)
+    useEffect(() => {
+        if (linkedDesign && linkedDesign.status === 'completed' && linkedDesign.original_image_url) {
+            setDesignImage(linkedDesign.original_image_url);
+            setDesignId(linkedDesign.id);
+            setIsAiDesign(true);
+        }
+    }, [linkedDesign]);
 
     if (isLoading) {
         return (
@@ -37,13 +60,42 @@ export default function ProductDetailPage() {
         );
     }
 
-    // Find matching variant for price
-    const matchingVariant = product.variants?.find(
-        (v) =>
-            (!selectedColor || v.color === selectedColor) &&
-            (!selectedSize || v.size === selectedSize)
-    );
-    const displayPrice = matchingVariant?.price || product.base_price;
+    const displayPrice = product.base_price;
+
+    const handleDesignUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Show preview immediately
+        const previewUrl = URL.createObjectURL(file);
+        setDesignImage(previewUrl);
+        setUploading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (user?.id) formData.append('userId', user.id);
+
+            const res = await fetch('/api/designs/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.url) {
+                setDesignImage(data.url);
+                setDesignId(data.designId);
+            }
+        } catch {
+            console.error('Upload failed');
+        }
+        setUploading(false);
+    };
+
+    const clearDesign = () => {
+        setDesignImage(null);
+        setDesignId(null);
+        setDesignTab('none');
+        setIsAiDesign(false);
+        if (fileRef.current) fileRef.current.value = '';
+    };
 
     const handleAddToCart = () => {
         addItem({
@@ -54,6 +106,8 @@ export default function ProductDetailPage() {
             color: selectedColor || product.colors[0]?.name || '',
             size: selectedSize || product.sizes[0] || '',
             image: product.image_url,
+            designId: designId || undefined,
+            designImage: designImage || undefined,
         });
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
@@ -70,84 +124,162 @@ export default function ProductDetailPage() {
                 </Link>
 
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Image */}
-                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] p-8 flex items-center justify-center animate-fade-in">
-                        <div className="relative w-full aspect-square max-w-md">
-                            {product.image_url ? (
-                                <Image
-                                    src={product.image_url}
-                                    alt={product.name}
-                                    fill
-                                    className="object-contain"
-                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                    priority
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full bg-[hsl(var(--muted))] rounded-xl">
-                                    <ShoppingCart className="h-16 w-16 text-[hsl(var(--muted-foreground)/0.3)]" />
+                    {/* Product Image + Design Preview */}
+                    <div className="space-y-4 animate-fade-in">
+                        <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-8 relative">
+                            <div className="relative w-full aspect-square max-w-md mx-auto">
+                                {product.image_url ? (
+                                    <Image
+                                        src={product.image_url}
+                                        alt={product.name}
+                                        fill
+                                        className="object-contain"
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        priority
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full bg-[hsl(var(--muted))] rounded-xl">
+                                        <ShoppingCart className="h-16 w-16 text-[hsl(var(--muted-foreground)/0.3)]" />
+                                    </div>
+                                )}
+
+                                {/* Design Overlay */}
+                                {designImage && (
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div className="relative w-[40%] h-[40%]">
+                                            <Image
+                                                src={designImage}
+                                                alt="Your design"
+                                                fill
+                                                className="object-contain drop-shadow-lg"
+                                                sizes="200px"
+                                                unoptimized
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Upload indicator */}
+                            {uploading && (
+                                <div className="absolute inset-0 bg-[hsl(var(--card))]/80 rounded-2xl flex items-center justify-center">
+                                    <div className="text-center">
+                                        <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--primary))] mx-auto mb-2" />
+                                        <p className="text-sm font-medium">Uploading design...</p>
+                                    </div>
                                 </div>
                             )}
                         </div>
+
+                        {/* Design Actions */}
+                        <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-4">
+                            <h3 className="font-semibold text-sm mb-3">🎨 Add Your Design</h3>
+
+                            {designImage ? (
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative h-12 w-12 rounded-lg overflow-hidden border">
+                                            <Image src={designImage} alt="" fill className="object-cover" sizes="48px" unoptimized />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-green-600">
+                                                {isAiDesign ? '✨ AI Design applied' : '✅ Design applied'}
+                                            </p>
+                                            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                                                {isAiDesign ? 'AI-generated design on this product' : 'Your design is shown on the product above'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} className="rounded-lg text-xs">
+                                            Change
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={clearDesign} className="rounded-lg text-xs text-red-500 hover:bg-red-50">
+                                            <X className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => { setDesignTab('upload'); fileRef.current?.click(); }}
+                                        className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-[hsl(var(--border))] hover:border-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.03)] transition cursor-pointer"
+                                    >
+                                        <Upload className="h-6 w-6 text-[hsl(var(--primary))]" />
+                                        <span className="text-xs font-medium">Upload Design</span>
+                                        <span className="text-[10px] text-[hsl(var(--muted-foreground))]">PNG, JPG, SVG</span>
+                                    </button>
+                                    <Link href="/studio" className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-[hsl(var(--border))] hover:border-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/0.03)] transition">
+                                        <Sparkles className="h-6 w-6 text-[hsl(var(--accent))]" />
+                                        <span className="text-xs font-medium">AI Generate</span>
+                                        <span className="text-[10px] text-[hsl(var(--muted-foreground))]">Create with AI</span>
+                                    </Link>
+                                </div>
+                            )}
+
+                            <input
+                                ref={fileRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleDesignUpload}
+                            />
+                        </div>
                     </div>
 
-                    {/* Details */}
+                    {/* Product Details */}
                     <div className="animate-slide-up">
-                        <span className="text-xs px-3 py-1 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-semibold uppercase">
-                            {product.category}
-                        </span>
-                        <h1 className="text-2xl md:text-3xl font-bold font-display mt-3">
-                            {product.name}
-                        </h1>
-                        <p className="text-[hsl(var(--muted-foreground))] mt-3 text-sm leading-relaxed">
-                            {product.description}
-                        </p>
-
-                        <div className="mt-6">
-                            <span className="text-3xl font-bold gradient-text">₹{Number(displayPrice).toFixed(0)}</span>
-                            {product.base_price !== product.max_price && (
-                                <span className="text-sm text-[hsl(var(--muted-foreground))] ml-2">
-                                    – ₹{Number(product.max_price).toFixed(0)}
-                                </span>
-                            )}
+                        <div className="mb-6">
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium capitalize">
+                                {product.category}
+                            </span>
+                            <h1 className="text-2xl md:text-3xl font-bold font-display mt-3">
+                                {product.name}
+                            </h1>
+                            <p className="text-[hsl(var(--muted-foreground))] mt-2 text-sm leading-relaxed">
+                                {product.description}
+                            </p>
                         </div>
 
-                        {/* Color Selection */}
+                        <div className="text-3xl font-bold gradient-text mb-6">
+                            ₹{Number(displayPrice).toFixed(0)}
+                        </div>
+
+                        {/* Colors */}
                         {product.colors.length > 0 && (
-                            <div className="mt-6">
-                                <label className="text-sm font-semibold mb-2 block">
-                                    Color: {selectedColor || 'Select a color'}
-                                </label>
+                            <div className="mb-5">
+                                <h3 className="text-sm font-semibold mb-2">
+                                    Color: <span className="text-[hsl(var(--primary))]">{selectedColor || product.colors[0]?.name}</span>
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {product.colors.map((c) => (
+                                    {product.colors.map((color) => (
                                         <button
-                                            key={c.name}
-                                            onClick={() => setSelectedColor(c.name)}
-                                            className={`h-8 w-8 rounded-full border-2 transition-all ${selectedColor === c.name
-                                                ? 'border-[hsl(var(--primary))] scale-110 shadow-lg'
-                                                : 'border-gray-200 hover:scale-105'
+                                            key={color.name}
+                                            onClick={() => setSelectedColor(color.name)}
+                                            className={`px-3 py-1.5 text-xs rounded-full border-2 transition-all ${selectedColor === color.name || (!selectedColor && product.colors[0]?.name === color.name)
+                                                ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] font-bold'
+                                                : 'border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)]'
                                                 }`}
-                                            style={{ backgroundColor: c.hex }}
-                                            title={c.name}
-                                        />
+                                        >
+                                            {color.name}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* Size Selection */}
+                        {/* Sizes */}
                         {product.sizes.length > 0 && (
-                            <div className="mt-6">
-                                <label className="text-sm font-semibold mb-2 block">
-                                    Size: {selectedSize || 'Select a size'}
-                                </label>
+                            <div className="mb-5">
+                                <h3 className="text-sm font-semibold mb-2">Size</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {product.sizes.map((size) => (
                                         <button
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
-                                            className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${selectedSize === size
-                                                ? 'bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))] shadow-lg'
-                                                : 'bg-white border-[hsl(var(--border))] hover:border-[hsl(var(--primary))]'
+                                            className={`h-10 min-w-[40px] px-3 rounded-xl text-sm font-medium border-2 transition-all ${selectedSize === size
+                                                ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))] text-white'
+                                                : 'border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)]'
                                                 }`}
                                         >
                                             {size}
@@ -187,12 +319,23 @@ export default function ProductDetailPage() {
                                     <><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart — ₹{Number(displayPrice).toFixed(0)}</>
                                 )}
                             </Button>
-                            <Link href="/studio" className="flex-1">
-                                <Button variant="outline" size="lg" className="w-full rounded-xl">
-                                    <Sparkles className="mr-2 h-5 w-5" /> Design with AI
+                            {!designImage && (
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    className="flex-1 rounded-xl"
+                                    onClick={() => fileRef.current?.click()}
+                                >
+                                    <ImagePlus className="mr-2 h-5 w-5" /> Add Your Design
                                 </Button>
-                            </Link>
+                            )}
                         </div>
+
+                        {designImage && (
+                            <p className="text-xs text-green-600 mt-2 text-center">
+                                {isAiDesign ? '✨ Your AI-generated design will be printed on this product' : '✅ Your custom design will be printed on this product'}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
