@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] via-white to-[hsl(var(--muted))]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-[hsl(var(--primary)/0.08)] blur-3xl" />
           <div className="absolute bottom-10 right-20 h-96 w-96 rounded-full bg-[hsl(var(--accent)/0.06)] blur-3xl" />

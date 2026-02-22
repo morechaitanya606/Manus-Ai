@@ -1,343 +1,185 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/ManusAI-AI%20Fashion%20Platform-blueviolet?style=for-the-badge&logo=sparkles" alt="ManusAI Badge" />
-</p>
+# The Quote Shop 🎨
 
-<h1 align="center">🧵 ManusAI — AI-Powered Custom Fashion Platform</h1>
+> India's AI-powered custom print-on-demand platform — sustainable materials, premium quality, doorstep delivery.
 
-<p align="center">
-  <strong>Production-ready SaaS platform for AI-generated custom fashion</strong><br/>
-  Design → Preview → Order → Deliver
-</p>
+## 🌟 Features
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js_14-black?style=flat-square&logo=next.js" />
-  <img src="https://img.shields.io/badge/Fastify-000?style=flat-square&logo=fastify" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white" />
-  <img src="https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
-</p>
+- **AI Design Studio** — Generate stunning designs from text prompts using AI (Gemini 2.0 Flash)
+- **7 Premium Materials** — Bamboo, Hemp, Linen, Cotton 240 GSM, Bleach Art, Denim
+- **Multiple Printing Methods** — DTF, Screen Print, Puff, HD, Embroidery, Bleach Art
+- **Dark Mode** — Full dark mode support with system preference detection
+- **Product Recommendations** — Smart "You might also like" suggestions on product pages
+- **Order Management** — Admin dashboard for tracking orders, printing, and shipping
+- **Razorpay Payments** — Secure checkout with UPI, cards, net banking
+- **Pan-India Shipping** — Flat ₹99 shipping, free above ₹2,000
 
----
+## 🛒 Product Catalog
 
-## ✨ What is ManusAI?
+| Product | Material | Price |
+|---------|----------|-------|
+| Denim Pants | Denim Cotton Blend | ₹600 |
+| Cotton T-Shirt 240 GSM | 100% Cotton | ₹699 |
+| Bamboo T-Shirt | Bamboo Fiber | ₹799 |
+| Bleach Art T-Shirt | 100% Cotton | ₹899 |
+| Bamboo Shirt | Bamboo Fiber | ₹999 |
+| Hemp Shirt | 100% Hemp | ₹1,199 |
+| Linen Shirt | Pure Linen | ₹1,299 |
 
-ManusAI is a **production-grade, AI-powered custom fashion marketplace** where users can:
+## 🏗️ Tech Stack
 
-- 🎨 **Generate designs** using AI (OpenAI / Stable Diffusion)
-- 👕 **Preview designs** on real apparel mockups (T-shirts, hoodies, shirts)
-- 🛒 **Order directly** from the Design Studio or Sample Gallery
-- 📦 **Track orders** through a complete order lifecycle
-- 💾 **Save designs** and re-order anytime
+- **Frontend** — Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend** — Supabase (Postgres, Auth, Storage, Edge Functions)
+- **AI** — Google Gemini 2.0 Flash (Image Generation)
+- **Payments** — Razorpay
+- **Deployment** — Vercel
 
-Admins can manage products, process orders, view revenue analytics, and control AI usage — all from a premium dashboard.
-
----
-
-## 🏗️ Architecture
+## 📁 Project Structure
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    FRONTEND                         │
-│              Next.js 14 (App Router)                │
-│     TailwindCSS · ShadCN UI · TanStack Query        │
-└──────────────────────┬──────────────────────────────┘
-                       │ REST API
-┌──────────────────────▼──────────────────────────────┐
-│                   BACKEND API                       │
-│            Fastify · TypeScript · Zod               │
-│  ┌──────┐ ┌────────┐ ┌───────┐ ┌────────┐         │
-│  │ Auth │ │Products│ │Designs│ │ Orders │          │
-│  └──────┘ └────────┘ └───┬───┘ └───┬────┘          │
-│                          │         │                │
-│  ┌───────────────────────▼─────────▼───────────┐   │
-│  │          Background Workers (BullMQ)         │   │
-│  │    AI Generation · Mockup Render · Events    │   │
-│  └──────────────────────────────────────────────┘   │
-└──────────────────────┬──────────────────────────────┘
-         ┌─────────────┼─────────────┐
-    ┌────▼────┐  ┌─────▼─────┐ ┌────▼────┐
-    │PostgreSQL│  │   Redis   │ │ S3/MinIO│
-    │ (Prisma) │  │  (Cache)  │ │(Storage)│
-    └──────────┘  └───────────┘ └─────────┘
+apps/web/
+├── app/
+│   ├── (auth)/          # Login, Signup pages
+│   ├── (marketing)/     # Homepage
+│   ├── about/           # About us
+│   ├── how-it-works/    # Step-by-step guide
+│   ├── pricing/         # Pricing table
+│   ├── printing-types/  # Printing methods + materials
+│   ├── faq/             # FAQ with search
+│   ├── contact/         # Contact form
+│   ├── gallery/         # Product catalog + detail pages
+│   ├── studio/          # AI Design Studio
+│   ├── my-designs/      # Saved designs
+│   ├── cart/            # Shopping cart
+│   ├── checkout/        # Payment checkout
+│   ├── orders/          # User orders
+│   ├── profile/         # User profile
+│   └── dashboard/       # Admin dashboard
+│       ├── orders/      # Order fulfillment
+│       └── products/    # Product management
+├── components/          # Shared UI components
+├── hooks/               # React Query hooks
+├── stores/              # Zustand state stores
+└── lib/                 # Supabase client, utilities
 ```
 
-**Style**: Modular Monolith → Route → Controller → Service → Repository → DB
-
----
-
-## 📱 Pages (17 total)
-
-| Page | Path | Description |
-|------|------|-------------|
-| 🏠 **Home** | `/` | "Your Imagination, Worn" — hero with dual CTAs |
-| 🎨 **Design Studio** | `/studio` | AI prompt → generate → preview on apparel → order |
-| 🖼️ **Gallery** | `/gallery` | Browse 1000+ designs with Men/Women/Unisex filters |
-| 📋 **Gallery Detail** | `/gallery/:id` | Size/color picker + inline order form |
-| 💾 **My Designs** | `/my-designs` | Design history with status, re-order, preview |
-| 👤 **Profile** | `/profile` | Account details + quick links |
-| 🔐 **Login/Signup** | `/login`, `/signup` | Branded auth with validation |
-| 📦 **Orders** | `/orders` | Order history |
-| 📄 **Order Detail** | `/orders/:id` | Shipment tracking + status |
-| 🛒 **Cart** | `/cart` | Cart management |
-| 💳 **Checkout** | `/checkout` | Stripe-powered checkout |
-| 📊 **Admin Dashboard** | `/dashboard` | Revenue, orders, AI metrics |
-| 📦 **Admin Products** | `/dashboard/products` | CRUD products + stock |
-| 📋 **Admin Orders** | `/dashboard/orders` | Order management + status |
-| 🛍️ **Products** | `/products`, `/products/:id` | Product catalog |
-
----
-
-## 🔌 API Endpoints
-
-```
-Auth
-  POST   /api/v1/auth/signup
-  POST   /api/v1/auth/login
-  POST   /api/v1/auth/refresh
-  GET    /api/v1/auth/me
-
-Designs (Core)
-  POST   /api/v1/designs/generate      → Queue AI generation
-  GET    /api/v1/designs/my             → User's design history
-  GET    /api/v1/designs/status/:jobId  → Poll generation status
-  POST   /api/v1/designs/mockup         → Render apparel mockup
-  POST   /api/v1/designs/signed-upload  → Get pre-signed upload URL
-
-Products
-  GET    /api/v1/products
-  GET    /api/v1/products/:id
-  POST   /api/v1/products               (admin)
-  PATCH  /api/v1/products/:id            (admin)
-  PATCH  /api/v1/products/:id/stock      (admin)
-
-Cart
-  GET    /api/v1/cart
-  POST   /api/v1/cart/items
-  PATCH  /api/v1/cart/items/:itemId
-  DELETE /api/v1/cart/items/:itemId
-
-Orders
-  POST   /api/v1/orders/checkout         (Idempotency-Key required)
-  GET    /api/v1/orders/my
-  GET    /api/v1/orders/:id
-  PATCH  /api/v1/orders/:id/status       (admin)
-  POST   /api/v1/orders/webhooks/stripe
-
-Admin
-  GET    /api/v1/admin/metrics
-
-Health
-  GET    /health
-  GET    /api/v1/health
-```
-
----
-
-## 🛡️ Security & Reliability
-
-| Feature | Implementation |
-|---------|---------------|
-| **Auth** | JWT with refresh token rotation |
-| **RBAC** | PLATFORM_ADMIN, STORE_OWNER, STORE_MANAGER, CUSTOMER |
-| **Input Validation** | Zod schemas at every route boundary |
-| **Security Headers** | Helmet (CSP, HSTS, etc.) |
-| **CORS** | Strict origin allowlist |
-| **Rate Limiting** | Global (120/min) + AI-specific (10/min) |
-| **Idempotency** | Idempotency keys for checkout/payments |
-| **Error Handling** | Centralized error handler, no stack traces in prod |
-| **Graceful Shutdown** | SIGTERM/SIGINT handlers |
-| **Structured Logging** | Pino with request IDs |
-| **Upload Limits** | 10MB max, image-only validation |
-
----
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
-- PostgreSQL 15+
-- Redis 7+
+- Node.js 18+
+- npm or yarn
+- Supabase account
+- Razorpay account (for payments)
+- Google AI API key (for design generation)
 
-### 1. Install
+### Installation
 
 ```bash
-git clone https://github.com/morechaitanya606/ManusAi.git
-cd ManusAi
+# Clone the repo
+git clone https://github.com/morechaitanya606/Manus-Ai.git
+cd Manus-Ai
+
+# Install dependencies
 npm install
+
+# Navigate to web app
+cd apps/web
+
+# Copy environment variables
+cp .env.example .env.local
 ```
 
-### 2. Configure
+### Environment Variables
 
-```bash
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env.local
-# Edit the .env files with your credentials
+Create `.env.local` in `apps/web/`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### 3. Database Setup
+### Run Development Server
 
 ```bash
-npm run db:push --workspace @atelier/api
-npm run db:seed --workspace @atelier/api
-```
-
-### 4. Run
-
-```bash
+cd apps/web
 npm run dev
 ```
 
-| Service | URL |
-|---------|-----|
-| 🌐 Web | http://localhost:3000 |
-| 🔧 API | http://localhost:5001 |
-| 📖 Swagger | http://localhost:5001/docs |
-| 💚 Health | http://localhost:5001/api/v1/health |
+Open [http://localhost:3000](http://localhost:3000).
 
----
-
-## 🐳 Docker (Full Stack)
+### Build for Production
 
 ```bash
-npm run docker:up
+npm run build
 ```
 
-Starts: PostgreSQL + Redis + MinIO + API + Worker + Web
+## 🔐 Admin Setup
+
+1. Sign up on the website with your email
+2. Set yourself as admin in Supabase SQL Editor:
+
+```sql
+UPDATE profiles SET role = 'admin' WHERE email = 'your-email@gmail.com';
+```
+
+3. The Dashboard link will appear in the navbar after login
+
+### Admin Dashboard Capabilities
+
+- **Overview** — Revenue, orders, users, AI credits stats
+- **Order Fulfillment** — Mark orders as printing → shipped → delivered
+- **Product Management** — Add, edit, delete products with images
+- **Design Downloads** — Download customer designs for printing
+
+## 🌐 Deployment (Vercel)
+
+1. Push code to GitHub
+2. Go to [vercel.com](https://vercel.com) → Import Project
+3. Set **Root Directory** to `apps/web`
+4. Add environment variables (same as `.env.local`)
+5. Deploy!
+
+### Post-Deployment
+
+Update Supabase Auth settings:
+- **Site URL** → `https://your-domain.vercel.app`
+- **Redirect URLs** → `https://your-domain.vercel.app/auth/callback`
+
+## 📄 Pages
+
+| Page | URL | Access |
+|------|-----|--------|
+| Home | `/` | Public |
+| About | `/about` | Public |
+| How It Works | `/how-it-works` | Public |
+| Pricing | `/pricing` | Public |
+| Printing Types | `/printing-types` | Public |
+| FAQ | `/faq` | Public |
+| Contact | `/contact` | Public |
+| Gallery | `/gallery` | Public |
+| Product Detail | `/gallery/:id` | Public |
+| AI Studio | `/studio` | Auth |
+| My Designs | `/my-designs` | Auth |
+| Cart | `/cart` | Public |
+| Checkout | `/checkout` | Auth |
+| Orders | `/orders` | Auth |
+| Profile | `/profile` | Auth |
+| Dashboard | `/dashboard` | Admin |
+| Manage Orders | `/dashboard/orders` | Admin |
+| Manage Products | `/dashboard/products` | Admin |
+
+## 🎨 Dark Mode
+
+Click the Moon/Sun icon in the navbar to toggle. Preference is saved in localStorage and auto-detects system theme on first visit.
+
+## 📞 Contact
+
+- **Email**: contact@thequoteshop.in
+- **Phone**: +91 70284 78109
+- **Location**: Pune, Maharashtra, India
 
 ---
 
-## ☁️ Production Deployment
-
-| Component | Provider | Notes |
-|-----------|----------|-------|
-| **Frontend** | Vercel | Set root dir to `apps/web` |
-| **API** | Railway / Render | Use `apps/api/Dockerfile` |
-| **Database** | Neon / Supabase | Managed PostgreSQL |
-| **Redis** | Upstash | Serverless Redis |
-| **Storage** | AWS S3 / Cloudflare R2 | S3-compatible |
-| **Payments** | Stripe | Test + Live keys |
-
-### Deploy Frontend (Vercel)
-
-```bash
-# Connect repo → select apps/web as root
-# Set env vars:
-NEXT_PUBLIC_API_URL=https://your-api.railway.app/api/v1
-NEXT_PUBLIC_TENANT_SLUG=atelier-thread
-```
-
-### Deploy Backend (Railway)
-
-```bash
-# Point to apps/api/Dockerfile
-# Set env vars from apps/api/.env.example
-# Key: DATABASE_URL, REDIS_URL, JWT secrets, STRIPE keys, S3 config
-```
-
-### Database Migration
-
-```bash
-npx prisma db push --schema=apps/api/prisma/schema.prisma
-npx ts-node apps/api/prisma/seed.ts
-```
-
----
-
-## 🧠 AI Design Engine
-
-```
-User Prompt → API Job → BullMQ Worker → AI Provider → S3 Upload → Status Update
-```
-
-- **Providers**: OpenAI Image API, Stable Diffusion, Mock (for testing)
-- **Provider abstraction**: swap providers via `AI_PROVIDER` env var
-- **Rate limited**: 10 requests/minute per user
-- **Mockup rendering**: Sharp-based image compositing with placement controls
-
----
-
-## 🛒 Order Flow
-
-```
-Cart → Validate Stock → Reserve → Create Order (PENDING) → Stripe Payment Intent
-  → Webhook Confirms → Mark PAID → Deduct Stock → Emit order.created → Clear Cart
-```
-
-- ✅ Database transactions
-- ✅ Idempotency keys prevent duplicates
-- ✅ Stock reservation prevents overselling
-- ✅ Payment failure recovery
-
----
-
-## 📁 Monorepo Structure
-
-```
-ManusAi/
-├── apps/
-│   ├── api/                    # Fastify backend
-│   │   ├── src/
-│   │   │   ├── modules/        # auth, designs, products, carts, orders, admin, tenants
-│   │   │   ├── lib/            # ai, mockups, payments, storage
-│   │   │   ├── plugins/        # prisma, redis, queues, auth, security, swagger
-│   │   │   ├── jobs/           # BullMQ workers
-│   │   │   └── config/         # env validation, logging, otel
-│   │   └── prisma/             # schema + seed
-│   └── web/                    # Next.js 14 frontend
-│       ├── app/                # 17 pages (App Router)
-│       ├── components/         # UI components + design system
-│       ├── stores/             # Zustand (auth state)
-│       └── lib/                # API client, utils
-├── packages/types/             # Shared types
-├── infra/k8s/                  # Kubernetes manifests
-├── docker-compose.saas.yml     # Full stack Docker
-├── .github/workflows/ci.yml   # CI/CD pipeline
-└── Dockerfile(s)               # Multi-stage production builds
-```
-
----
-
-## 🔄 CI/CD
-
-GitHub Actions pipeline (`.github/workflows/ci.yml`):
-
-1. ✅ Lint + Type Check
-2. ✅ Build Frontend
-3. ✅ Build Docker Images (API + Web)
-
----
-
-## 🗺️ Roadmap
-
-- [x] Phase 1: Modular Monolith (current)
-- [ ] Phase 2: Service extraction (Auth, Product, Order, AI)
-- [ ] Phase 3: Event backbone + dedicated workers
-- [ ] Phase 4: Creator marketplace + subscription AI credits
-- [ ] Phase 5: Multi-tenant SaaS with custom storefronts
-
----
-
-## 📄 Tech Stack Summary
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 14, TypeScript, TailwindCSS, ShadCN UI, TanStack Query, Zustand, Framer Motion |
-| Backend | Fastify, TypeScript, Prisma, Zod |
-| Database | PostgreSQL |
-| Cache | Redis |
-| Queue | BullMQ |
-| AI | OpenAI / Stable Diffusion (abstracted) |
-| Payments | Stripe |
-| Storage | S3 / R2 / MinIO |
-| Auth | JWT + Refresh Tokens + RBAC |
-| DevOps | Docker, GitHub Actions, Kubernetes-ready |
-
----
-
-<p align="center">
-  Built with ❤️ by <strong>ManusAI Team</strong>
-</p>
+Made with ❤️ in India | © 2026 The Quote Shop

@@ -4,12 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useProduct } from '../../../hooks/use-products';
+import { useProduct, useProducts } from '../../../hooks/use-products';
 import { useDesign } from '../../../hooks/use-designs';
 import { useCartStore } from '../../../stores/cart-store';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Button } from '../../../components/ui/button';
-import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus, ShoppingBag } from 'lucide-react';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -338,7 +338,65 @@ export default function ProductDetailPage() {
                         )}
                     </div>
                 </div>
+
+                {/* Recommendations */}
+                <RecommendedProducts currentProductId={product.id} category={product.category} />
             </div>
         </div>
+    );
+}
+
+function RecommendedProducts({ currentProductId, category }: { currentProductId: string; category: string }) {
+    const { data: allProducts } = useProducts();
+    if (!allProducts || allProducts.length < 2) return null;
+
+    // Same category first (excluding current), then other products
+    const sameCategory = allProducts.filter(p => p.id !== currentProductId && p.category === category);
+    const otherProducts = allProducts.filter(p => p.id !== currentProductId && p.category !== category);
+    const recommended = [...sameCategory, ...otherProducts].slice(0, 4);
+
+    if (recommended.length === 0) return null;
+
+    return (
+        <section className="mt-12 col-span-full animate-fade-in">
+            <h2 className="text-xl font-bold font-display mb-6">
+                You might also <span className="gradient-text">like</span>
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {recommended.map((p) => (
+                    <Link
+                        key={p.id}
+                        href={`/gallery/${p.id}`}
+                        className="group bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-lg hover:border-[hsl(var(--primary)/0.2)] transition-all duration-300 hover:-translate-y-1"
+                    >
+                        <div className="aspect-square bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] relative overflow-hidden">
+                            {p.image_url ? (
+                                <Image src={p.image_url} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform" sizes="25vw" />
+                            ) : (
+                                <div className="flex items-center justify-center h-full">
+                                    <ShoppingBag className="h-10 w-10 text-[hsl(var(--muted-foreground)/0.3)]" />
+                                </div>
+                            )}
+                            {p.category === category && (
+                                <div className="absolute top-2 left-2 px-2 py-0.5 bg-[hsl(var(--primary))] text-white text-[10px] rounded-full font-medium">
+                                    Same style
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-3">
+                            <h3 className="font-semibold text-sm group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-1">
+                                {p.name}
+                            </h3>
+                            <div className="flex items-center justify-between mt-1.5">
+                                <span className="text-sm font-bold">₹{Number(p.base_price).toFixed(0)}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] capitalize">
+                                    {(p as any).fabric?.split(' ')[0] || p.category}
+                                </span>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </section>
     );
 }
