@@ -1,138 +1,137 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../../../lib/api-client';
+import { useEffect, useState } from 'react';
 import { AuthGuard } from '../../../components/auth-guard';
-import { Card } from '../../../components/ui/card';
+import { getSupabase } from '../../../lib/supabase';
+import { useAuthStore } from '../../../stores/auth-store';
 import { Button } from '../../../components/ui/button';
-import { StatusBadge } from '../../../components/ui/badge';
-import { Select } from '../../../components/ui/select';
-import { SkeletonTable } from '../../../components/ui/skeleton';
-import { toast } from '../../../components/ui/toast';
-import { ArrowLeft, ClipboardList } from 'lucide-react';
-import Link from 'next/link';
+import { Package, Truck, Loader2, CheckCircle } from 'lucide-react';
 
-type Order = {
-    id: string;
-    orderNumber: string;
-    status: string;
-    paymentStatus: string;
-    totalAmount: string;
-    currency: string;
-    placedAt: string;
-    user: { email: string; displayName: string };
-};
-
-const STATUS_OPTIONS = [
-    { value: 'PROCESSING', label: 'Processing' },
-    { value: 'SHIPPED', label: 'Shipped' },
-    { value: 'DELIVERED', label: 'Delivered' },
-    { value: 'CANCELLED', label: 'Cancelled' },
-];
-
-function OrdersManagement() {
-    const queryClient = useQueryClient();
-
-    const ordersQuery = useQuery({
-        queryKey: ['admin-orders'],
-        queryFn: async () => {
-            const res = await apiFetch<{ success: boolean; data: Order[] }>('/orders', {
-                params: { page: 1, limit: 100 },
-            });
-            return res.data;
-        },
-    });
-
-    const updateStatus = useMutation({
-        mutationFn: async ({ id, status }: { id: string; status: string }) => {
-            await apiFetch(`/orders/${id}/status`, {
-                method: 'PATCH',
-                body: { status },
-            });
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-            toast('success', 'Updated', 'Order status updated.');
-        },
-        onError: (err) => toast('error', 'Failed', err instanceof Error ? err.message : 'Could not update status'),
-    });
-
+export default function DashboardOrdersPage() {
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-display font-bold">Order Management</h1>
-                    <p className="text-sm text-[hsl(var(--muted-foreground))]">{ordersQuery.data?.length ?? 0} orders</p>
-                </div>
-            </div>
-
-            {ordersQuery.isLoading ? (
-                <SkeletonTable rows={8} />
-            ) : (
-                <Card className="overflow-x-auto p-0">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--muted))]">
-                                <th className="text-left p-3 font-medium">Order</th>
-                                <th className="text-left p-3 font-medium">Customer</th>
-                                <th className="text-right p-3 font-medium">Total</th>
-                                <th className="text-center p-3 font-medium">Status</th>
-                                <th className="text-center p-3 font-medium">Payment</th>
-                                <th className="text-left p-3 font-medium">Date</th>
-                                <th className="text-right p-3 font-medium">Update</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {ordersQuery.data?.map((order) => (
-                                <tr key={order.id} className="border-b border-[hsl(var(--border))] last:border-0 hover:bg-[hsl(var(--muted)/0.5)] transition">
-                                    <td className="p-3">
-                                        <Link href={`/orders/${order.id}`} className="font-medium text-[hsl(var(--primary))] hover:underline">
-                                            {order.orderNumber}
-                                        </Link>
-                                    </td>
-                                    <td className="p-3 text-[hsl(var(--muted-foreground))]">{order.user?.displayName || order.user?.email || '-'}</td>
-                                    <td className="p-3 text-right font-semibold">${Number(order.totalAmount).toFixed(2)}</td>
-                                    <td className="p-3 text-center"><StatusBadge status={order.status} /></td>
-                                    <td className="p-3 text-center"><StatusBadge status={order.paymentStatus} /></td>
-                                    <td className="p-3 text-[hsl(var(--muted-foreground))]">
-                                        {new Date(order.placedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                    </td>
-                                    <td className="p-3 text-right">
-                                        <select
-                                            className="text-xs rounded border border-[hsl(var(--border))] bg-transparent px-2 py-1"
-                                            defaultValue=""
-                                            onChange={(e) => {
-                                                if (e.target.value) {
-                                                    updateStatus.mutate({ id: order.id, status: e.target.value });
-                                                    e.target.value = '';
-                                                }
-                                            }}
-                                        >
-                                            <option value="">Update</option>
-                                            {STATUS_OPTIONS.map((opt) => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </Card>
-            )}
-        </div>
+        <AuthGuard requireAdmin>
+            <DashboardOrdersContent />
+        </AuthGuard>
     );
 }
 
-export default function AdminOrdersPage() {
+function DashboardOrdersContent() {
+    const [orders, setOrders] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [fulfilling, setFulfilling] = useState<string | null>(null);
+    const { session } = useAuthStore();
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const fetchOrders = async () => {
+        const supabase = getSupabase();
+        const { data } = await supabase
+            .from('orders')
+            .select('*, order_items(count)')
+            .order('created_at', { ascending: false })
+            .limit(50);
+        setOrders(data || []);
+        setLoading(false);
+    };
+
+    const handleFulfill = async (orderId: string) => {
+        if (!session) return;
+        setFulfilling(orderId);
+        try {
+            const supabase = getSupabase();
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-fulfillment-order`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({ order_id: orderId }),
+                }
+            );
+            if (res.ok) {
+                // Update local state
+                setOrders((prev) =>
+                    prev.map((o) =>
+                        o.id === orderId ? { ...o, status: 'fulfilled' } : o
+                    )
+                );
+            }
+        } catch (e) {
+            console.error('Fulfillment error:', e);
+        }
+        setFulfilling(null);
+    };
+
+    const STATUS_COLORS: Record<string, string> = {
+        pending: 'bg-yellow-100 text-yellow-700',
+        paid: 'bg-blue-100 text-blue-700',
+        fulfilled: 'bg-purple-100 text-purple-700',
+        shipped: 'bg-indigo-100 text-indigo-700',
+        delivered: 'bg-green-100 text-green-700',
+        cancelled: 'bg-red-100 text-red-700',
+    };
+
     return (
-        <AuthGuard requiredRoles={['PLATFORM_ADMIN', 'STORE_OWNER', 'STORE_MANAGER']}>
-            <div className="space-y-4 animate-fade-in">
-                <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition">
-                    <ArrowLeft className="h-4 w-4" /> Dashboard
-                </Link>
-                <OrdersManagement />
+        <div className="min-h-screen bg-[hsl(var(--muted))]">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+                <h1 className="text-3xl font-bold font-display mb-8">
+                    All <span className="gradient-text">Orders</span>
+                </h1>
+
+                {loading ? (
+                    <div className="space-y-4">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-16 skeleton rounded-xl" />)}</div>
+                ) : orders.length > 0 ? (
+                    <div className="bg-white rounded-2xl border border-[hsl(var(--border))] divide-y divide-[hsl(var(--border))]">
+                        {orders.map((order) => (
+                            <div key={order.id} className="flex items-center justify-between p-4 gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="h-10 w-10 rounded-xl bg-[hsl(var(--muted))] flex items-center justify-center flex-shrink-0">
+                                        <Package className="h-5 w-5 text-[hsl(var(--muted-foreground))]" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="font-medium text-sm">#{order.id.slice(0, 8)}</p>
+                                        <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                                            {new Date(order.created_at).toLocaleDateString()} • {order.order_items?.[0]?.count || 0} items
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${STATUS_COLORS[order.status] || ''}`}>
+                                        {order.status}
+                                    </span>
+                                    <span className="font-bold text-sm">${Number(order.total_amount).toFixed(2)}</span>
+                                    {order.status === 'pending' && (
+                                        <Button
+                                            variant="gradient"
+                                            size="sm"
+                                            className="rounded-full ml-2"
+                                            onClick={() => handleFulfill(order.id)}
+                                            disabled={fulfilling === order.id}
+                                        >
+                                            {fulfilling === order.id ? (
+                                                <Loader2 className="h-3 w-3 animate-spin" />
+                                            ) : (
+                                                <><Truck className="h-3 w-3 mr-1" /> Fulfill</>
+                                            )}
+                                        </Button>
+                                    )}
+                                    {order.status === 'fulfilled' && (
+                                        <CheckCircle className="h-4 w-4 text-green-500 ml-2" />
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20 text-[hsl(var(--muted-foreground))]">
+                        No orders yet
+                    </div>
+                )}
             </div>
-        </AuthGuard>
+        </div>
     );
 }
