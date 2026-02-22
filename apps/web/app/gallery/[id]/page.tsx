@@ -9,7 +9,7 @@ import { useDesign } from '../../../hooks/use-designs';
 import { useCartStore } from '../../../stores/cart-store';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Button } from '../../../components/ui/button';
-import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -23,6 +23,7 @@ export default function ProductDetailPage() {
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [added, setAdded] = useState(false);
+    const [selectedImageIdx, setSelectedImageIdx] = useState(0);
 
     // Design upload state
     const [designImage, setDesignImage] = useState<string | null>(null);
@@ -61,6 +62,7 @@ export default function ProductDetailPage() {
     }
 
     const displayPrice = product.base_price;
+    const allImages = (product.images?.length > 0 ? product.images : product.image_url ? [product.image_url] : []).slice(0, 5);
 
     const handleDesignUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -126,20 +128,46 @@ export default function ProductDetailPage() {
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                     {/* Product Image + Design Preview */}
                     <div className="space-y-4 animate-fade-in">
+                        {/* Main Image */}
                         <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-8 relative">
                             <div className="relative w-full aspect-square max-w-md mx-auto">
-                                {product.image_url ? (
+                                {allImages.length > 0 ? (
                                     <Image
-                                        src={product.image_url}
+                                        src={allImages[selectedImageIdx] || allImages[0]}
                                         alt={product.name}
                                         fill
-                                        className="object-contain"
+                                        className="object-contain transition-opacity duration-200"
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                         priority
                                     />
                                 ) : (
                                     <div className="flex items-center justify-center h-full bg-[hsl(var(--muted))] rounded-xl">
                                         <ShoppingCart className="h-16 w-16 text-[hsl(var(--muted-foreground)/0.3)]" />
+                                    </div>
+                                )}
+
+                                {/* Navigation Arrows */}
+                                {allImages.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={() => setSelectedImageIdx(prev => prev === 0 ? allImages.length - 1 : prev - 1)}
+                                            className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition"
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedImageIdx(prev => prev === allImages.length - 1 ? 0 : prev + 1)}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition"
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Image counter */}
+                                {allImages.length > 1 && (
+                                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-[hsl(var(--foreground))]/70 text-[hsl(var(--background))] text-xs font-medium">
+                                        {selectedImageIdx + 1}/{allImages.length}
                                     </div>
                                 )}
 
@@ -170,6 +198,24 @@ export default function ProductDetailPage() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Thumbnail Strip */}
+                        {allImages.length > 1 && (
+                            <div className="flex gap-2 justify-center">
+                                {allImages.map((img, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setSelectedImageIdx(i)}
+                                        className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all duration-200 flex-shrink-0 ${selectedImageIdx === i
+                                            ? 'border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary)/0.2)] scale-105'
+                                            : 'border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)] opacity-70 hover:opacity-100'
+                                            }`}
+                                    >
+                                        <Image src={img} alt={`View ${i + 1}`} fill className="object-cover" sizes="64px" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         {/* Design Actions */}
                         <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-4">

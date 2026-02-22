@@ -22,6 +22,7 @@ export interface Product {
 
 export interface ProductDetail extends Omit<Product, 'colors'> {
     max_price: string;
+    images: string[];
     colors: { name: string; hex: string }[];
     variants: any[];
     variant_count: number;

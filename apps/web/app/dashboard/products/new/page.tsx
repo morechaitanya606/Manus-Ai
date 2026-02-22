@@ -237,7 +237,7 @@ function NewProductForm() {
 
                     {/* Images */}
                     <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6">
-                        <h2 className="font-semibold mb-4">Product Images</h2>
+                        <h2 className="font-semibold mb-4">Product Images <span className="text-xs font-normal text-[hsl(var(--muted-foreground))]">(max 5)</span></h2>
                         <div className="flex flex-wrap gap-3 mb-4">
                             {form.images.map((img, i) => (
                                 <div key={i} className="relative h-24 w-24 rounded-xl overflow-hidden border border-[hsl(var(--border))] group">
