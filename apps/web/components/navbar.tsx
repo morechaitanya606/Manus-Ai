@@ -23,6 +23,7 @@ import { useTheme } from './theme-provider';
 
 const NAV_LINKS = [
   { href: '/gallery', label: 'Gallery' },
+  { href: '/community', label: 'Community' },
   { href: '/studio', label: 'Studio' },
   { href: '/my-designs', label: 'My Designs' },
 ];
@@ -106,13 +107,23 @@ export function Navbar() {
 
               {/* Admin */}
               {isAdmin() && (
-                <Link
-                  href="/dashboard"
-                  className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
-                  title="Dashboard"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                </Link>
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
+                    title="Dashboard"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/admin/studio"
+                    className="hidden lg:flex items-center gap-2 rounded-lg bg-purple-100 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-200 transition"
+                    title="Admin Studio (Bulk Uploader)"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Admin Studio
+                  </Link>
+                </>
               )}
 
               {/* Profile */}
@@ -187,10 +198,16 @@ export function Navbar() {
                 My Orders
               </Link>
               {isAdmin() && (
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                  <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium bg-purple-50 text-purple-700 hover:bg-purple-100 transition">
+                    <Sparkles className="h-4 w-4" />
+                    Admin Studio
+                  </Link>
+                </>
               )}
               <button
                 onClick={() => { signOut(); setMobileOpen(false); }}

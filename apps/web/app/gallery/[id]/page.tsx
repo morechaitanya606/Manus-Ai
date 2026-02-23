@@ -10,6 +10,7 @@ import { useCartStore } from '../../../stores/cart-store';
 import { useAuthStore } from '../../../stores/auth-store';
 import { Button } from '../../../components/ui/button';
 import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MockupEditor } from '../../../components/mockup-editor';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -130,60 +131,53 @@ export default function ProductDetailPage() {
                     <div className="space-y-4 animate-fade-in">
                         {/* Main Image */}
                         <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-8 relative">
-                            <div className="relative w-full aspect-square max-w-md mx-auto">
-                                {allImages.length > 0 ? (
-                                    <Image
-                                        src={allImages[selectedImageIdx] || allImages[0]}
-                                        alt={product.name}
-                                        fill
-                                        className="object-contain transition-opacity duration-200"
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority
+                            <div className="relative w-full max-w-md mx-auto">
+                                {designImage && allImages.length > 0 ? (
+                                    <MockupEditor
+                                        baseImage={allImages[selectedImageIdx] || allImages[0]}
+                                        designImage={designImage}
                                     />
                                 ) : (
-                                    <div className="flex items-center justify-center h-full bg-[hsl(var(--muted))] rounded-xl">
-                                        <ShoppingCart className="h-16 w-16 text-[hsl(var(--muted-foreground)/0.3)]" />
-                                    </div>
-                                )}
-
-                                {/* Navigation Arrows */}
-                                {allImages.length > 1 && (
-                                    <>
-                                        <button
-                                            onClick={() => setSelectedImageIdx(prev => prev === 0 ? allImages.length - 1 : prev - 1)}
-                                            className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition"
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => setSelectedImageIdx(prev => prev === allImages.length - 1 ? 0 : prev + 1)}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition"
-                                        >
-                                            <ChevronRight className="h-4 w-4" />
-                                        </button>
-                                    </>
-                                )}
-
-                                {/* Image counter */}
-                                {allImages.length > 1 && (
-                                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-[hsl(var(--foreground))]/70 text-[hsl(var(--background))] text-xs font-medium">
-                                        {selectedImageIdx + 1}/{allImages.length}
-                                    </div>
-                                )}
-
-                                {/* Design Overlay */}
-                                {designImage && (
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <div className="relative w-[40%] h-[40%]">
+                                    <div className="relative w-full aspect-square">
+                                        {allImages.length > 0 ? (
                                             <Image
-                                                src={designImage}
-                                                alt="Your design"
+                                                src={allImages[selectedImageIdx] || allImages[0]}
+                                                alt={product.name}
                                                 fill
-                                                className="object-contain drop-shadow-lg"
-                                                sizes="200px"
-                                                unoptimized
+                                                className="object-contain transition-opacity duration-200"
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                priority
                                             />
-                                        </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full bg-[hsl(var(--muted))] rounded-xl">
+                                                <ShoppingCart className="h-16 w-16 text-[hsl(var(--muted-foreground)/0.3)]" />
+                                            </div>
+                                        )}
+
+                                        {/* Navigation Arrows */}
+                                        {allImages.length > 1 && (
+                                            <>
+                                                <button
+                                                    onClick={() => setSelectedImageIdx(prev => prev === 0 ? allImages.length - 1 : prev - 1)}
+                                                    className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition z-10"
+                                                >
+                                                    <ChevronLeft className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => setSelectedImageIdx(prev => prev === allImages.length - 1 ? 0 : prev + 1)}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[hsl(var(--card))]/90 border border-[hsl(var(--border))] flex items-center justify-center hover:bg-[hsl(var(--card))] hover:shadow-md transition z-10"
+                                                >
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {/* Image counter */}
+                                        {allImages.length > 1 && (
+                                            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-[hsl(var(--foreground))]/70 text-[hsl(var(--background))] text-xs font-medium z-10">
+                                                {selectedImageIdx + 1}/{allImages.length}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

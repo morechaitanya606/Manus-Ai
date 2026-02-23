@@ -100,3 +100,69 @@ export function useToggleDesignPublic() {
         },
     });
 }
+
+export function useRemoveBackground() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ designId, imageUrl }: { designId: string; imageUrl: string }) => {
+            const supabase = getSupabase();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Not authenticated');
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/remove-background`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({ designId, imageUrl }),
+                }
+            );
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ error: 'Background removal failed' }));
+                throw new Error(err.error || 'Failed to remove background');
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-designs'] });
+        },
+    });
+}
+
+export function useUpscaleImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ designId, imageUrl }: { designId: string; imageUrl: string }) => {
+            const supabase = getSupabase();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Not authenticated');
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/upscale-image`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({ designId, imageUrl }),
+                }
+            );
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ error: 'Upscaling failed' }));
+                throw new Error(err.error || 'Failed to upscale image');
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-designs'] });
+        },
+    });
+}

@@ -4,6 +4,7 @@ import { AppProviders } from '../components/providers';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ToastContainer } from '../components/ui/toast';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const inter = Inter({
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
           <ToastContainer />
+          <Toaster position="bottom-right" richColors />
         </AppProviders>
       </body>
     </html>
