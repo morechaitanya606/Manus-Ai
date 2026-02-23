@@ -3,10 +3,19 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+    {
+        auth: { persistSession: false },
+        global: {
+            fetch: (url, options) => {
+                return fetch(url, { ...options, cache: 'no-store' });
+            }
+        }
+    }
 );
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
     console.log('--- API: FETCHING PRODUCTS (V4) ---');

@@ -32,7 +32,7 @@ export function useProducts() {
     return useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const res = await fetch('/api/products', { cache: 'no-store' });
+            const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
             if (!res.ok) throw new Error('Failed to fetch products');
             return res.json();
         },
@@ -44,11 +44,11 @@ export function useProduct(id: string | undefined) {
     return useQuery<ProductDetail>({
         queryKey: ['product', id],
         queryFn: async () => {
-            const res = await fetch(`/api/products/${id}`);
+            const res = await fetch(`/api/products/${id}?t=${Date.now()}`, { cache: 'no-store' });
             if (!res.ok) throw new Error('Product not found');
             return res.json();
         },
         enabled: !!id,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
     });
 }

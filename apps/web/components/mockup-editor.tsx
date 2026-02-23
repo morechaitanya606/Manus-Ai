@@ -46,20 +46,29 @@ export function MockupEditor({ baseImage, designImage, onSave }: MockupEditorPro
             {/* Canvas Area */}
             <div
                 ref={containerRef}
-                className="relative w-full aspect-square bg-[#f5f5f5] rounded-xl overflow-hidden border border-[hsl(var(--border))] flex items-center justify-center"
+                className="relative w-full aspect-square bg-void border border-border-std overflow-hidden group/canvas shadow-[0_0_20px_rgba(0,0,0,0.5)] flex items-center justify-center"
             >
+                {/* Cyberpunk Scanner Lines & Background */}
+                <div className="absolute inset-0 bg-grid-pattern bg-[length:20px_20px] opacity-[0.05] pointer-events-none z-0" />
+                <div className="absolute inset-0 scanline opacity-20 pointer-events-none z-0" />
+
                 {/* Base Product Image (e.g., T-Shirt Vector) */}
                 <Image
                     src={baseImage}
                     alt="Product Base"
                     fill
-                    className="object-contain pointer-events-none p-4"
+                    className="object-contain pointer-events-none p-4 z-10 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                     sizes="(max-width: 768px) 100vw, 50vw"
                 />
 
                 {/* Printable Box Guide (Optional, can be hidden) */}
-                <div className="absolute w-[40%] h-[50%] border-2 border-dashed border-[hsl(var(--primary)/0.2)] top-[20%] pointer-events-none flex items-center justify-center">
-                    <span className="text-[10px] text-[hsl(var(--primary)/0.4)] font-medium uppercase tracking-widest absolute bottom-2">Print Area</span>
+                <div className="absolute w-[40%] h-[50%] border border-dashed border-cyan/30 top-[20%] pointer-events-none flex items-center justify-center z-10 transition-colors group-hover/canvas:border-cyan/60">
+                    <span className="text-[9px] text-cyan/40 font-mono uppercase tracking-widest absolute bottom-2">Print Area</span>
+                    {/* Corner accents */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan/50"></div>
+                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan/50"></div>
+                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan/50"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan/50"></div>
                 </div>
 
                 {/* Draggable Design Overlay */}
@@ -84,9 +93,9 @@ export function MockupEditor({ baseImage, designImage, onSave }: MockupEditorPro
                         />
 
                         {/* Overlay Controls (Visible on hover/drag) */}
-                        <div className={`absolute inset-0 border-2 border-[hsl(var(--primary))] transition-opacity ${isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                        <div className={`absolute inset-0 border-2 border-cyan transition-opacity ${isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                             {/* Drag Handle Indicator */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[hsl(var(--card))] p-1.5 rounded-full shadow-md text-[hsl(var(--primary))]">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-panel p-1.5 rounded-none border border-border-std border-dashed shadow-md text-cyan">
                                 <Move className="w-4 h-4" />
                             </div>
                         </div>
@@ -95,14 +104,17 @@ export function MockupEditor({ baseImage, designImage, onSave }: MockupEditorPro
             </div>
 
             {/* Controls */}
-            <div className="grid grid-cols-2 gap-4 bg-[hsl(var(--card))] p-4 rounded-xl border border-[hsl(var(--border))]">
+            <div className="grid grid-cols-2 gap-4 bg-panel p-4 border border-border-std shadow-[0_0_10px_rgba(0,0,0,0.5)] relative">
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-magenta/50"></div>
+
                 <div>
-                    <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] flex justify-between mb-2">
-                        <span>Size</span>
-                        <span>{Math.round(scale * 100)}%</span>
+                    <label className="text-[10px] font-mono tracking-widest text-text-dim uppercase flex justify-between mb-3 border-b border-border-std pb-1">
+                        <span>Scale</span>
+                        <span className="text-cyan">{Math.round(scale * 100)}%</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg shrink-0" onClick={() => setScale(s => Math.max(0.1, s - 0.05))}>
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-none border border-border-std shrink-0 text-text-dim hover:text-cyan hover:border-cyan hover:bg-cyan/10 transition-colors" onClick={() => setScale(s => Math.max(0.1, s - 0.05))}>
                             <ZoomOut className="h-4 w-4" />
                         </Button>
                         <input
@@ -110,36 +122,40 @@ export function MockupEditor({ baseImage, designImage, onSave }: MockupEditorPro
                             min="0.1" max="1" step="0.01"
                             value={scale}
                             onChange={e => setScale(parseFloat(e.target.value))}
-                            className="flex-1 accent-[hsl(var(--primary))]"
+                            className="flex-1 h-1.5 bg-void appearance-none cursor-pointer border border-border-std
+                                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-cyan [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-cyan
+                                [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-cyan [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:rounded-none"
                         />
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg shrink-0" onClick={() => setScale(s => Math.min(1, s + 0.05))}>
+                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-none border border-border-std shrink-0 text-text-dim hover:text-cyan hover:border-cyan hover:bg-cyan/10 transition-colors" onClick={() => setScale(s => Math.min(1, s + 0.05))}>
                             <ZoomIn className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
 
                 <div>
-                    <label className="text-xs font-medium text-[hsl(var(--muted-foreground))] flex justify-between mb-2">
+                    <label className="text-[10px] font-mono tracking-widest text-text-dim uppercase flex justify-between mb-3 border-b border-border-std pb-1">
                         <span>Rotation</span>
-                        <span>{rotation}°</span>
+                        <span className="text-magenta">{rotation}°</span>
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <input
                             type="range"
                             min="-180" max="180" step="1"
                             value={rotation}
                             onChange={e => setRotation(parseInt(e.target.value))}
-                            className="flex-1 accent-[hsl(var(--primary))]"
+                            className="flex-1 h-1.5 bg-void appearance-none cursor-pointer border border-border-std
+                                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-magenta [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-magenta
+                                [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-magenta [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:rounded-none"
                         />
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg shrink-0" onClick={() => setRotation(r => (r + 90) % 360)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-none border border-border-std shrink-0 text-text-dim hover:text-magenta hover:border-magenta hover:bg-magenta/10 transition-colors" onClick={() => setRotation(r => (r + 90) % 360)}>
                             <RotateCw className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
 
                 <div className="col-span-2 pt-2 flex justify-center">
-                    <Button variant="ghost" size="sm" onClick={() => { setPosition({ x: 0, y: 0 }); setScale(0.4); setRotation(0); }} className="text-xs h-7">
-                        Reset Position
+                    <Button variant="ghost" size="sm" onClick={() => { setPosition({ x: 0, y: 0 }); setScale(0.4); setRotation(0); }} className="text-[10px] font-mono tracking-widest uppercase h-8 border border-transparent hover:border-text-dim/50 text-text-dim transition-colors rounded-none">
+                        Reset Canvas
                     </Button>
                 </div>
             </div>

@@ -75,35 +75,35 @@ export default function FAQPage() {
     return (
         <div className="min-h-screen">
             {/* Hero */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] via-[hsl(var(--card))] to-[hsl(var(--muted))]">
+            <section className="relative overflow-hidden bg-gradient-to-br from-panel-highlight via-[hsl(var(--card))] to-[hsl(var(--muted))]">
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold font-display">
-                        Frequently Asked <span className="gradient-text">Questions</span>
+                        Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Questions</span>
                     </h1>
-                    <p className="mt-6 text-lg text-[hsl(var(--muted-foreground))]">
+                    <p className="mt-6 text-lg text-text-dim">
                         Everything you need to know about The Quote Shop
                     </p>
                     {/* Search */}
                     <div className="mt-8 max-w-md mx-auto relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[hsl(var(--muted-foreground))]" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-text-dim" />
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search questions..."
-                            className="w-full pl-12 pr-4 py-3 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition"
+                            className="w-full pl-12 pr-4 py-3 rounded-none border border-border-std border-dashed border border-border-std bg-panel text-sm focus:outline-none focus:ring-2 focus:ring-cyan transition"
                         />
                     </div>
                 </div>
             </section>
 
             {/* FAQ Accordion */}
-            <section className="py-20 bg-[hsl(var(--card))]">
+            <section className="py-20 bg-panel">
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-10">
                     {filtered.map((cat) => (
                         <div key={cat.category}>
                             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                <span className="h-1 w-6 rounded-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))]" />
+                                <span className="h-1 w-6 rounded-none border border-border-std border-dashed bg-gradient-to-r from-cyan to-magenta" />
                                 {cat.category}
                             </h2>
                             <div className="space-y-2">
@@ -111,16 +111,16 @@ export default function FAQPage() {
                                     const key = `${cat.category}-${item.q}`;
                                     const isOpen = openItems.has(key);
                                     return (
-                                        <div key={key} className="border border-[hsl(var(--border))] rounded-xl overflow-hidden">
+                                        <div key={key} className="border border-border-std rounded-none border border-border-std overflow-hidden">
                                             <button
                                                 onClick={() => toggle(key)}
                                                 className="w-full flex items-center justify-between p-4 text-left hover:bg-[hsl(var(--muted)/0.5)] transition"
                                             >
                                                 <span className="font-medium text-sm pr-4">{item.q}</span>
-                                                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-[hsl(var(--muted-foreground))] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                                                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-text-dim transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                             </button>
                                             {isOpen && (
-                                                <div className="px-4 pb-4 text-sm text-[hsl(var(--muted-foreground))] animate-fade-in">
+                                                <div className="px-4 pb-4 text-sm text-text-dim animate-fade-in">
                                                     {item.a}
                                                 </div>
                                             )}
@@ -134,11 +134,11 @@ export default function FAQPage() {
             </section>
 
             {/* Still have questions */}
-            <section className="py-16 bg-[hsl(var(--muted))]">
+            <section className="py-16 bg-panel-highlight">
                 <div className="mx-auto max-w-2xl px-4 text-center">
                     <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-                    <p className="text-[hsl(var(--muted-foreground))] mb-6">Our team is happy to help with anything</p>
-                    <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white rounded-full font-semibold hover:opacity-90 transition shadow-lg">
+                    <p className="text-text-dim mb-6">Our team is happy to help with anything</p>
+                    <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan to-magenta text-white rounded-none border border-border-std border-dashed font-semibold hover:opacity-90 transition shadow-[0_0_10px_rgba(0,240,255,0.1)]">
                         Contact Us
                     </Link>
                 </div>

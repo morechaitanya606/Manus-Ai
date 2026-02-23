@@ -15,18 +15,18 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         return (
             <div className="w-full space-y-1.5">
                 {label && (
-                    <label htmlFor={selectId} className="block text-sm font-medium text-[hsl(var(--foreground))]">
+                    <label htmlFor={selectId} className="block text-sm font-medium text-white">
                         {label}
                     </label>
                 )}
                 <select
                     id={selectId}
                     className={cn(
-                        'flex h-10 w-full appearance-none rounded-lg border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200',
+                        'flex h-10 w-full appearance-none rounded-none border border-border-std border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200',
                         'focus:ring-2 focus:ring-[hsl(var(--ring)/0.4)] focus:border-[hsl(var(--ring))]',
                         error
                             ? 'border-[hsl(var(--destructive))]'
-                            : 'border-[hsl(var(--border))]',
+                            : 'border-border-std',
                         className
                     )}
                     ref={ref}

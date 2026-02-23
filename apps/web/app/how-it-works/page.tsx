@@ -48,41 +48,41 @@ export default function HowItWorksPage() {
     return (
         <div className="min-h-screen">
             {/* Hero */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--muted))] via-[hsl(var(--card))] to-[hsl(var(--muted))]">
+            <section className="relative overflow-hidden bg-gradient-to-br from-panel-highlight via-[hsl(var(--card))] to-[hsl(var(--muted))]">
                 <div className="absolute inset-0">
-                    <div className="absolute top-20 left-20 h-64 w-64 rounded-full bg-[hsl(var(--primary)/0.08)] blur-3xl" />
+                    <div className="absolute top-20 left-20 h-64 w-64 rounded-none border border-border-std border-dashed bg-cyan/10 blur-3xl" />
                 </div>
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold font-display">
-                        How It <span className="gradient-text">Works</span>
+                        How It <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Works</span>
                     </h1>
-                    <p className="mt-6 text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
+                    <p className="mt-6 text-lg text-text-dim max-w-2xl mx-auto">
                         From your imagination to your doorstep in 4 simple steps — create custom apparel with AI-powered designs on premium materials
                     </p>
                 </div>
             </section>
 
             {/* Steps */}
-            <section className="py-20 bg-[hsl(var(--card))]">
+            <section className="py-20 bg-panel">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-16">
                     {STEPS.map((step, i) => (
                         <div key={step.num} className={`flex items-start gap-8 ${i % 2 !== 0 ? 'flex-row-reverse' : ''} max-md:flex-col`}>
                             <div className="flex-1">
-                                <div className={`inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br ${step.color} text-white text-2xl font-bold font-display mb-4 shadow-lg`}>
+                                <div className={`inline-flex items-center justify-center h-14 w-14 rounded-none border border-border-std bg-gradient-to-br ${step.color} text-white text-2xl font-bold font-display mb-4 shadow-[0_0_10px_rgba(0,240,255,0.1)]`}>
                                     {step.num}
                                 </div>
                                 <h3 className="text-2xl font-bold mb-3">{step.title}</h3>
-                                <p className="text-[hsl(var(--muted-foreground))] mb-4">{step.desc}</p>
+                                <p className="text-text-dim mb-4">{step.desc}</p>
                                 <ul className="space-y-2">
                                     {step.details.map((d) => (
                                         <li key={d} className="flex items-center gap-2 text-sm">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" />
+                                            <span className="h-1.5 w-1.5 rounded-none border border-border-std border-dashed bg-cyan" />
                                             {d}
                                         </li>
                                     ))}
                                 </ul>
                             </div>
-                            <div className="flex-1 aspect-[4/3] rounded-2xl bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] flex items-center justify-center">
+                            <div className="flex-1 aspect-[4/3] rounded-none border border-border-std bg-gradient-to-br from-panel-highlight to-border-std flex items-center justify-center">
                                 <span className={`text-7xl font-display font-bold bg-gradient-to-br ${step.color} bg-clip-text text-transparent opacity-20`}>
                                     {step.num}
                                 </span>
@@ -93,20 +93,20 @@ export default function HowItWorksPage() {
             </section>
 
             {/* Printing Methods */}
-            <section className="py-20 bg-[hsl(var(--muted))]">
+            <section className="py-20 bg-panel-highlight">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-bold font-display text-center mb-4">
-                        Printing <span className="gradient-text">Methods</span>
+                        Printing <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Methods</span>
                     </h2>
-                    <p className="text-center text-[hsl(var(--muted-foreground))] mb-12">
+                    <p className="text-center text-text-dim mb-12">
                         We use the best printing technology for each product and design type
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {PRINTING_METHODS.map((m) => (
-                            <div key={m.name} className="bg-[hsl(var(--card))] rounded-2xl p-6 border border-[hsl(var(--border))] hover:shadow-lg transition">
+                            <div key={m.name} className="bg-panel rounded-none border border-border-std p-6 border border-border-std hover:shadow-[0_0_10px_rgba(0,240,255,0.1)] transition">
                                 <h3 className="font-bold text-lg mb-2">{m.name}</h3>
-                                <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3">{m.desc}</p>
-                                <div className="text-xs text-[hsl(var(--primary))] font-medium bg-[hsl(var(--primary)/0.1)] rounded-full px-3 py-1 inline-block">
+                                <p className="text-sm text-text-dim mb-3">{m.desc}</p>
+                                <div className="text-xs text-cyan font-medium bg-cyan/10 rounded-none border border-border-std border-dashed px-3 py-1 inline-block">
                                     Best for: {m.best}
                                 </div>
                             </div>
@@ -116,15 +116,15 @@ export default function HowItWorksPage() {
             </section>
 
             {/* CTA */}
-            <section className="py-16 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white text-center">
+            <section className="py-16 bg-gradient-to-r from-cyan to-magenta text-white text-center">
                 <div className="mx-auto max-w-3xl px-4">
                     <h2 className="text-3xl font-bold font-display mb-4">Ready to Create?</h2>
                     <p className="text-white/80 mb-8">Start designing your custom apparel today — 5 free AI credits included</p>
                     <div className="flex items-center justify-center gap-4">
-                        <Link href="/studio" className="px-8 py-3 bg-[hsl(var(--card))] text-[hsl(var(--primary))] rounded-full font-semibold hover:opacity-90 transition shadow-xl">
+                        <Link href="/studio" className="px-8 py-3 bg-panel text-cyan rounded-none border border-border-std border-dashed font-semibold hover:opacity-90 transition shadow-[0_0_15px_rgba(0,240,255,0.15)]">
                             Open AI Studio
                         </Link>
-                        <Link href="/gallery" className="px-8 py-3 bg-white/10 text-white rounded-full font-semibold hover:bg-white/20 transition">
+                        <Link href="/gallery" className="px-8 py-3 bg-white/10 text-white rounded-none border border-border-std border-dashed font-semibold hover:bg-white/20 transition">
                             Browse Products
                         </Link>
                     </div>

@@ -6,8 +6,8 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 
 export function SkeletonCard() {
     return (
-        <div className="rounded-xl border border-[hsl(var(--border))] p-5 space-y-4">
-            <Skeleton className="h-40 w-full rounded-lg" />
+        <div className="rounded-none border border-border-std border border-border-std p-5 space-y-4">
+            <Skeleton className="h-40 w-full rounded-none border border-border-std" />
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
             <div className="flex gap-2">

@@ -21,14 +21,14 @@ export default function AdminLayout({
 
     if (!initialized || !isAdmin()) {
         return (
-            <div className="flex h-screen w-full items-center justify-center bg-[hsl(var(--background))]">
-                <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--primary))]" />
+            <div className="flex h-screen w-full items-center justify-center bg-void">
+                <Loader2 className="h-8 w-8 animate-spin text-cyan" />
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-[hsl(var(--background))]">
+        <div className="flex min-h-screen w-full flex-col bg-void">
             {children}
         </div>
     );

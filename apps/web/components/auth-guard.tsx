@@ -31,7 +31,7 @@ export function AuthGuard({
     if (!initialized || loading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="h-8 w-8 rounded-full border-2 border-[hsl(var(--primary))] border-t-transparent animate-spin" />
+                <div className="h-8 w-8 rounded-none border border-border-std border-dashed border-2 border-cyan border-t-transparent animate-spin" />
             </div>
         );
     }

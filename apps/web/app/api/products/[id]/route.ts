@@ -6,6 +6,8 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
     _request: Request,
     { params }: { params: { id: string } }
@@ -42,7 +44,9 @@ export async function GET(
             is_active: product.is_active,
         }, {
             headers: {
-                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+                'Cache-Control': 'no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
             },
         });
     } catch (error) {

@@ -79,29 +79,37 @@ function DashboardContent() {
   };
 
   const STAT_CARDS = [
-    { icon: IndianRupee, label: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, color: 'text-green-600 bg-green-100' },
-    { icon: Package, label: 'Total Orders', value: stats.totalOrders, color: 'text-blue-600 bg-blue-100' },
-    { icon: Sparkles, label: 'Designs Generated', value: stats.totalDesigns, color: 'text-purple-600 bg-purple-100' },
-    { icon: Users, label: 'Total Users', value: stats.totalUsers, color: 'text-indigo-600 bg-indigo-100' },
+    { icon: IndianRupee, label: 'TOTAL REVENUE', value: `₹${stats.totalRevenue.toLocaleString()}`, color: 'text-green-400 border-green-400 bg-green-500/10 shadow-[0_0_10px_rgba(74,222,128,0.2)]' },
+    { icon: Package, label: 'TOTAL ORDERS', value: stats.totalOrders, color: 'text-cyan border-cyan bg-cyan/10 shadow-[0_0_10px_rgba(0,240,255,0.2)]' },
+    { icon: Sparkles, label: 'DESIGNS GEN', value: stats.totalDesigns, color: 'text-magenta border-magenta bg-magenta/10 shadow-[0_0_10px_rgba(255,0,255,0.2)]' },
+    { icon: Users, label: 'TOTAL USERS', value: stats.totalUsers, color: 'text-blue-400 border-blue-400 bg-blue-500/10 shadow-[0_0_10px_rgba(96,165,250,0.2)]' },
   ];
 
   const STATUS_COLOR: Record<string, string> = {
-    pending: 'bg-yellow-100 text-yellow-700',
-    paid: 'bg-blue-100 text-blue-700',
-    printing: 'bg-purple-100 text-purple-700',
-    shipped: 'bg-indigo-100 text-indigo-700',
-    delivered: 'bg-green-100 text-green-700',
-    cancelled: 'bg-red-100 text-red-700',
+    pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-500',
+    paid: 'border-cyan bg-cyan/10 text-cyan',
+    printing: 'border-magenta bg-magenta/10 text-magenta',
+    shipped: 'border-blue-500 bg-blue-500/10 text-blue-500',
+    delivered: 'border-green-500 bg-green-500/10 text-green-500',
+    cancelled: 'border-red-500 bg-red-500/10 text-red-500',
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--muted))]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold font-display">
-            Admin <span className="gradient-text">Dashboard</span>
+    <div className="min-h-screen bg-void relative overflow-hidden text-text-main font-mono">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.03] pointer-events-none z-0" />
+      <div className="absolute inset-0 crt-overlay pointer-events-none z-50" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="mb-8 animate-fade-in border-b border-border-std pb-4">
+          <div className="inline-flex items-center gap-2 text-cyan font-mono text-[10px] tracking-widest uppercase bg-cyan/5 px-2 py-1 border border-cyan/20 mb-3">
+            <Settings className="h-3 w-3" />
+            <span>ADMINISTRATOR</span>
+          </div>
+          <h1 className="text-3xl font-bold font-mono tracking-widest uppercase text-white">
+            ADMIN <span className="text-magenta">DASHBOARD</span>
           </h1>
-          <p className="mt-1 text-[hsl(var(--muted-foreground))]">Monitor your platform metrics</p>
+          <p className="mt-2 text-[10px] tracking-widest text-cyan uppercase">&gt; System online</p>
         </div>
 
         {/* Stats Grid */}
@@ -109,51 +117,59 @@ function DashboardContent() {
           {STAT_CARDS.map((card, i) => (
             <div
               key={card.label}
-              className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-fade-in"
+              className="bg-panel border border-border-std p-6 relative animate-fade-in hover:border-cyan/50 hover:shadow-[0_0_15px_rgba(0,240,255,0.1)] transition-all"
               style={{ animationDelay: `${i * 50}ms` }}
             >
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-text-dim/50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-text-dim/50"></div>
+
               <div className="flex items-center gap-3 mb-3">
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${card.color}`}>
+                <div className={`h-10 w-10 border flex items-center justify-center relative ${card.color}`}>
                   <card.icon className="h-5 w-5" />
+                  <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20"></div>
                 </div>
-                <span className="text-sm text-[hsl(var(--muted-foreground))]">{card.label}</span>
+                <span className="text-[10px] tracking-widest text-text-dim uppercase">{card.label}</span>
               </div>
-              <div className="text-2xl font-bold">{card.value}</div>
+              <div className="text-2xl font-bold text-white font-mono tracking-wider">{card.value}</div>
             </div>
           ))}
         </div>
 
         {/* Print Queue + Alerts Row */}
         <div className="grid sm:grid-cols-3 gap-4 mb-8">
-          <Link href="/dashboard/orders?tab=paid" className="flex items-center gap-4 p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition group">
-            <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Printer className="h-6 w-6 text-blue-600" />
+          <Link href="/dashboard/orders?tab=paid" className="flex items-center gap-4 p-5 bg-panel border-l-4 border-cyan border-y border-r border-border-std hover:bg-cyan/5 transition group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="h-12 w-12 border border-cyan bg-cyan/10 flex items-center justify-center relative z-10 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+              <Printer className="h-6 w-6 text-cyan" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-blue-700">{stats.printQueue}</p>
-              <p className="text-sm text-blue-600">Ready to Print</p>
+            <div className="relative z-10">
+              <p className="text-2xl font-bold text-white font-mono">{stats.printQueue}</p>
+              <p className="text-[10px] tracking-widest text-cyan uppercase mt-1">Ready To Print</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-blue-400 ml-auto opacity-0 group-hover:opacity-100 transition" />
+            <ArrowRight className="h-5 w-5 text-cyan ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
           </Link>
-          <Link href="/dashboard/orders?tab=printing" className="flex items-center gap-4 p-5 rounded-2xl bg-purple-50 border border-purple-200 hover:bg-purple-100 transition group">
-            <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-purple-600" />
+          <Link href="/dashboard/orders?tab=printing" className="flex items-center gap-4 p-5 bg-panel border-l-4 border-magenta border-y border-r border-border-std hover:bg-magenta/5 transition group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-magenta/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="h-12 w-12 border border-magenta bg-magenta/10 flex items-center justify-center relative z-10 shadow-[0_0_10px_rgba(255,0,255,0.2)]">
+              <TrendingUp className="h-6 w-6 text-magenta" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-purple-700">{stats.printing}</p>
-              <p className="text-sm text-purple-600">Currently Printing</p>
+            <div className="relative z-10">
+              <p className="text-2xl font-bold text-white font-mono">{stats.printing}</p>
+              <p className="text-[10px] tracking-widest text-magenta uppercase mt-1">Currently Printing</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-purple-400 ml-auto opacity-0 group-hover:opacity-100 transition" />
+            <ArrowRight className="h-5 w-5 text-magenta ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
           </Link>
-          <Link href="/dashboard/orders?tab=shipped" className="flex items-center gap-4 p-5 rounded-2xl bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition group">
-            <div className="h-12 w-12 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <Truck className="h-6 w-6 text-indigo-600" />
+          <Link href="/dashboard/orders?tab=shipped" className="flex items-center gap-4 p-5 bg-panel border-l-4 border-blue-500 border-y border-r border-border-std hover:bg-blue-500/5 transition group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="h-12 w-12 border border-blue-500 bg-blue-500/10 flex items-center justify-center relative z-10 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+              <Truck className="h-6 w-6 text-blue-500" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-indigo-700">{stats.shipped}</p>
-              <p className="text-sm text-indigo-600">In Transit</p>
+            <div className="relative z-10">
+              <p className="text-2xl font-bold text-white font-mono">{stats.shipped}</p>
+              <p className="text-[10px] tracking-widest text-blue-500 uppercase mt-1">In Transit</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-indigo-400 ml-auto opacity-0 group-hover:opacity-100 transition" />
+            <ArrowRight className="h-5 w-5 text-blue-400 ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
           </Link>
         </div>
 
@@ -161,15 +177,25 @@ function DashboardContent() {
         {(stats.pendingOrders > 0 || stats.failedDesigns > 0) && (
           <div className="grid sm:grid-cols-2 gap-4 mb-8">
             {stats.pendingOrders > 0 && (
-              <Link href="/dashboard/orders" className="flex items-center gap-3 p-4 rounded-xl bg-yellow-50 border border-yellow-200 hover:bg-yellow-100 transition">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                <span className="text-sm text-yellow-700"><strong>{stats.pendingOrders}</strong> pending orders need payment</span>
+              <Link href="/dashboard/orders" className="flex items-center gap-3 p-4 bg-void border border-yellow-500/50 hover:border-yellow-500 transition group relative">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
+                <div className="animate-pulse">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                </div>
+                <span className="text-[10px] tracking-widest font-mono text-yellow-500 uppercase">
+                  <span className="font-bold text-sm mr-1">{stats.pendingOrders}</span> PENDING ORDERS
+                </span>
               </Link>
             )}
             {stats.failedDesigns > 0 && (
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
-                <span className="text-sm text-red-700"><strong>{stats.failedDesigns}</strong> design generations failed</span>
+              <div className="flex items-center gap-3 p-4 bg-void border border-red-500/50 relative">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+                <div className="animate-pulse">
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                </div>
+                <span className="text-[10px] tracking-widest font-mono text-red-500 uppercase">
+                  <span className="font-bold text-sm mr-1">{stats.failedDesigns}</span> FAILED DESIGNS
+                </span>
               </div>
             )}
           </div>
@@ -178,16 +204,21 @@ function DashboardContent() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Orders */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Recent Orders
+            <div className="bg-panel border border-border-std p-6 relative animate-slide-up shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+              {/* Corner accents */}
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan/50 -translate-x-[2px] -translate-y-[2px]"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-magenta/50 translate-x-[2px] translate-y-[2px]"></div>
+
+              <div className="flex items-center justify-between mb-6 border-b border-border-std pb-4">
+                <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3">
+                  <Package className="h-5 w-5 text-cyan" />
+                  RECENT ORDERS
                 </h3>
-                <Link href="/dashboard/orders" className="text-sm text-[hsl(var(--primary))] hover:underline flex items-center gap-1">
-                  View All <ArrowRight className="h-3 w-3" />
+                <Link href="/dashboard/orders" className="text-[10px] font-mono tracking-widest text-cyan hover:text-magenta flex items-center gap-2 uppercase transition-colors">
+                  VIEW ALL ORDERS <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
+
               {recentOrders.length > 0 ? (
                 <div className="space-y-3">
                   {recentOrders.map((order) => {
@@ -196,63 +227,69 @@ function DashboardContent() {
                       <Link
                         key={order.id}
                         href="/dashboard/orders"
-                        className="flex items-center justify-between p-3 rounded-xl bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border)/0.5)] transition"
+                        className="flex items-center justify-between p-4 bg-void border border-border-std hover:border-cyan/50 hover:bg-cyan/5 transition-all group"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           {designUrl ? (
-                            <div className="relative h-10 w-10 rounded-lg overflow-hidden border border-[hsl(var(--border))] bg-[hsl(var(--card))] flex-shrink-0">
-                              <Image src={designUrl} alt="" fill className="object-contain" sizes="40px" unoptimized />
+                            <div className="relative h-12 w-12 border border-border-std overflow-hidden bg-void flex-shrink-0 group-hover:border-cyan/50 transition-colors">
+                              <Image src={designUrl} alt="" fill className="object-contain" sizes="48px" unoptimized />
+                              <div className="absolute inset-0 scanline opacity-20" />
                             </div>
                           ) : (
-                            <div className="h-10 w-10 rounded-lg bg-[hsl(var(--border))] flex items-center justify-center flex-shrink-0">
-                              <Package className="h-5 w-5 text-[hsl(var(--muted-foreground)/0.4)]" />
+                            <div className="h-12 w-12 border border-border-std bg-void flex items-center justify-center flex-shrink-0 border-dashed group-hover:border-cyan/50 transition-colors">
+                              <Package className="h-5 w-5 text-text-dim/50 group-hover:text-cyan/50" />
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-sm">Order #{order.id.slice(0, 8)}</p>
-                            <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                              {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                            <p className="font-mono font-bold text-white tracking-widest text-sm group-hover:text-cyan transition-colors">ORD_{order.id.slice(0, 8)}</p>
+                            <p className="text-[10px] font-mono text-text-dim tracking-widest uppercase mt-1">
+                              TS: {new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '.')}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[order.status] || 'bg-gray-100 text-gray-700'}`}>
+                        <div className="flex items-center gap-4">
+                          <span className={`text-[10px] font-mono tracking-widest uppercase px-3 py-1 border border-dashed ${STATUS_COLOR[order.status] || 'border-text-dim/50 bg-void text-text-dim'}`}>
                             {order.status}
                           </span>
-                          <span className="font-bold text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
+                          <span className="font-bold font-mono text-white text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
                         </div>
                       </Link>
                     );
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-[hsl(var(--muted-foreground))] text-center py-6">No orders yet</p>
+                <div className="py-12 flex flex-col items-center justify-center text-center border border-dashed border-border-std bg-void/50">
+                  <Package className="h-8 w-8 text-text-dim/30 mb-3" />
+                  <p className="text-[10px] font-mono tracking-widest text-text-dim uppercase">NO RECORDS FOUND</p>
+                </div>
               )}
             </div>
 
             {/* Quick Links */}
-            <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up">
-              <h3 className="font-semibold mb-4">Quick Links</h3>
+            <div className="bg-panel border border-border-std p-6 relative animate-slide-up shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+              <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+                QUICK LINKS
+              </h3>
               <div className="grid sm:grid-cols-3 gap-3">
-                <Link href="/dashboard/products" className="flex items-center gap-3 p-4 rounded-xl bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border)/0.5)] transition">
-                  <Package className="h-5 w-5 text-[hsl(var(--primary))]" />
+                <Link href="/dashboard/products" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
+                  <Package className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-sm font-medium">Products</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{products?.length || 0} products</p>
+                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">PRODUCTS</p>
+                    <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{products?.length || 0} ITEMS</p>
                   </div>
                 </Link>
-                <Link href="/dashboard/orders" className="flex items-center gap-3 p-4 rounded-xl bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border)/0.5)] transition">
-                  <Printer className="h-5 w-5 text-blue-600" />
+                <Link href="/dashboard/orders" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
+                  <Printer className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-sm font-medium">Print Queue</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{stats.printQueue} to print</p>
+                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">PRINT QUEUE</p>
+                    <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{stats.printQueue} PENDING</p>
                   </div>
                 </Link>
-                <Link href="/studio" className="flex items-center gap-3 p-4 rounded-xl bg-[hsl(var(--muted))] hover:bg-[hsl(var(--border)/0.5)] transition">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
+                <Link href="/studio" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
+                  <Sparkles className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-sm font-medium">AI Studio</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{stats.totalDesigns} designs</p>
+                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">AI STUDIO</p>
+                    <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{stats.totalDesigns} DESIGNS</p>
                   </div>
                 </Link>
               </div>
@@ -260,26 +297,27 @@ function DashboardContent() {
           </div>
 
           {/* Settings */}
-          <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 animate-slide-up animation-delay-200 h-fit">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Platform Settings
+          <div className="bg-panel border border-border-std p-6 relative animate-slide-up animation-delay-200 h-fit shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan/50"></div>
+            <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+              <Settings className="h-5 w-5 text-cyan" />
+              SETTINGS
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-1.5">Platform Margin (%)</label>
+                <label className="block text-[10px] font-mono tracking-widest text-text-dim uppercase mb-2">PLATFORM MARGIN (%)</label>
                 <input
                   type="number"
                   value={margin}
                   onChange={(e) => setMargin(e.target.value)}
                   min="0"
                   max="50"
-                  className="w-full px-4 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition"
+                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors"
                 />
-                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Applied to all orders</p>
+                <p className="text-[9px] font-mono tracking-widest text-text-dim mt-2 uppercase">&gt; APPLIED TO ALL TRANSACTIONS</p>
               </div>
-              <Button onClick={handleSaveMargin} variant="gradient" size="sm" className="w-full" disabled={savingMargin}>
-                {savingMargin ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Margin'}
+              <Button onClick={handleSaveMargin} className="w-full py-4 mt-2 rounded-none bg-cyan/10 border border-cyan text-cyan font-mono font-bold tracking-widest uppercase hover:bg-cyan hover:text-void animate-in transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)] disabled:opacity-50" disabled={savingMargin}>
+                {savingMargin ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> SAVING...</> : 'SAVE SETTINGS'}
               </Button>
             </div>
           </div>
