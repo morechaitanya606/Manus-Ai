@@ -76,20 +76,20 @@ export default function HomePage() {
               />
               <div className="absolute inset-0 bg-cyan mix-blend-overlay opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
 
-              {/* Revealed Design Always Visible */}
-              <motion.div
+              {/* Revealed Design Always Visible with No Glow */}
+              <div
                 className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
               >
-                <div className="flex flex-col items-center mt-[15%] opacity-90 drop-shadow-[0_0_15px_rgba(236,72,153,0.8)] mix-blend-screen scale-110">
-                  <span className="font-display font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-br from-white to-pink-400 text-center leading-[0.8] tracking-tighter mix-blend-plus-lighter">
+                <div className="flex flex-col items-center mt-[15%] opacity-90 mix-blend-screen scale-125">
+                  <span className="font-display font-bold text-5xl text-blue-700 text-center leading-[0.8] tracking-tighter mix-blend-plus-lighter">
                     EVERYDAY<br />DROP
                   </span>
-                  <div className="w-12 h-1 bg-pink-500 mt-3 opacity-80 shadow-[0_0_10px_#ec4899]"></div>
-                  <span className="font-mono text-[7px] text-white tracking-[0.3em] uppercase mt-2 opacity-80 font-bold">
+                  <div className="w-16 h-1 bg-blue-700 mt-4 opacity-100"></div>
+                  <span className="font-mono text-[8px] text-white tracking-[0.4em] uppercase mt-3 opacity-90 font-bold">
                     EST. 2026
                   </span>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
 
             {/* Top Right Text */}
