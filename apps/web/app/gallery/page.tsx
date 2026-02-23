@@ -29,6 +29,10 @@ export default function GalleryPage() {
         return matchCat && matchSearch;
     });
 
+    if (products && products.length > 0) {
+        console.log('DEBUG: First Product Full JSON:', JSON.stringify(products[0], null, 2));
+    }
+
     return (
         <div className="min-h-screen bg-[hsl(var(--muted))]">
 
@@ -147,9 +151,11 @@ export default function GalleryPage() {
                                                 src={product.image_url}
                                                 alt={product.name}
                                                 fill
+                                                unoptimized
                                                 className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                             />
+
                                         ) : (
                                             <div className="flex items-center justify-center h-full">
                                                 <ShoppingBag className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)]" />

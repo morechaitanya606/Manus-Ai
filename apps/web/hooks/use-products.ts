@@ -32,11 +32,11 @@ export function useProducts() {
     return useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const res = await fetch('/api/products');
+            const res = await fetch('/api/products', { cache: 'no-store' });
             if (!res.ok) throw new Error('Failed to fetch products');
             return res.json();
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 0,
     });
 }
 
