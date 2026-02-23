@@ -3,8 +3,8 @@ import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key'
 );
 
 export async function POST(request: Request) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         } = await request.json();
 
         // Verify Razorpay signature
-        const secret = process.env.RAZORPAY_KEY_SECRET || '';
+        const secret = process.env.RAZORPAY_KEY_SECRET || 'placeholder_secret';
         const generated_signature = crypto
             .createHmac('sha256', secret)
             .update(razorpay_order_id + '|' + razorpay_payment_id)

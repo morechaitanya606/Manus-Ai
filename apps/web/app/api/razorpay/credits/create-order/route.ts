@@ -4,13 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 import { getCreditPackage } from '../../../../../config/credits';
 
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || '',
-    key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
+    key_secret: process.env.RAZORPAY_KEY_SECRET || 'placeholder_secret',
 });
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key'
 );
 
 export async function POST(request: Request) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
             razorpay_order_id: razorpayOrder.id,
             amount: amountInr,
             currency: 'INR',
-            key_id: process.env.RAZORPAY_KEY_ID,
+            key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
             credits: creditPackage.credits,
             purchase_id: purchase.id
         });
