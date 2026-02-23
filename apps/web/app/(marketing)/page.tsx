@@ -37,8 +37,92 @@ export default function HomePage() {
       {/* Main Hero Split Area */}
       <main className="relative z-20 flex flex-col lg:flex-row w-full min-h-[calc(100vh-4rem)] border-b border-border-std">
 
-        {/* Left Pane: Typography & CTA */}
-        <div className="w-full lg:w-1/2 h-full flex flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 relative border-r border-border-std">
+        {/* MOBILE ONLY HERO (Matches user provided image) */}
+        <div className="flex lg:hidden w-full min-h-[calc(100vh-4rem)] flex-col px-4 py-6 relative z-30 bg-void font-display overflow-hidden">
+
+          {/* Typography */}
+          <div className="mb-6 flex flex-col z-10 relative">
+            <h1 className="text-5xl font-display font-bold leading-[0.85] tracking-tighter uppercase mb-4">
+              <span className="text-white">DESIGN.</span><br />
+              <span className="text-cyan drop-shadow-[0_0_10px_rgba(0,240,255,0.6)]">PRINT. DELIVER.</span>
+            </h1>
+
+            {/* System Ready Badge */}
+            <div className="inline-flex items-center gap-2 border border-green-500/30 bg-green-500/10 px-3 py-1.5 w-fit">
+              <Terminal className="h-4 w-4 text-green-500" />
+              <span className="font-mono text-[10px] font-bold text-green-500 uppercase tracking-widest">SYSTEM_READY // PRINTERS_ONLINE</span>
+            </div>
+          </div>
+
+          {/* Visualizer Block */}
+          <div className="relative w-full flex-1 min-h-[300px] bg-[#080812] border border-white/5 overflow-hidden flex items-center justify-center mb-6">
+            {/* Grid bg */}
+            <div className="absolute inset-0 bg-grid-pattern bg-[length:20px_20px] opacity-[0.05] pointer-events-none" />
+
+            {/* Crosshairs */}
+            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-cyan/20"></div>
+            <div className="absolute left-1/2 top-0 w-[1px] h-full bg-cyan/20"></div>
+
+            {/* Img with animation */}
+            <motion.div
+              animate={{ y: [-10, 10, -10], rotateY: [-5, 5, -5] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="w-full h-full flex items-center justify-center relative z-10"
+            >
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r7kTRy35CA6EY8iGtdBkVVsbhG9Hlft-9R9iiiSWJnKfSjbYywGzr9md10kY9ghnnDCR1ZmUbTbjPw--wEA_nkeIeWMSPgyv0vq4ATBxtfugSCnNJEMHdUp6HX9bTpIe7p5U8QnOgaOiOJY-s0NWGXjgBo-iL4Bl3rEPJKPzA1MVh_qzKpdJiVz9EyxSvVq6CgXAy6b12wP5P_4JxWbBAU457vaS2-dnpKKuYZv0DhOWd__llO2AY3YJmJ5J6QXeXPG0Uxgb8VI"
+                alt="White T-Shirt Render"
+                className="w-[85%] h-[85%] object-contain filter grayscale contrast-125 brightness-90 drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]"
+              />
+              <div className="absolute inset-0 bg-cyan mix-blend-overlay opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
+
+              {/* Revealed Design Always Visible */}
+              <motion.div
+                className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+              >
+                <div className="flex flex-col items-center mt-[15%] opacity-90 drop-shadow-[0_0_15px_rgba(236,72,153,0.8)] mix-blend-screen scale-110">
+                  <span className="font-display font-bold text-4xl text-transparent bg-clip-text bg-gradient-to-br from-white to-pink-400 text-center leading-[0.8] tracking-tighter mix-blend-plus-lighter">
+                    EVERYDAY<br />DROP
+                  </span>
+                  <div className="w-12 h-1 bg-pink-500 mt-3 opacity-80 shadow-[0_0_10px_#ec4899]"></div>
+                  <span className="font-mono text-[7px] text-white tracking-[0.3em] uppercase mt-2 opacity-80 font-bold">
+                    EST. 2026
+                  </span>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Top Right Text */}
+            <div className="absolute top-3 right-3 text-right z-20">
+              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">RENDER_SCALE</div>
+              <div className="font-mono text-[12px] text-cyan font-bold leading-tight">1:1</div>
+              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">NODE_LOCATION</div>
+              <div className="font-mono text-[12px] text-white font-bold leading-tight">MUM-01</div>
+            </div>
+
+            {/* Bottom Left Text */}
+            <div className="absolute bottom-3 left-3 text-left z-20">
+              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">PIPELINE_LATENCY</div>
+              <div className="font-mono text-[12px] text-white font-bold leading-tight">0.02ms</div>
+              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">FABRIC_STOCK</div>
+              <div className="font-mono text-[12px] text-white font-bold leading-tight">98.4%</div>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <Link href="/studio" className="w-full shrink-0 z-20 relative">
+            <button className="w-full bg-cyan hover:bg-white transition-colors h-16 flex items-center justify-between px-6 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+              <span className="font-mono font-bold text-base text-black tracking-widest uppercase">[ INITIALIZE PROJECT ]</span>
+              <ArrowRight className="h-6 w-6 text-black" />
+            </button>
+          </Link>
+          <div className="mt-3 font-mono text-[9px] text-text-dim tracking-[0.3em] z-20 relative">
+            RATION_V4.2_STABLE ///
+          </div>
+        </div>
+
+        {/* Desktop Left Pane: Typography & CTA */}
+        <div className="hidden lg:flex w-full lg:w-1/2 h-full flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 relative border-r border-border-std">
           {/* Decorative Corner */}
           <div className="absolute top-10 left-10 opacity-20 text-cyan hidden md:block">
             <QrCode className="h-10 w-10 text-4xl" />
@@ -295,7 +379,7 @@ export default function HomePage() {
               How <span className="gradient-text">EVERYDAYDROP</span> Works
             </h2>
             <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
-              From imagination to doorstep ÔÇö create, customize, and get it printed on premium products
+              From imagination to doorstep — create, customize, and get it printed on premium products
             </p>
           </div>
 
@@ -324,17 +408,17 @@ export default function HomePage() {
             <div>
               <Package className="h-8 w-8 mx-auto mb-3 opacity-90" />
               <h3 className="font-bold text-lg">Bulk Orders</h3>
-              <p className="text-sm text-white/80 mt-1">Order in bulk with ease ÔÇö corporate branding, events, merch</p>
+              <p className="text-sm text-white/80 mt-1">Order in bulk with ease — corporate branding, events, merch</p>
             </div>
             <div>
               <Printer className="h-8 w-8 mx-auto mb-3 opacity-90" />
               <h3 className="font-bold text-lg">High Quality Printing</h3>
-              <p className="text-sm text-white/80 mt-1">Printed on our own machines ÔÇö DTF, sublimation, screen print</p>
+              <p className="text-sm text-white/80 mt-1">Printed on our own machines — DTF, sublimation, screen print</p>
             </div>
             <div>
               <Zap className="h-8 w-8 mx-auto mb-3 opacity-90" />
               <h3 className="font-bold text-lg">Fast Delivery</h3>
-              <p className="text-sm text-white/80 mt-1">Quick turnaround ÔÇö shipped across India within 3-5 days</p>
+              <p className="text-sm text-white/80 mt-1">Quick turnaround — shipped across India within 3-5 days</p>
             </div>
           </div>
         </div>
@@ -410,13 +494,13 @@ export default function HomePage() {
             <div className="relative">
               <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--card))]/20 px-4 py-1.5 text-sm font-medium mb-6">
                 <Star className="h-4 w-4" />
-                Start for free ÔÇö AI credits included
+                Start for free — AI credits included
               </div>
               <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">
                 Ready to Create Something Amazing?
               </h2>
               <p className="text-white/80 mb-8 max-w-lg mx-auto">
-                Join creators and brands who are designing and selling custom apparel with AI ÔÇö printed in India, shipped to your doorstep
+                Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep
               </p>
               <Link href="/signup">
                 <Button size="lg" className="rounded-full px-10 bg-[hsl(var(--card))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--card))]/90 font-semibold shadow-xl">

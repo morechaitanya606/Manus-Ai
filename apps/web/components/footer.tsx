@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Droplet } from 'lucide-react';
+import { BrandLogo } from './icons/brand-logo';
 
 export function Footer() {
     return (
@@ -11,8 +11,8 @@ export function Footer() {
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-2 border-b border-white/5 pb-8 md:border-b-0 md:pb-0">
                         <Link href="/" className="flex items-center gap-2 mb-3">
-                            <div className="relative flex items-center justify-center h-7 w-7 bg-black border border-cyan/40 overflow-hidden">
-                                <Droplet className="h-3 w-3 text-white" />
+                            <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
+                                <BrandLogo className="h-5 w-5 text-white" />
                                 <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
                                 <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
                             </div>

@@ -7,7 +7,6 @@ import { useAuthStore } from '../stores/auth-store';
 import { useCartStore } from '../stores/cart-store';
 import { Button } from './ui/button';
 import {
-  Droplet,
   Sparkles,
   ShoppingCart,
   LayoutDashboard,
@@ -20,13 +19,15 @@ import {
   Sun,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from './theme-provider';
+import { BrandLogo } from './icons/brand-logo';
 
 const NAV_LINKS = [
   { href: '/gallery', label: 'Gallery' },
   { href: '/community', label: 'Community' },
   { href: '/studio', label: 'Studio' },
-  { href: '/my-designs', label: 'My Designs' },
+  { href: '/dashboard/designs', label: 'My Designs' },
 ];
 
 export function Navbar() {
@@ -42,7 +43,7 @@ export function Navbar() {
         {/* Left: Logo & Title */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
-            <Droplet className="h-4 w-4 text-white group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
+            <BrandLogo className="h-5 w-5 text-white group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
             <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
             <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
           </div>
