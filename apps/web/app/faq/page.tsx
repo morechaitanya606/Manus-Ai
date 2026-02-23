@@ -81,7 +81,7 @@ export default function FAQPage() {
                         Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Questions</span>
                     </h1>
                     <p className="mt-6 text-lg text-text-dim">
-                        Everything you need to know about The Quote Shop
+                        Everything you need to know about EVERYDAYDROP
                     </p>
                     {/* Search */}
                     <div className="mt-8 max-w-md mx-auto relative">

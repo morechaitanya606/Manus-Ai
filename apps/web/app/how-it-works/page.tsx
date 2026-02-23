@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: 'How It Works',
-    description: 'Learn how to create custom apparel with The Quote Shop — from AI design generation to doorstep delivery in 4 simple steps.',
+    description: 'Learn how to create custom apparel with EVERYDAYDROP — from AI design generation to doorstep delivery in 4 simple steps.',
 };
 
 const STEPS = [

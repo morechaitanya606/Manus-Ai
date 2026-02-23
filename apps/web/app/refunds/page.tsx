@@ -15,7 +15,7 @@ export default function RefundsPage() {
                 <div className="space-y-8 text-sm leading-relaxed text-text-dim">
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">1. Custom Made Orders</h2>
-                        <p>At The Quote Shop, every product is custom-printed exactly to the specifications and designs you provide at checkout. Because each order is uniquely created for you, <strong>we do not accept returns or exchanges for correctly fulfilled orders</strong>. This includes issues such as ordering the wrong size, color, or disliking the design after printing.</p>
+                        <p>At EVERYDAYDROP, every product is custom-printed exactly to the specifications and designs you provide at checkout. Because each order is uniquely created for you, <strong>we do not accept returns or exchanges for correctly fulfilled orders</strong>. This includes issues such as ordering the wrong size, color, or disliking the design after printing.</p>
                     </section>
 
                     <section>
@@ -23,7 +23,7 @@ export default function RefundsPage() {
                         <p>If you receive a product that is damaged, misprinted, or defective, we take full responsibility. To be eligible for a replacement or refund:</p>
                         <ul className="list-disc list-inside mt-2 space-y-1 ml-4 text-text-dim">
                             <li>You must contact us within <strong>7 days</strong> of the product delivery date.</li>
-                            <li>Please provide clear photos of the issue along with your Order ID via email at contact@thequoteshop.in.</li>
+                            <li>Please provide clear photos of the issue along with your Order ID via email at contact@everydaydrop.in.</li>
                             <li>Upon verification, we will send a free replacement or issue a full refund to your original payment method.</li>
                         </ul>
                     </section>

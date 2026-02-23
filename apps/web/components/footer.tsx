@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Droplet } from 'lucide-react';
 
 export function Footer() {
     return (
@@ -10,10 +11,12 @@ export function Footer() {
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-2 border-b border-white/5 pb-8 md:border-b-0 md:pb-0">
                         <Link href="/" className="flex items-center gap-2 mb-3">
-                            <div className="h-7 w-7 rounded-none border border-border-std bg-[hsl(var(--foreground))] flex items-center justify-center">
-                                <span className="text-white font-bold text-sm leading-none">.</span>
+                            <div className="relative flex items-center justify-center h-7 w-7 bg-black border border-cyan/40 overflow-hidden">
+                                <Droplet className="h-3 w-3 text-white" />
+                                <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
+                                <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
                             </div>
-                            <span className="font-display font-bold text-lg">thequoteshop</span>
+                            <span className="font-display font-bold text-lg tracking-widest text-white uppercase">EVERYDAY<span className="text-cyan">DROP</span></span>
                         </Link>
                         <p className="text-sm text-text-dim mb-4">
                             India&apos;s AI-powered custom print-on-demand platform. Sustainable materials, premium quality.
@@ -55,7 +58,7 @@ export function Footer() {
                         <nav className="flex flex-col gap-2 text-sm text-text-dim">
                             <Link href="/faq" className="hover:text-white transition">Help Center</Link>
                             <Link href="/contact" className="hover:text-white transition">Bulk Orders</Link>
-                            <a href="mailto:contact@thequoteshop.in" className="hover:text-white transition">Email Us</a>
+                            <a href="mailto:contact@everydaydrop.in" className="hover:text-white transition">Email Us</a>
                         </nav>
                         <div className="mt-4">
                             <p className="text-xs text-text-dim">🕐 Mon-Sat, 10 AM - 7 PM</p>
@@ -66,7 +69,7 @@ export function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-10 pt-6 border-t border-border-std flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                     <p className="text-[10px] sm:text-xs text-text-dim">
-                        © {new Date().getFullYear()} The Quote Shop. All rights reserved. Made in India 🇮🇳
+                        © {new Date().getFullYear()} EVERYDAYDROP. All rights reserved. Made in India 🇮🇳
                     </p>
                     <div className="flex gap-4 text-xs text-text-dim">
                         <Link href="/privacy" className="hover:text-white transition">Privacy</Link>

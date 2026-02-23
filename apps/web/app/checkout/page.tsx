@@ -80,7 +80,7 @@ export default function CheckoutPage() {
                 key: data.key_id,
                 amount: data.amount * 100,
                 currency: data.currency,
-                name: 'The Quote Shop',
+                name: 'EVERYDAYDROP',
                 description: `Order #${data.order_id.slice(0, 8)}`,
                 order_id: data.razorpay_order_id,
                 prefill: {

@@ -15,7 +15,7 @@ export default function TermsPage() {
                 <div className="space-y-8 text-sm leading-relaxed text-text-dim">
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">1. Acceptance of Terms</h2>
-                        <p>By accessing and using The Quote Shop, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our service.</p>
+                        <p>By accessing and using EVERYDAYDROP, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our service.</p>
                     </section>
 
                     <section>
@@ -26,7 +26,7 @@ export default function TermsPage() {
                             <li>Content that infringes on third-party intellectual property or copyrights.</li>
                             <li>Hate speech or discriminatory designs.</li>
                         </ul>
-                        <p className="mt-2">The Quote Shop reserves the right to cancel orders or terminate accounts that violate this policy.</p>
+                        <p className="mt-2">EVERYDAYDROP reserves the right to cancel orders or terminate accounts that violate this policy.</p>
                     </section>
 
                     <section>

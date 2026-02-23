@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: 'Printing Types | DTF, Screen Print, Puff, HD, Embroidery',
-    description: 'Explore all printing methods available at The Quote Shop — Screen Printing, Puff Printing, HD Printing, DTF, Embroidery and more for custom apparel.',
+    description: 'Explore all printing methods available at EVERYDAYDROP — Screen Printing, Puff Printing, HD Printing, DTF, Embroidery and more for custom apparel.',
 };
 
 const PRINTING_TYPES = [

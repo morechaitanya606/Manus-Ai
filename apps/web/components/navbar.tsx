@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/auth-store';
 import { useCartStore } from '../stores/cart-store';
 import { Button } from './ui/button';
 import {
+  Droplet,
   Sparkles,
   ShoppingCart,
   LayoutDashboard,
@@ -40,12 +41,14 @@ export function Navbar() {
       <div className="flex w-full items-center justify-between mx-auto max-w-7xl">
         {/* Left: Logo & Title */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="text-cyan group-hover:rotate-12 transition-transform">
-            <Sparkles className="h-6 w-6" />
+          <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
+            <Droplet className="h-4 w-4 text-white group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
+            <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
+            <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
           </div>
-          <h1 className="font-display font-bold text-xl tracking-tight text-white">
-            thequoteshop
-          </h1>
+          <span className="font-display font-bold text-xl tracking-widest text-white uppercase hidden sm:block">
+            EVERYDAY<span className="text-cyan">DROP</span>
+          </span>
         </Link>
 
         {/* Center: Desktop Nav Links */}

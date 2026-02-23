@@ -148,7 +148,7 @@ export default function HomePage() {
               >
                 <div className="flex flex-col items-center mt-[15%] opacity-90 drop-shadow-[0_0_15px_rgba(0,240,255,0.8)] mix-blend-screen scale-110">
                   <span className="font-display font-bold text-5xl text-transparent bg-clip-text bg-gradient-to-br from-white to-cyan text-center leading-[0.8] tracking-tighter mix-blend-plus-lighter">
-                    THE QUOTE<br />SHOP
+                    EVERYDAY<br />DROP
                   </span>
                   <div className="w-16 h-1 bg-cyan mt-4 opacity-80 shadow-[0_0_10px_#00F0FF]"></div>
                   <span className="font-mono text-[9px] text-white tracking-[0.3em] uppercase mt-2 opacity-80 font-bold">
@@ -292,7 +292,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold font-display">
-              How <span className="gradient-text">The Quote Shop</span> Works
+              How <span className="gradient-text">EVERYDAYDROP</span> Works
             </h2>
             <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
               From imagination to doorstep ÔÇö create, customize, and get it printed on premium products

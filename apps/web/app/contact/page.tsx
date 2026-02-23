@@ -51,7 +51,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="font-medium text-sm">Email</p>
-                                        <a href="mailto:contact@thequoteshop.in" className="text-sm text-cyan hover:underline">contact@thequoteshop.in</a>
+                                        <a href="mailto:contact@everydaydrop.in" className="text-sm text-cyan hover:underline">contact@everydaydrop.in</a>
                                     </div>
                                 </div>
 

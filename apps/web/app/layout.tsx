@@ -27,14 +27,14 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'The Quote Shop — Custom Print-on-Demand Fashion',
-    template: '%s | The Quote Shop',
+    default: 'EVERYDAYDROP — Custom Print-on-Demand Fashion',
+    template: '%s | EVERYDAYDROP',
   },
   description:
     'Create stunning AI-generated designs, preview them on realistic apparel mockups, and launch your custom fashion brand. The world\'s first AI Custom Merch Agent.',
   keywords: ['AI fashion', 'custom clothing', 'design studio', 'apparel mockup', 'custom t-shirts'],
   openGraph: {
-    title: 'The Quote Shop — Custom Print-on-Demand Fashion',
+    title: 'EVERYDAYDROP — Custom Print-on-Demand Fashion',
     description: 'Create stunning AI-generated designs and launch your custom fashion brand.',
     type: 'website',
   },

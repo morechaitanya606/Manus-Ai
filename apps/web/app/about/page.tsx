@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'About Us',
-    description: 'Learn about The Quote Shop — India\'s premium custom print-on-demand platform for eco-friendly, quote-inspired apparel.',
+    description: 'Learn about EVERYDAYDROP — India\'s premium custom print-on-demand platform for eco-friendly, quote-inspired apparel.',
 };
 
 const TIMELINE = [
     { year: '2024', title: 'The Idea', desc: 'Started with a simple vision — make custom printed apparel accessible to everyone in India with sustainable materials.' },
     { year: '2025', title: 'AI-Powered Studio', desc: 'Integrated AI design generation so anyone can create professional-grade artwork without design skills.' },
-    { year: '2026', title: 'Quote Culture', desc: 'Launched The Quote Shop — a platform dedicated to quote-lovers who want their words on premium apparel.' },
+    { year: '2026', title: 'Quote Culture', desc: 'Launched EVERYDAYDROP — a platform dedicated to quote-lovers who want their words on premium apparel.' },
 ];
 
 const VALUES = [
@@ -39,7 +39,7 @@ export default function AboutPage() {
                 </div>
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 text-center">
                     <h1 className="text-4xl md:text-6xl font-bold font-display">
-                        About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">The Quote Shop</span>
+                        About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">EVERYDAYDROP</span>
                     </h1>
                     <p className="mt-6 text-lg text-text-dim max-w-2xl mx-auto">
                         We&apos;re building India&apos;s most sustainable custom printing platform — where your words become wearable art on eco-friendly materials.

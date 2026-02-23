@@ -15,7 +15,7 @@ export default function ShippingPage() {
                 <div className="space-y-8 text-sm leading-relaxed text-text-dim">
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">1. Order Processing Time</h2>
-                        <p>All items at The Quote Shop are custom-printed on demand just for you. Please allow <strong>2 to 4 business days</strong> for your order to be printed, quality-checked, and packaged before it is handed over to our shipping carriers.</p>
+                        <p>All items at EVERYDAYDROP are custom-printed on demand just for you. Please allow <strong>2 to 4 business days</strong> for your order to be printed, quality-checked, and packaged before it is handed over to our shipping carriers.</p>
                     </section>
 
                     <section>
@@ -39,7 +39,7 @@ export default function ShippingPage() {
 
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">5. Delays & Issues</h2>
-                        <p>While we strive to ensure timely delivery, unpredictable weather, natural disasters, or logistical issues with courier services may occasionally cause delays. If your order is significantly delayed or lost in transit, please reach out to us at contact@thequoteshop.in with your Order ID.</p>
+                        <p>While we strive to ensure timely delivery, unpredictable weather, natural disasters, or logistical issues with courier services may occasionally cause delays. If your order is significantly delayed or lost in transit, please reach out to us at contact@everydaydrop.in with your Order ID.</p>
                     </section>
                 </div>
             </div>

@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
                 <div className="space-y-8 text-sm leading-relaxed text-text-dim">
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">1. Information We Collect</h2>
-                        <p>We collect information to provide better services to our users. When you use The Quote Shop, we collect the following types of information: personal identification information (Name, Email address, Phone number, Shipping Address) when you register for an account or place an order. We also collect the images and text prompts you provide to generate designs.</p>
+                        <p>We collect information to provide better services to our users. When you use EVERYDAYDROP, we collect the following types of information: personal identification information (Name, Email address, Phone number, Shipping Address) when you register for an account or place an order. We also collect the images and text prompts you provide to generate designs.</p>
                     </section>
 
                     <section>
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
 
                     <section>
                         <h2 className="text-xl font-bold text-white uppercase mb-4 border-l-2 border-cyan pl-3">5. Contact Us</h2>
-                        <p>If you have any questions about this Privacy Policy, please contact us at contact@thequoteshop.in or via phone at +91 70284 78109.</p>
+                        <p>If you have any questions about this Privacy Policy, please contact us at contact@everydaydrop.in or via phone at +91 70284 78109.</p>
                     </section>
                 </div>
             </div>
