@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/auth-store';
 import { useCartStore } from '../stores/cart-store';
 import { Button } from './ui/button';
 import {
+  Droplet,
   Sparkles,
   ShoppingCart,
   LayoutDashboard,
@@ -23,6 +24,7 @@ import { useTheme } from './theme-provider';
 
 const NAV_LINKS = [
   { href: '/gallery', label: 'Gallery' },
+  { href: '/community', label: 'Community' },
   { href: '/studio', label: 'Studio' },
   { href: '/my-designs', label: 'My Designs' },
 ];
@@ -35,31 +37,33 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[hsl(var(--border))] bg-[hsl(var(--background)/0.9)] backdrop-blur-lg">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--foreground))] flex items-center justify-center">
-            <span className="text-white font-bold text-lg leading-none">.</span>
+    <header className="h-16 shrink-0 border-b border-border-std bg-void flex items-center justify-between px-6 z-50 sticky top-0 backdrop-blur-md bg-void/90">
+      <div className="flex w-full items-center justify-between mx-auto max-w-7xl">
+        {/* Left: Logo & Title */}
+        <Link href="/" className="flex items-center gap-3 group shrink-0">
+          <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
+            <Droplet className="h-4 w-4 text-white group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
+            <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
+            <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
           </div>
-          <span className="font-display text-xl font-bold tracking-tight">
-            thequoteshop
+          <span className="font-display font-bold text-xl tracking-widest text-white uppercase hidden sm:block">
+            EVERYDAY<span className="text-cyan">DROP</span>
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-6 ml-8">
-          {NAV_LINKS.map((link) => {
+        {/* Center: Desktop Nav Links */}
+        <nav className="hidden md:flex items-center gap-8">
+          {NAV_LINKS.map((link, idx) => {
             const isActive = pathname === link.href || pathname?.startsWith(link.href + '/');
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'text-sm font-medium transition-colors duration-200',
+                  'font-mono text-xs tracking-wider transition-colors',
                   isActive
-                    ? 'text-[hsl(var(--foreground))]'
-                    : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+                    ? 'text-cyan border-b border-cyan pb-0.5'
+                    : 'text-text-dim hover:text-cyan'
                 )}
               >
                 {link.label}
@@ -68,148 +72,136 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-2">
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
-            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-
-          {/* Cart */}
-          <Link
-            href="/cart"
-            className="relative rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
-            title="Cart"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[hsl(var(--primary))] text-white text-[10px] font-bold flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </Link>
-
+        {/* Right: Credits, Auth, Status */}
+        <div className="flex items-center gap-4">
           {session && user ? (
-            <div className="hidden md:flex items-center gap-2">
-              {/* Orders */}
-              <Link
-                href="/orders"
-                className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
-                title="My Orders"
-              >
-                <Package className="h-4 w-4" />
+            <div className="hidden md:flex items-center gap-4">
+              {/* Profile/Credits */}
+              <div className="flex flex-col items-end mr-2">
+                <span className="font-mono text-[10px] text-text-dim uppercase">
+                  {profile?.full_name || user.email?.split('@')[0]}
+                </span>
+                <span className="font-mono text-sm font-bold text-white">
+                  {isAdmin() ? 'SYS_ADMIN' : 'USER'}
+                </span>
+              </div>
+
+              <Link href="/cart" className="relative text-text-dim hover:text-cyan transition-colors">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 h-4 w-4 bg-magenta text-white text-[10px] font-bold flex items-center justify-center border border-void">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
 
-              {/* Admin */}
+              <Link href="/orders" className="text-text-dim hover:text-cyan transition-colors">
+                <Package className="h-5 w-5" />
+              </Link>
+
               {isAdmin() && (
-                <Link
-                  href="/dashboard"
-                  className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition"
-                  title="Dashboard"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
+                <Link href="/dashboard" className="text-text-dim hover:text-cyan transition-colors" title="Dashboard">
+                  <LayoutDashboard className="h-5 w-5" />
                 </Link>
               )}
 
-              {/* Profile */}
-              <Link href="/profile" className="flex items-center gap-2 rounded-full bg-[hsl(var(--muted))] px-3 py-1.5 hover:bg-[hsl(var(--muted-foreground)/0.1)] transition">
-                <div className="h-6 w-6 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">
-                    {(profile?.full_name || user.email || 'U')[0].toUpperCase()}
-                  </span>
-                </div>
-                <span className="text-sm font-medium max-w-[100px] truncate">
-                  {profile?.full_name || profile?.username || user.email?.split('@')[0]}
-                </span>
-              </Link>
-
-              <button
-                onClick={() => signOut()}
-                className="rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:text-red-500 hover:bg-[hsl(var(--muted))] transition"
-                title="Sign Out"
-              >
-                <LogOut className="h-4 w-4" />
+              <button onClick={() => signOut()} className="text-text-dim hover:text-red-500 transition-colors" title="Sign Out">
+                <LogOut className="h-5 w-5" />
               </button>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-2">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Sign In</Button>
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/cart" className="relative text-text-dim hover:text-cyan transition-colors mr-2">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 h-4 w-4 bg-magenta text-white text-[10px] font-bold flex items-center justify-center border border-void">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
-              <Link href="/studio">
-                <Button variant="gradient" size="sm" className="rounded-full px-5">
-                  Start Creating
-                </Button>
+              <Link href="/login" className="font-mono text-xs text-text-dim hover:text-white transition-colors">
+                SIGN IN
               </Link>
             </div>
           )}
+
+          <div className="hidden md:block h-8 w-px bg-border-std mx-2"></div>
+
+          {/* User Profile Link */}
+          <Link href={session ? "/profile" : "/login"} className="flex bg-cyan/10 hover:bg-cyan/20 border border-cyan/30 text-cyan text-[10px] sm:text-xs font-mono font-bold px-2 sm:px-3 py-1.5 rounded-none items-center gap-1.5 sm:gap-2 transition-colors">
+            <div className="w-1.5 h-1.5 rounded-none border border-cyan/50 border-dashed bg-cyan animate-pulse shrink-0"></div>
+            <span className="hidden sm:inline">USER PROFILE</span>
+            <span className="sm:hidden">PROFILE</span>
+          </Link>
 
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden rounded-lg p-2 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))] transition"
+            className="md:hidden text-text-dim hover:text-cyan transition-colors"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       {mobileOpen && (
-        <div className="md:hidden animate-slide-down border-t border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-4 space-y-2">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            href="/studio"
-            onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition"
-          >
-            <Palette className="h-4 w-4" />
-            Design Studio
-          </Link>
-          <hr className="border-[hsl(var(--border))]" />
-          {session ? (
-            <>
-              <Link href="/orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition">
-                <ShoppingCart className="h-4 w-4" />
-                My Orders
-              </Link>
-              {isAdmin() && (
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[hsl(var(--muted))] transition">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
-              )}
-              <button
-                onClick={() => { signOut(); setMobileOpen(false); }}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-[hsl(var(--muted))] transition"
+        <div className="absolute top-16 left-0 w-full bg-panel border-b border-border-std px-4 py-4 space-y-4 md:hidden z-50">
+          <nav className="flex flex-col gap-4">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase"
               >
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <Link href="/login" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full">Sign In</Button>
+                {link.label}
               </Link>
-              <Link href="/studio" onClick={() => setMobileOpen(false)}>
-                <Button variant="gradient" className="w-full">Start Creating</Button>
-              </Link>
-            </div>
-          )}
+            ))}
+            <hr className="border-border-std" />
+
+            <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase">
+              <ShoppingCart className="h-4 w-4" />
+              Cart ({itemCount})
+            </Link>
+
+            {session ? (
+              <>
+                <Link href="/orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase">
+                  <Package className="h-4 w-4" />
+                  My Orders
+                </Link>
+                {isAdmin() && (
+                  <>
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-white transition-colors uppercase">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                    <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-white transition-colors uppercase">
+                      <Sparkles className="h-4 w-4" />
+                      Admin Studio
+                    </Link>
+                  </>
+                )}
+                <button
+                  onClick={() => { signOut(); setMobileOpen(false); }}
+                  className="flex w-full items-center gap-2 font-mono text-sm text-red-500 hover:text-white transition-colors uppercase text-left"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-white transition-colors uppercase">
+                  Sign In
+                </Link>
+                <Link href="/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-white transition-colors uppercase">
+                  Start Creating
+                </Link>
+              </div>
+            )}
+          </nav>
         </div>
       )}
     </header>

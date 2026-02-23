@@ -58,7 +58,7 @@ function ToastItem({ item }: { item: Toast }) {
     return (
         <div
             className={cn(
-                'animate-toast-in pointer-events-auto flex w-80 items-start gap-3 rounded-lg border p-4 shadow-lg backdrop-blur',
+                'animate-toast-in pointer-events-auto flex w-80 items-start gap-3 rounded-none border border-border-std border p-4 shadow-[0_0_10px_rgba(0,240,255,0.1)] backdrop-blur',
                 COLORS[item.type]
             )}
         >

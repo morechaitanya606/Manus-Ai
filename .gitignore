@@ -5,10 +5,14 @@ task.md
 .next/
 dist/
 .turbo/
+*.tsbuildinfo
 
 # Environment files
 .env
 .env.local
+.env.*.local
+.env.development
+.env.staging
 .env.production
 apps/api/.env
 apps/web/.env.local

@@ -80,7 +80,7 @@ export default function CheckoutPage() {
                 key: data.key_id,
                 amount: data.amount * 100,
                 currency: data.currency,
-                name: 'The Quote Shop',
+                name: 'EVERYDAYDROP',
                 description: `Order #${data.order_id.slice(0, 8)}`,
                 order_id: data.razorpay_order_id,
                 prefill: {
@@ -129,15 +129,26 @@ export default function CheckoutPage() {
 
     if (success) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center px-4">
-                <div className="text-center animate-fade-in">
-                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
-                    <p className="text-[hsl(var(--muted-foreground))] mb-6">
-                        Order #{orderId.slice(0, 8)} has been placed. We&apos;ll start printing soon!
+            <div className="min-h-screen flex items-center justify-center p-4 bg-void text-text-main font-mono relative overflow-hidden">
+                <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05] pointer-events-none" />
+                <div className="absolute inset-0 crt-overlay pointer-events-none z-50" />
+
+                <div className="text-center animate-fade-in bg-panel border-2 border-cyan p-8 shadow-[0_0_30px_rgba(0,240,255,0.2)] relative z-10 max-w-md w-full">
+                    {/* Corner accents */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan"></div>
+                    <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan"></div>
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-cyan"></div>
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan"></div>
+
+                    <CheckCircle className="h-16 w-16 text-cyan mx-auto mb-6 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
+                    <h1 className="text-2xl font-bold font-display text-white mb-2 tracking-widest uppercase">Payment Successful!</h1>
+                    <p className="text-text-dim text-xs mb-8">
+                        Order <span className="text-cyan">#{orderId.slice(0, 8)}</span> has been placed. We&apos;ll start printing soon!
                     </p>
                     <Link href={`/orders/${orderId}`}>
-                        <Button variant="gradient" className="rounded-full">View Order</Button>
+                        <Button className="w-full rounded-none bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-bold text-xs tracking-widest uppercase transition-colors h-12 shadow-[0_0_15px_rgba(0,240,255,0.2)] pb-0">
+                            View Order
+                        </Button>
                     </Link>
                 </div>
             </div>
@@ -146,11 +157,19 @@ export default function CheckoutPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center px-4">
-                <div className="text-center">
-                    <ShoppingBag className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)] mx-auto mb-4" />
-                    <h1 className="text-xl font-bold mb-2">Your cart is empty</h1>
-                    <Link href="/gallery"><Button variant="outline">Browse Products</Button></Link>
+            <div className="min-h-screen flex items-center justify-center p-4 bg-void text-text-main font-mono relative overflow-hidden">
+                <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05] pointer-events-none" />
+                <div className="absolute inset-0 crt-overlay pointer-events-none z-50" />
+
+                <div className="text-center bg-panel border border-border-std p-8 relative z-10 max-w-md w-full">
+                    <ShoppingBag className="h-12 w-12 text-border-std mx-auto mb-4" />
+                    <h1 className="text-xl font-bold mb-2 font-display text-white uppercase tracking-wider">Your cart is empty</h1>
+                    <p className="text-text-dim text-xs mb-6">Browse our products to add something.</p>
+                    <Link href="/gallery">
+                        <Button className="rounded-none bg-transparent border border-text-dim text-white hover:border-cyan hover:text-cyan font-bold text-xs tracking-widest uppercase transition-colors">
+                            Browse Products
+                        </Button>
+                    </Link>
                 </div>
             </div>
         );
@@ -162,84 +181,145 @@ export default function CheckoutPage() {
                 src="https://checkout.razorpay.com/v1/checkout.js"
                 onLoad={() => setRazorpayLoaded(true)}
             />
-            <div className="min-h-screen bg-[hsl(var(--muted))]">
-                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-                    <h1 className="text-3xl font-bold font-display mb-8">
-                        <span className="gradient-text">Checkout</span>
-                    </h1>
+            <div className="min-h-screen bg-void text-text-main selection:bg-cyan selection:text-void overflow-hidden relative border-t border-border-std font-mono">
+                {/* Background Details */}
+                <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05] pointer-events-none" />
+                <div className="absolute inset-0 crt-overlay z-50 pointer-events-none" />
 
-                    <div className="grid md:grid-cols-5 gap-8">
-                        {/* Shipping Form */}
-                        <div className="md:col-span-3 bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6">
-                            <h2 className="font-semibold mb-4">Shipping Address</h2>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <input placeholder="Full Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="col-span-2 px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
-                                    <input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
-                                    <input placeholder="Phone *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+                <main className="max-w-6xl mx-auto py-12 px-6 relative z-10">
+                    {/* Header */}
+                    <div className="mb-8 border-b border-border-std pb-6 flex items-end justify-between">
+                        <div>
+                            <h1 className="text-3xl font-display font-bold text-white uppercase tracking-widest">
+                                Checkout <span className="text-cyan animate-pulse">_</span>
+                            </h1>
+                            <p className="text-xs text-text-dim mt-2 tracking-widest uppercase">&gt; Complete your order securely</p>
+                        </div>
+                        <div className="hidden sm:flex items-center gap-2 border border-border-std bg-panel/50 px-3 py-1.5">
+                            <Lock className="h-3 w-3 text-green-500" />
+                            <span className="text-[10px] text-green-500 font-bold uppercase tracking-wider">Secure Payment</span>
+                        </div>
+                    </div>
+
+                    <div className="grid lg:grid-cols-12 gap-8">
+                        {/* LEFT: Shipping Form */}
+                        <div className="lg:col-span-7 bg-panel/30 border border-border-std p-6 relative">
+                            {/* Decorative brackets */}
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan/50 -translate-x-[2px] -translate-y-[2px]"></div>
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan/50 translate-x-[2px] -translate-y-[2px]"></div>
+
+                            <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-2">
+                                <span className="w-2 h-2 bg-cyan"></span>
+                                <h2 className="text-sm font-bold text-white tracking-widest uppercase">Shipping Address</h2>
+                            </div>
+
+                            <div className="space-y-5">
+                                <div className="grid grid-cols-2 gap-5">
+                                    <div className="col-span-2">
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">Full Name *</label>
+                                        <input placeholder="> John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="cyber-input" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">Email</label>
+                                        <input placeholder="> john@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="cyber-input" type="email" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">Phone *</label>
+                                        <input placeholder="> +91 XXXXX XXXXX" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="cyber-input" />
+                                    </div>
                                 </div>
-                                <input placeholder="Address *" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
-                                <div className="grid grid-cols-3 gap-4">
-                                    <input placeholder="City *" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
-                                    <input placeholder="State *" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
-                                    <input placeholder="PIN Code *" value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="px-4 py-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]" />
+
+                                <div>
+                                    <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">Address *</label>
+                                    <input placeholder="> Street, Apartment, Unit" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="cyber-input" />
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-5">
+                                    <div>
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">City *</label>
+                                        <input placeholder="> Mumbai" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="cyber-input" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">State *</label>
+                                        <input placeholder="> Maharashtra" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="cyber-input" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] text-text-dim mb-1 uppercase tracking-wider">PIN Code *</label>
+                                        <input placeholder="> 400001" value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="cyber-input" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Order Summary */}
-                        <div className="md:col-span-2">
-                            <div className="bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] p-6 sticky top-24">
-                                <h2 className="font-semibold mb-4">Order Summary</h2>
-                                <div className="space-y-3 mb-4">
+                        {/* RIGHT: Order Summary */}
+                        <div className="lg:col-span-5">
+                            <div className="bg-panel border border-border-std p-6 sticky top-24 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                                <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-2">
+                                    <span className="w-2 h-2 bg-magenta"></span>
+                                    <h2 className="text-sm font-bold text-white tracking-widest uppercase">Order Summary</h2>
+                                </div>
+
+                                <div className="space-y-4 mb-6 pr-2 max-h-[300px] overflow-y-auto custom-scrollbar">
                                     {items.map((item) => (
-                                        <div key={item.id} className="flex justify-between text-sm">
-                                            <span className="text-[hsl(var(--muted-foreground))]">
-                                                {item.productName} × {item.quantity}
-                                            </span>
-                                            <span className="font-medium">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
+                                        <div key={item.id} className="flex gap-4 p-3 bg-void border border-border-std group hover:border-magenta/50 transition-colors">
+                                            <div className="flex-1">
+                                                <h3 className="text-xs font-bold text-white uppercase truncate">{item.productName}</h3>
+                                                <div className="text-[10px] text-text-dim mt-1.5 flex gap-3">
+                                                    <span>SIZE: <span className="text-cyan">{item.size || 'N/A'}</span></span>
+                                                    <span>CLR: <span className="text-magenta">{item.color || 'N/A'}</span></span>
+                                                    <span>QTY: <span className="text-white">{item.quantity}</span></span>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-xs font-bold text-white">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                                <hr className="my-4 border-[hsl(var(--border))]" />
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
+
+                                <div className="space-y-3 p-4 bg-void border border-border-std border-dashed">
+                                    <div className="flex justify-between text-[11px] text-text-dim uppercase tracking-wider">
                                         <span>Subtotal</span>
-                                        <span>₹{subtotal.toFixed(0)}</span>
+                                        <span className="text-white">₹{subtotal.toFixed(0)}</span>
                                     </div>
-                                    <div className="flex justify-between">
+                                    <div className="flex justify-between text-[11px] text-text-dim uppercase tracking-wider">
                                         <span>Shipping</span>
-                                        <span>₹{shippingCost}</span>
+                                        <span className="text-white">₹{shippingCost}</span>
                                     </div>
-                                    <hr className="my-2 border-[hsl(var(--border))]" />
-                                    <div className="flex justify-between text-lg font-bold">
-                                        <span>Total</span>
-                                        <span className="gradient-text">₹{total.toFixed(0)}</span>
+                                    <div className="h-px bg-border-std my-2"></div>
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-xs text-white font-bold uppercase tracking-widest">Total</span>
+                                        <span className="text-2xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-magenta to-cyan drop-shadow-[0_0_5px_rgba(211,45,255,0.5)]">
+                                            ₹{total.toFixed(0)}
+                                        </span>
                                     </div>
                                 </div>
 
-                                <Button
-                                    variant="gradient"
-                                    size="lg"
-                                    className="w-full mt-6 rounded-xl shadow-lg"
+                                <button
                                     onClick={handlePlaceOrder}
                                     disabled={loading || !form.name || !form.address || !form.city || !form.state || !form.zip || !form.phone}
+                                    className="w-full mt-6 bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-bold text-xs tracking-widest uppercase py-4 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-2"
                                 >
                                     {loading ? (
-                                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
+                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> PROCESSING...</>
                                     ) : (
-                                        <><Lock className="mr-2 h-5 w-5" /> Pay ₹{total.toFixed(0)}</>
+                                        <>
+                                            Pay ₹{total.toFixed(0)}
+                                            <span className="font-sans text-lg leading-none group-hover:translate-x-1 transition-transform">→</span>
+                                        </>
                                     )}
-                                </Button>
+                                </button>
 
-                                <p className="text-xs text-center text-[hsl(var(--muted-foreground))] mt-3">
-                                    <Lock className="inline h-3 w-3 mr-1" />
-                                    Secure payment powered by Razorpay
-                                </p>
+                                <div className="mt-4 flex flex-col items-center">
+                                    <div className="text-[9px] text-text-dim uppercase tracking-widest border border-border-std px-2 py-1 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                        Secure payment powered by Razorpay
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
         </>
     );

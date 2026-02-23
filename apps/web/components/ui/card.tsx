@@ -3,16 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const cardVariants = cva(
-  'rounded-xl border border-[hsl(var(--border))] p-5 shadow-sm transition-all duration-300',
+  'rounded-none border border-border-std border border-border-std p-5 shadow-sm transition-all duration-300',
   {
     variants: {
       variant: {
-        default: 'bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]',
+        default: 'bg-panel text-[hsl(var(--card-foreground))]',
         glass: 'glass',
         elevated:
-          'bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] shadow-md hover:shadow-lg',
+          'bg-panel text-[hsl(var(--card-foreground))] shadow-md hover:shadow-[0_0_10px_rgba(0,240,255,0.1)]',
         interactive:
-          'bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] hover:shadow-md hover:border-[hsl(var(--primary)/0.3)] hover:-translate-y-0.5 cursor-pointer',
+          'bg-panel text-[hsl(var(--card-foreground))] hover:shadow-md hover:border-[hsl(var(--primary)/0.3)] hover:-translate-y-0.5 cursor-pointer',
       },
     },
     defaultVariants: {
@@ -45,7 +45,7 @@ function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElem
 }
 
 function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-[hsl(var(--muted-foreground))]', className)} {...props} />;
+  return <p className={cn('text-sm text-text-dim', className)} {...props} />;
 }
 
 function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

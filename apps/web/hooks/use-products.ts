@@ -22,6 +22,7 @@ export interface Product {
 
 export interface ProductDetail extends Omit<Product, 'colors'> {
     max_price: string;
+    images: string[];
     colors: { name: string; hex: string }[];
     variants: any[];
     variant_count: number;
@@ -31,11 +32,11 @@ export function useProducts() {
     return useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const res = await fetch('/api/products');
+            const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
             if (!res.ok) throw new Error('Failed to fetch products');
             return res.json();
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 0,
     });
 }
 
@@ -43,11 +44,11 @@ export function useProduct(id: string | undefined) {
     return useQuery<ProductDetail>({
         queryKey: ['product', id],
         queryFn: async () => {
-            const res = await fetch(`/api/products/${id}`);
+            const res = await fetch(`/api/products/${id}?t=${Date.now()}`, { cache: 'no-store' });
             if (!res.ok) throw new Error('Product not found');
             return res.json();
         },
         enabled: !!id,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
     });
 }

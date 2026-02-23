@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-[hsl(var(--foreground))]"
+            className="block text-sm font-medium text-white"
           >
             {label}
           </label>
@@ -25,12 +25,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={type}
           id={inputId}
           className={cn(
-            'flex h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200',
-            'placeholder:text-[hsl(var(--muted-foreground))]',
+            'flex h-10 w-full rounded-none border border-border-std border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200',
+            'placeholder:text-text-dim',
             'focus:ring-2 focus:ring-[hsl(var(--ring)/0.4)] focus:border-[hsl(var(--ring))]',
             error
               ? 'border-[hsl(var(--destructive))] focus:ring-[hsl(var(--destructive)/0.3)]'
-              : 'border-[hsl(var(--border))]',
+              : 'border-border-std',
             className
           )}
           ref={ref}
@@ -38,7 +38,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
         {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
         {helperText && !error && (
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">{helperText}</p>
+          <p className="text-xs text-text-dim">{helperText}</p>
         )}
       </div>
     );
@@ -58,19 +58,19 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-[hsl(var(--foreground))]">
+          <label htmlFor={inputId} className="block text-sm font-medium text-white">
             {label}
           </label>
         )}
         <textarea
           id={inputId}
           className={cn(
-            'flex min-h-[80px] w-full rounded-lg border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200 resize-y',
-            'placeholder:text-[hsl(var(--muted-foreground))]',
+            'flex min-h-[80px] w-full rounded-none border border-border-std border bg-transparent px-3 py-2 text-sm outline-none transition-all duration-200 resize-y',
+            'placeholder:text-text-dim',
             'focus:ring-2 focus:ring-[hsl(var(--ring)/0.4)] focus:border-[hsl(var(--ring))]',
             error
               ? 'border-[hsl(var(--destructive))] focus:ring-[hsl(var(--destructive)/0.3)]'
-              : 'border-[hsl(var(--border))]',
+              : 'border-border-std',
             className
           )}
           ref={ref}

@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key'
 );
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(
     _request: Request,
@@ -42,7 +44,9 @@ export async function GET(
             is_active: product.is_active,
         }, {
             headers: {
-                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+                'Cache-Control': 'no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
             },
         });
     } catch (error) {

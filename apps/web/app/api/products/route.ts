@@ -2,17 +2,31 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key',
+    {
+        auth: { persistSession: false },
+        global: {
+            fetch: (url, options) => {
+                return fetch(url, { ...options, cache: 'no-store' });
+            }
+        }
+    }
 );
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export async function GET(request: Request) {
+    console.log('--- API: FETCHING PRODUCTS (V4) ---');
     try {
         const { data: products, error } = await supabase
             .from('products')
             .select('*')
             .eq('is_active', true)
             .order('created_at', { ascending: false });
+
+        console.log('--- API: SUPABASE RETURNED ---', products?.length);
 
         if (error) {
             console.error('Products fetch error:', error);
@@ -40,8 +54,10 @@ export async function GET() {
 
         return NextResponse.json(mapped, {
             headers: {
-                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-            },
+                'Cache-Control': 'no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+            }
         });
     } catch (error) {
         console.error('Products API error:', error);

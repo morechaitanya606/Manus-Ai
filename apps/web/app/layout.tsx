@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { AppProviders } from '../components/providers';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ToastContainer } from '../components/ui/toast';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const inter = Inter({
@@ -18,16 +19,22 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: {
-    default: 'The Quote Shop — Custom Print-on-Demand Fashion',
-    template: '%s | The Quote Shop',
+    default: 'EVERYDAYDROP — Custom Print-on-Demand Fashion',
+    template: '%s | EVERYDAYDROP',
   },
   description:
     'Create stunning AI-generated designs, preview them on realistic apparel mockups, and launch your custom fashion brand. The world\'s first AI Custom Merch Agent.',
   keywords: ['AI fashion', 'custom clothing', 'design studio', 'apparel mockup', 'custom t-shirts'],
   openGraph: {
-    title: 'The Quote Shop — Custom Print-on-Demand Fashion',
+    title: 'EVERYDAYDROP — Custom Print-on-Demand Fashion',
     description: 'Create stunning AI-generated designs and launch your custom fashion brand.',
     type: 'website',
   },
@@ -35,8 +42,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="min-h-screen flex flex-col bg-[hsl(var(--background))]" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans min-h-screen flex flex-col bg-void text-text-main selection:bg-cyan selection:text-void" suppressHydrationWarning>
         <AppProviders>
           <Navbar />
           <main className="flex-1">
@@ -44,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
           <ToastContainer />
+          <Toaster position="bottom-right" richColors />
         </AppProviders>
       </body>
     </html>
