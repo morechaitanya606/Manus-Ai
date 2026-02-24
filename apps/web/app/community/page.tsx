@@ -1,18 +1,121 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePublicDesigns } from '../../hooks/use-designs';
+import { usePublicDesigns, useToggleDesignLike } from '../../hooks/use-designs';
 import { useProducts } from '../../hooks/use-products';
 import { Button } from '../../components/ui/button';
-import { Loader2, Palette, Sparkles, Image as ImageIcon, ArrowRight, X } from 'lucide-react';
-import type { Design, Product } from '../../lib/supabase';
+import { Palette, Sparkles, Image as ImageIcon, X, Heart, Flame, Clock3, Shield, ShieldX } from 'lucide-react';
+import type { Design } from '../../lib/supabase';
+import { useAuthStore } from '../../stores/auth-store';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+type SortMode = 'trending' | 'loved' | 'latest';
 
 export default function CommunityGalleryPage() {
     const { data: designs, isLoading } = usePublicDesigns();
     const { data: products } = useProducts();
+    const { session, profile } = useAuthStore();
+    const queryClient = useQueryClient();
+    const toggleLike = useToggleDesignLike();
     const [selectedDesign, setSelectedDesign] = useState<Design | null>(null);
+    const [sortMode, setSortMode] = useState<SortMode>('trending');
+    const [pendingLikeId, setPendingLikeId] = useState<string | null>(null);
+    const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+
+    const isAdminUser =
+        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
+
+    useEffect(() => {
+        if (!selectedDesign || !designs?.length) return;
+        const refreshed = designs.find((design) => design.id === selectedDesign.id);
+        if (refreshed) setSelectedDesign(refreshed);
+    }, [designs, selectedDesign?.id]);
+
+    const sortedDesigns = useMemo(() => {
+        const source = [...(designs || [])];
+        const now = Date.now();
+
+        if (sortMode === 'latest') {
+            return source.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        }
+
+        if (sortMode === 'loved') {
+            return source.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+        }
+
+        return source.sort((a, b) => {
+            const likesA = a.likes_count || 0;
+            const likesB = b.likes_count || 0;
+            const ageHoursA = Math.max((now - new Date(a.created_at).getTime()) / 36e5, 0);
+            const ageHoursB = Math.max((now - new Date(b.created_at).getTime()) / 36e5, 0);
+            const freshnessA = Math.max(0, 72 - ageHoursA) / 72;
+            const freshnessB = Math.max(0, 72 - ageHoursB) / 72;
+            const trendA = likesA * 5 + freshnessA * 3;
+            const trendB = likesB * 5 + freshnessB * 3;
+            return trendB - trendA;
+        });
+    }, [designs, sortMode]);
+
+    const handleToggleLike = async (design: Design) => {
+        if (!session) {
+            alert('Please sign in to like designs.');
+            return;
+        }
+        if (pendingLikeId) return;
+
+        setPendingLikeId(design.id);
+        try {
+            await toggleLike.mutateAsync({
+                designId: design.id,
+                like: !design.liked_by_me,
+            });
+        } catch (error: any) {
+            alert(error?.message || 'Unable to update like right now.');
+        } finally {
+            setPendingLikeId(null);
+        }
+    };
+
+    const handleRemoveFromCommunity = async (design: Design) => {
+        if (!session || !isAdminUser) {
+            toast.error('Only admins can remove community designs.');
+            return;
+        }
+
+        const confirmed = window.confirm('Remove this image from Community?');
+        if (!confirmed) return;
+
+        setPendingRemoveId(design.id);
+        try {
+            const response = await fetch(`/api/admin/community/designs/${design.id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${session.access_token}`,
+                },
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload?.error || 'Failed to remove design from community.');
+            }
+
+            queryClient.setQueriesData<Design[]>(
+                { queryKey: ['public-designs'] },
+                (cached) => (cached || []).filter((d) => d.id !== design.id)
+            );
+            if (selectedDesign?.id === design.id) setSelectedDesign(null);
+
+            toast.success('Design removed from Community.');
+            queryClient.invalidateQueries({ queryKey: ['public-designs'] });
+        } catch (error: any) {
+            toast.error(error?.message || 'Unable to remove design right now.');
+        } finally {
+            setPendingRemoveId(null);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-void">
@@ -33,6 +136,26 @@ export default function CommunityGalleryPage() {
                             <p className="text-text-dim mt-4 text-sm md:text-base font-mono border-l-2 border-border-std pl-4 uppercase tracking-widest">
                                 &gt; Discover and access designs created by our community.
                             </p>
+                            <div className="mt-5 flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setSortMode('trending')}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'trending' ? 'border-cyan bg-cyan/10 text-cyan' : 'border-border-std text-text-dim hover:border-cyan/40 hover:text-white'}`}
+                                >
+                                    <Flame className="h-3.5 w-3.5" /> Trending
+                                </button>
+                                <button
+                                    onClick={() => setSortMode('loved')}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'loved' ? 'border-magenta bg-magenta/10 text-magenta' : 'border-border-std text-text-dim hover:border-magenta/40 hover:text-white'}`}
+                                >
+                                    <Heart className="h-3.5 w-3.5" /> Most Loved
+                                </button>
+                                <button
+                                    onClick={() => setSortMode('latest')}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'latest' ? 'border-white/70 bg-white/5 text-white' : 'border-border-std text-text-dim hover:border-white/40 hover:text-white'}`}
+                                >
+                                    <Clock3 className="h-3.5 w-3.5" /> Latest
+                                </button>
+                            </div>
                         </div>
                         <div className="hidden md:block">
                             <div className="bg-panel/50 backdrop-blur-sm border border-cyan/30 p-6 shadow-[0_0_20px_rgba(0,240,255,0.1)] relative">
@@ -59,9 +182,9 @@ export default function CommunityGalleryPage() {
                                 </div>
                             ))}
                         </div>
-                    ) : designs && designs.length > 0 ? (
+                    ) : sortedDesigns.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {designs.map((design) => (
+                            {sortedDesigns.map((design, index) => (
                                 <div
                                     key={design.id}
                                     className="group bg-panel relative border border-border-std overflow-hidden hover:shadow-[0_0_15px_rgba(0,240,255,0.1)] hover:border-cyan transition-all duration-300 hover:-translate-y-1 cursor-pointer"
@@ -69,6 +192,30 @@ export default function CommunityGalleryPage() {
                                 >
                                     <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan/50 group-hover:border-cyan z-10 transition-colors"></div>
                                     <div className="aspect-square bg-void relative overflow-hidden">
+                                        {index === 0 && (
+                                            <div className="absolute top-2 left-2 z-20 bg-cyan/90 text-void px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest">
+                                                {sortMode === 'loved' ? 'Top Loved' : sortMode === 'latest' ? 'Fresh Pick' : 'Top Trending'}
+                                            </div>
+                                        )}
+                                        {isAdminUser && (
+                                            <div
+                                                className={`absolute z-20 left-2 px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest border border-red-500/60 bg-red-500/15 text-red-300 flex items-center gap-1 ${index === 0 ? 'top-8' : 'top-2'}`}
+                                            >
+                                                <Shield className="h-3 w-3" />
+                                                Admin
+                                            </div>
+                                        )}
+                                        <button
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                void handleToggleLike(design);
+                                            }}
+                                            disabled={pendingLikeId === design.id}
+                                            className={`absolute top-2 right-2 z-20 px-2 py-1 text-[9px] font-mono uppercase tracking-widest border transition-colors flex items-center gap-1 ${design.liked_by_me ? 'bg-magenta/20 border-magenta text-magenta' : 'bg-black/40 border-border-std text-text-main hover:border-magenta/50 hover:text-magenta'} disabled:opacity-60`}
+                                        >
+                                            <Heart className={`h-3 w-3 ${design.liked_by_me ? 'fill-magenta' : ''}`} />
+                                            {design.likes_count || 0}
+                                        </button>
                                         {design.original_image_url ? (
                                             <Image
                                                 src={design.original_image_url}
@@ -146,6 +293,28 @@ export default function CommunityGalleryPage() {
                             <p className="text-cyan text-sm font-mono italic mb-6 leading-relaxed border-l-2 border-cyan pl-3 bg-cyan/5 p-2 tracking-wide">
                                 &gt; "{selectedDesign.prompt}"
                             </p>
+                            <div className="mb-6 flex items-center justify-between border border-border-std bg-void/50 px-3 py-2">
+                                <span className="font-mono text-[10px] uppercase tracking-widest text-text-dim">Loved By Community</span>
+                                <button
+                                    onClick={() => void handleToggleLike(selectedDesign)}
+                                    disabled={pendingLikeId === selectedDesign.id}
+                                    className={`px-3 py-1 border font-mono text-[10px] uppercase tracking-widest transition-colors flex items-center gap-1 ${selectedDesign.liked_by_me ? 'border-magenta text-magenta bg-magenta/10' : 'border-border-std text-text-main hover:border-magenta/50 hover:text-magenta'} disabled:opacity-60`}
+                                >
+                                    <Heart className={`h-3.5 w-3.5 ${selectedDesign.liked_by_me ? 'fill-magenta' : ''}`} />
+                                    {selectedDesign.likes_count || 0}
+                                </button>
+                            </div>
+
+                            {isAdminUser && (
+                                <button
+                                    onClick={() => void handleRemoveFromCommunity(selectedDesign)}
+                                    disabled={pendingRemoveId === selectedDesign.id}
+                                    className="mb-6 w-full py-2 border border-red-500/60 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors font-mono text-[10px] uppercase tracking-widest flex items-center justify-center gap-1 disabled:opacity-60"
+                                >
+                                    <ShieldX className="h-3.5 w-3.5" />
+                                    {pendingRemoveId === selectedDesign.id ? 'Removing...' : 'Remove From Community'}
+                                </button>
+                            )}
 
                             <h4 className="font-mono text-[10px] text-text-dim uppercase tracking-widest mb-3">SELECT PRODUCT:</h4>
 

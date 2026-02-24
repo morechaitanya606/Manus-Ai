@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '../../../lib/logger';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
@@ -17,8 +18,8 @@ const supabase = createClient(
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET(request: Request) {
-    console.log('--- API: FETCHING PRODUCTS (V4) ---');
+export async function GET() {
+    logger.debug('GET /api/products - fetching active products');
     try {
         const { data: products, error } = await supabase
             .from('products')
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
             .eq('is_active', true)
             .order('created_at', { ascending: false });
 
-        console.log('--- API: SUPABASE RETURNED ---', products?.length);
+        logger.debug('GET /api/products - returned rows:', products?.length ?? 0);
 
         if (error) {
             console.error('Products fetch error:', error);

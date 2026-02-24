@@ -1,9 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { BrandLogo } from './icons/brand-logo';
 
 export function Footer() {
+    const pathname = usePathname();
+
+    if (pathname?.startsWith('/studio')) {
+        return null;
+    }
+
     return (
         <footer className="border-t border-border-std mt-auto bg-panel">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">

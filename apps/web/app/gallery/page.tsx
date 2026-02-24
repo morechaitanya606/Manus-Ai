@@ -1,296 +1,469 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useProducts } from '../../hooks/use-products';
 import { Button } from '../../components/ui/button';
-import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Upload, Package, Truck, Printer, Layers, Palette } from 'lucide-react';
+import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Package, Truck, Printer, Layers, X } from 'lucide-react';
+import type { Product } from '../../hooks/use-products';
 
 const CATEGORIES = [
-    { key: 'all', label: 'All Products', icon: '🛍️' },
-    { key: 'tshirt', label: 'T-Shirts', icon: '👕' },
-    { key: 'shirt', label: 'Shirts', icon: '👔' },
-    { key: 'hoodie', label: 'Hoodies', icon: '🧥' },
-    { key: 'pants', label: 'Pants', icon: '👖' },
-    { key: 'cap', label: 'Caps', icon: '🧢' },
-    { key: 'tote', label: 'Totes', icon: '👜' },
-    { key: 'poster', label: 'Posters & Stickers', icon: '🖼️' },
+  { key: 'all', label: 'All' },
+  { key: 'tshirt', label: 'T-Shirts' },
+  { key: 'shirt', label: 'Shirts' },
+  { key: 'hoodie', label: 'Hoodies' },
+  { key: 'pants', label: 'Pants' },
+  { key: 'cap', label: 'Caps' },
+  { key: 'tote', label: 'Totes' },
+  { key: 'poster', label: 'Posters' },
 ];
 
+type SortMode = 'newest' | 'price_low_high' | 'price_high_low';
+
+const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'price_low_high', label: 'Price: Low to High' },
+  { value: 'price_high_low', label: 'Price: High to Low' },
+];
+
+const PAGE_SIZE = 10;
+
+const FALLBACK_COLOR_MAP: Record<string, string> = {
+  black: '#121212',
+  white: '#f4f4f5',
+  navy: '#1e2a4a',
+  navyblue: '#1e2a4a',
+  blue: '#2563eb',
+  red: '#dc2626',
+  green: '#16a34a',
+  gray: '#6b7280',
+  grey: '#6b7280',
+  beige: '#d6c2a2',
+  cream: '#efe8d8',
+};
+
+const toCssColor = (input: string) => {
+  const normalized = String(input || '').trim().toLowerCase().replace(/\s+/g, '');
+  if (!normalized) return '#232331';
+  return FALLBACK_COLOR_MAP[normalized] || normalized;
+};
+
 export default function GalleryPage() {
-    const { data: products, isLoading } = useProducts();
-    const [category, setCategory] = useState('all');
-    const [search, setSearch] = useState('');
+  const { data: products, isLoading } = useProducts();
+  const [category, setCategory] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sortMode, setSortMode] = useState<SortMode>('newest');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+  const [nextBatchSize, setNextBatchSize] = useState(PAGE_SIZE);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const loadMoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const filtered = products?.filter((p) => {
-        const matchCat = category === 'all' || p.category === category;
-        const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-        return matchCat && matchSearch;
+  const filteredProducts = useMemo(() => {
+    return (products || []).filter((product) => {
+      const matchesCategory = category === 'all' || product.category === category;
+      const matchesSearch =
+        !search.trim() ||
+        product.name.toLowerCase().includes(search.toLowerCase()) ||
+        product.category.toLowerCase().includes(search.toLowerCase());
+      return matchesCategory && matchesSearch;
     });
+  }, [products, category, search]);
 
-    if (products && products.length > 0) {
-        console.log('DEBUG: First Product Full JSON:', JSON.stringify(products[0], null, 2));
+  const getPrice = (product: Product) => {
+    const value = Number(product.base_price);
+    return Number.isFinite(value) ? value : 0;
+  };
+
+  const sortedProducts = useMemo(() => {
+    const source = [...filteredProducts];
+    if (sortMode === 'price_low_high') {
+      return source.sort((a, b) => getPrice(a) - getPrice(b));
     }
+    if (sortMode === 'price_high_low') {
+      return source.sort((a, b) => getPrice(b) - getPrice(a));
+    }
+    return source;
+  }, [filteredProducts, sortMode]);
 
-    return (
-        <div className="min-h-screen bg-void">
+  useEffect(() => {
+    if (loadMoreTimerRef.current) {
+      clearTimeout(loadMoreTimerRef.current);
+      loadMoreTimerRef.current = null;
+    }
+    setIsLoadingNextBatch(false);
+    setNextBatchSize(PAGE_SIZE);
+    setVisibleCount(PAGE_SIZE);
+  }, [category, search, sortMode]);
 
-            {/* Hero Banner */}
-            <section className="relative overflow-hidden border-b border-border-std bg-void">
-                <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05]" />
-                <div className="absolute inset-0 scanline opacity-10 pointer-events-none" />
-                <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="inline-flex items-center gap-2 text-cyan font-mono text-xs tracking-widest uppercase bg-cyan/5 px-2 py-1 w-fit border border-cyan/20 mb-4">
-                                <Sparkles className="h-4 w-4" />
-                                <span>LIVE INVENTORY</span>
-                            </div>
-                            <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase glitch-text tracking-wider" data-text="Product Archives">
-                                Product <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Archives</span>
-                            </h1>
-                            <p className="text-text-dim mt-4 text-sm md:text-base font-mono border-l-2 border-border-std pl-4 uppercase tracking-widest">
-                                &gt; Browse our collection of customizable blank garments.
-                            </p>
-                        </div>
-                        <div className="hidden md:block">
-                            <div className="bg-panel/50 backdrop-blur-sm border border-cyan/30 p-6 shadow-[0_0_20px_rgba(0,240,255,0.1)] relative">
-                                <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan"></div>
-                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan"></div>
-                                <Printer className="h-16 w-16 text-cyan/80 animate-pulse-fast" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  const hasMore = visibleCount < sortedProducts.length;
+  const visibleProducts = sortedProducts.slice(0, visibleCount);
 
-            {/* Category Heading */}
-            <section className="bg-panel py-10 md:py-14 border-b border-border-std relative">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-2xl md:text-4xl font-bold font-display text-white uppercase tracking-widest">
-                        Filter By <span className="text-magenta animate-pulse">Category</span>
-                    </h2>
+  useEffect(() => {
+    if (!hasMore) return;
+    const node = loadMoreRef.current;
+    if (!node) return;
 
-                    {/* Category Carousel */}
-                    <div className="flex items-center justify-center gap-4 md:gap-6 mt-10 overflow-x-auto pb-4 scrollbar-hide">
-                        {CATEGORIES.map((cat) => (
-                            <button
-                                key={cat.key}
-                                onClick={() => setCategory(cat.key)}
-                                className={`flex flex-col items-center gap-2 min-w-[90px] py-4 px-4 bg-void border transition-all duration-300 relative group
-                                    ${category === cat.key
-                                        ? 'border-magenta text-magenta shadow-[0_0_15px_rgba(211,45,255,0.2)]'
-                                        : 'border-border-std text-text-dim hover:border-cyan hover:text-cyan'
-                                    }`}
-                            >
-                                <span className={`text-2xl md:text-3xl grayscale group-hover:grayscale-0 transition-all ${category === cat.key ? 'grayscale-0' : ''}`}>{cat.icon}</span>
-                                <span className="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap uppercase tracking-widest mt-1">
-                                    {cat.label}
-                                </span>
-                                {/* Corner Accents */}
-                                <div className={`absolute top-0 left-0 w-1 h-1 bg-${category === cat.key ? 'magenta' : 'transparent'} group-hover:bg-cyan transition-colors`}></div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isLoadingNextBatch) {
+          const remaining = sortedProducts.length - visibleCount;
+          if (remaining <= 0) return;
 
-            {/* Explore Products Section */}
-            <section className="py-10 md:py-14">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-10">
-                        <h2 className="text-2xl md:text-4xl font-bold font-display text-white uppercase tracking-wider">
-                            Explore <span className="text-cyan">Collection</span>
-                        </h2>
-                        <p className="mt-3 text-text-dim font-mono text-xs uppercase tracking-widest max-w-xl mx-auto border-l border-r border-border-std px-4">
-                            &gt; Find your perfect fit.
-                            <br />
-                            &gt; Select an item to start designing.
-                        </p>
-                    </div>
+          const batch = Math.min(PAGE_SIZE, remaining);
+          setNextBatchSize(batch);
+          setIsLoadingNextBatch(true);
 
-                    {/* Search Bar */}
-                    <div className="flex justify-center mb-8">
-                        <div className="relative w-full max-w-md">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-dim" />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 rounded-none border border-border-std border-dashed border border-border-std bg-panel text-sm focus:outline-none focus:ring-2 focus:ring-cyan transition shadow-sm"
-                            />
-                        </div>
-                    </div>
+          if (loadMoreTimerRef.current) {
+            clearTimeout(loadMoreTimerRef.current);
+          }
 
-                    {/* Product Grid */}
-                    {isLoading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} className="bg-panel rounded-none border border-border-std overflow-hidden border border-border-std animate-pulse">
-                                    <div className="aspect-square bg-panel-highlight" />
-                                    <div className="p-4 space-y-2">
-                                        <div className="h-4 bg-panel-highlight rounded w-3/4" />
-                                        <div className="h-3 bg-panel-highlight rounded w-1/2" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : filtered && filtered.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {filtered.map((product) => (
-                                <Link
-                                    key={product.id}
-                                    href={`/gallery/${product.id}`}
-                                    className="group bg-panel rounded-none border border-border-std overflow-hidden border border-border-std hover:shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:shadow-[0_0_10px_rgba(0,240,255,0.1)] transition-all duration-300 hover:-translate-y-1"
-                                >
-                                    <div className="aspect-square bg-panel-highlight relative overflow-hidden">
-                                        {product.image_url ? (
-                                            <Image
-                                                src={product.image_url}
-                                                alt={product.name}
-                                                fill
-                                                unoptimized
-                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                                            />
-
-                                        ) : (
-                                            <div className="flex items-center justify-center h-full">
-                                                <ShoppingBag className="h-12 w-12 text-text-dim/30" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2">
-                                            {product.name}
-                                        </h3>
-                                        <hr className="my-3 border-border-std" />
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">₹{Number(product.base_price).toFixed(0)}</span>
-                                            <div className="flex gap-1">
-                                                {product.colors.slice(0, 6).map((color) => (
-                                                    <span
-                                                        key={color}
-                                                        className="h-5 w-5 rounded-none border border-border-std border-dashed border-2 border-gray-100 shadow-sm"
-                                                        style={{ backgroundColor: color.toLowerCase().replace(/\s/g, '') }}
-                                                        title={color}
-                                                    />
-                                                ))}
-                                                {product.colors.length > 6 && (
-                                                    <span className="text-xs text-text-dim ml-1 self-center">
-                                                        +{product.colors.length - 6}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20">
-                            <ShoppingBag className="h-12 w-12 text-text-dim/30 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">No products found</h3>
-                            <p className="text-text-dim">Try adjusting your search or filters</p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* High Quality Printing Banner */}
-            <section className="py-8 bg-magenta/5 border-t border-b border-border-std relative overflow-hidden">
-                <div className="absolute inset-0 scanline opacity-30 pointer-events-none" />
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="flex items-center justify-center gap-5 text-center">
-                        <span className="text-xl md:text-3xl text-magenta font-bold glitch-text" data-text="★">★</span>
-                        <h2 className="text-xl md:text-2xl font-bold uppercase text-white font-mono tracking-[0.2em]">
-                            High Quality <span className="text-cyan">Offset Printing</span>
-                        </h2>
-                        <span className="text-xl md:text-3xl text-magenta font-bold glitch-text" data-text="★">★</span>
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="bg-void py-12 md:py-24 relative overflow-hidden border-b border-border-std">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-cyan/10 blur-[100px] rounded-full point-events-none" />
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center text-white border border-border-std bg-panel/50 backdrop-blur-md p-10 md:p-16 relative">
-                        {/* Corner Brackets */}
-                        <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-cyan"></div>
-                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-magenta"></div>
-
-                        <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tight uppercase mb-4">
-                            EXPERIENCE <span className="text-magenta">SUPERIOR QUALITY</span>
-                        </h2>
-                        <p className="text-cyan font-mono text-xs uppercase tracking-widest mb-6 border-y border-cyan/20 py-2 inline-block">
-                            WITH OUR PREMIUM PRINTING SERVICES
-                        </p>
-                        <p className="text-text-dim max-w-2xl mx-auto mb-10 text-sm font-mono leading-relaxed">
-                            &gt; Start your entrepreneurial journey today by building your own brand with confidence.
-                            <br />
-                            &gt; We offer AI design generation, 100+ ready designs, and custom uploads.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-4">
-                            <Link href="/studio">
-                                <Button size="lg" className="rounded-none border border-cyan bg-cyan/10 text-cyan hover:bg-cyan hover:text-void font-bold shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all font-mono tracking-widest uppercase h-12 px-8">
-                                    <Sparkles className="mr-3 h-4 w-4" />
-                                    Launch Studio
-                                </Button>
-                            </Link>
-                            <Link href="/signup">
-                                <Button size="lg" variant="outline" className="rounded-none border border-magenta text-magenta hover:bg-magenta hover:text-white font-bold transition-all font-mono tracking-widest uppercase h-12 px-8">
-                                    Sign Up
-                                    <ArrowRight className="ml-3 h-4 w-4" />
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* USP Features Section */}
-            <section className="bg-panel py-16 md:py-24 relative overflow-hidden">
-                <div className="absolute inset-0 bg-grid-pattern bg-[length:30px_30px] opacity-[0.03]" />
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <div className="flex flex-col border border-border-std p-6 hover:border-cyan transition-colors group bg-void relative">
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan/50 opcaity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="h-12 w-12 rounded-none border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-6 group-hover:bg-cyan/20 transition-colors">
-                                <Package className="h-6 w-6 text-cyan" />
-                            </div>
-                            <h3 className="font-mono font-bold text-sm uppercase text-white mb-3">Bulk Order</h3>
-                            <p className="text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">Order in bulk with ease. Corporate, events, and merch — we handle it all.</p>
-                        </div>
-                        <div className="flex flex-col border border-border-std p-6 hover:border-magenta transition-colors group bg-void relative">
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-magenta/50 opcaity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="h-12 w-12 rounded-none border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-6 group-hover:bg-magenta/20 transition-colors">
-                                <Truck className="h-6 w-6 text-magenta" />
-                            </div>
-                            <h3 className="font-mono font-bold text-sm uppercase text-white mb-3">Pan-India Shipping</h3>
-                            <p className="text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">Ship products across India. Fast delivery within 3-5 working days.</p>
-                        </div>
-                        <div className="flex flex-col border border-border-std p-6 hover:border-cyan transition-colors group bg-void relative">
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan/50 opcaity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="h-12 w-12 rounded-none border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-6 group-hover:bg-cyan/20 transition-colors">
-                                <Layers className="h-6 w-6 text-cyan" />
-                            </div>
-                            <h3 className="font-mono font-bold text-sm uppercase text-white mb-3">Multiple Printing</h3>
-                            <p className="text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">DTF, sublimation, screen print — different printing methods for every need.</p>
-                        </div>
-                        <div className="flex flex-col border border-border-std p-6 hover:border-magenta transition-colors group bg-void relative">
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-magenta/50 opcaity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="h-12 w-12 rounded-none border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-6 group-hover:bg-magenta/20 transition-colors">
-                                <Sparkles className="h-6 w-6 text-magenta" />
-                            </div>
-                            <h3 className="font-mono font-bold text-sm uppercase text-white mb-3">AI Design Studio</h3>
-                            <p className="text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">Generate unique designs with AI or upload your own. 100+ templates included.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+          loadMoreTimerRef.current = setTimeout(() => {
+            setVisibleCount((prev) => Math.min(prev + batch, sortedProducts.length));
+            setIsLoadingNextBatch(false);
+            setNextBatchSize(PAGE_SIZE);
+          }, 250);
+        }
+      },
+      { rootMargin: '220px 0px' }
     );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, sortedProducts.length, visibleCount, isLoadingNextBatch]);
+
+  useEffect(() => {
+    return () => {
+      if (loadMoreTimerRef.current) {
+        clearTimeout(loadMoreTimerRef.current);
+      }
+    };
+  }, []);
+
+  const activeCategoryLabel = CATEGORIES.find((cat) => cat.key === category)?.label || 'All';
+  const hasActiveFilters = category !== 'all' || Boolean(search.trim());
+
+  return (
+    <div className="min-h-screen bg-void">
+      <section className="relative overflow-hidden border-b border-border-std bg-void">
+        <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05]" />
+        <div className="absolute inset-0 scanline opacity-10 pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-14">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 text-cyan font-mono text-[10px] sm:text-xs tracking-widest uppercase bg-cyan/5 px-2 py-1 w-fit border border-cyan/20 mb-3">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Marketplace</span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold font-display text-white uppercase glitch-text tracking-wider" data-text="Surf & Shop">
+                Surf & <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Shop</span>
+              </h1>
+              <p className="text-text-dim mt-3 text-[11px] sm:text-sm md:text-base font-mono border-l-2 border-border-std pl-3 uppercase tracking-widest">
+                &gt; Browse blanks fast. Pick product. Start purchase.
+              </p>
+            </div>
+
+            <div className="hidden md:block">
+              <div className="bg-panel/50 backdrop-blur-sm border border-cyan/30 p-6 shadow-[0_0_20px_rgba(0,240,255,0.1)] relative">
+                <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan"></div>
+                <Printer className="h-16 w-16 text-cyan/80 animate-pulse-fast" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="sticky top-16 z-30 border-b border-border-std bg-panel/90 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-dim" />
+              <input
+                type="text"
+                placeholder="Search by product or category..."
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 border border-border-std bg-void text-sm focus:outline-none focus:border-cyan transition-colors"
+              />
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={() => {
+                  setCategory('all');
+                  setSearch('');
+                }}
+                className="h-10 px-3 border border-border-std text-text-dim hover:text-white hover:border-cyan transition-colors font-mono text-[10px] uppercase tracking-widest flex items-center gap-1"
+              >
+                <X className="h-3.5 w-3.5" />
+                Clear
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setCategory(cat.key)}
+                className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${
+                  category === cat.key
+                    ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
+                    : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-widest">
+            <span className="text-text-dim whitespace-nowrap">
+              {sortedProducts.length} Items
+            </span>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-cyan hidden sm:inline whitespace-nowrap">
+                Category: {activeCategoryLabel}
+              </span>
+              <select
+                value={sortMode}
+                onChange={(event) => setSortMode(event.target.value as SortMode)}
+                className="min-w-[150px] sm:min-w-[170px] bg-void border border-border-std text-text-main text-[10px] font-mono px-2 py-1.5 uppercase tracking-widest focus:border-cyan focus:outline-none"
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-6 sm:py-10">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          {isLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="bg-panel border border-border-std overflow-hidden animate-pulse">
+                  <div className="aspect-square bg-panel-highlight" />
+                  <div className="p-3 sm:p-4 space-y-2">
+                    <div className="h-3.5 bg-panel-highlight rounded w-3/4" />
+                    <div className="h-3 bg-panel-highlight rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : sortedProducts.length > 0 ? (
+            <div>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                {visibleProducts.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/gallery/${product.id}`}
+                    className="group bg-panel border border-border-std overflow-hidden hover:border-cyan/70 hover:shadow-[0_0_15px_rgba(0,240,255,0.12)] transition-all duration-300"
+                  >
+                    <div className="aspect-square bg-panel-highlight relative overflow-hidden">
+                      <span className="absolute top-2 left-2 z-20 text-[9px] font-mono uppercase tracking-widest bg-void/80 border border-border-std px-1.5 py-0.5 text-text-dim">
+                        {product.category}
+                      </span>
+                      {product.image_url ? (
+                        <Image
+                          src={product.image_url}
+                          alt={product.name}
+                          fill
+                          unoptimized
+                          className="object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <ShoppingBag className="h-10 w-10 text-text-dim/30" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-2.5 sm:p-4">
+                      <h3 className="font-bold text-[11px] sm:text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
+                        {product.name}
+                      </h3>
+
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">
+                          INR {Number(product.base_price).toFixed(0)}
+                        </span>
+                        <span className="text-[9px] sm:text-[10px] font-mono text-text-dim uppercase tracking-widest">
+                          {(product.sizes || []).length} sizes
+                        </span>
+                      </div>
+
+                      <div className="mt-2 flex items-center gap-1 min-h-[16px] sm:min-h-[20px]">
+                        {(product.colors || []).slice(0, 4).map((color) => (
+                          <span
+                            key={color}
+                            className="h-3.5 w-3.5 sm:h-4 sm:w-4 border border-border-std"
+                            style={{ backgroundColor: toCssColor(color) }}
+                            title={color}
+                          />
+                        ))}
+                        {(product.colors || []).length > 4 && (
+                          <span className="text-[9px] sm:text-[10px] text-text-dim ml-1 font-mono">
+                            +{product.colors.length - 4}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-2 sm:mt-3 inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-white transition-colors">
+                        Customize
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+                {isLoadingNextBatch &&
+                  Array.from({ length: nextBatchSize }).map((_, index) => (
+                    <div key={`next-skeleton-${index}`} className="bg-panel border border-border-std overflow-hidden">
+                      <div className="aspect-square skeleton" />
+                      <div className="p-2.5 sm:p-4 space-y-2">
+                        <div className="h-3.5 w-4/5 skeleton" />
+                        <div className="h-3 w-3/5 skeleton" />
+                        <div className="h-3 w-2/5 skeleton" />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              <div className="pt-6 flex justify-center">
+                {hasMore ? (
+                  <div ref={loadMoreRef} className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-cyan">
+                    <Loader2 className={`h-4 w-4 ${isLoadingNextBatch ? 'animate-spin' : ''}`} />
+                    {isLoadingNextBatch ? 'Loading More' : 'Scroll For More'}
+                  </div>
+                ) : sortedProducts.length > PAGE_SIZE ? (
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-text-dim border border-border-std px-3 py-1.5">
+                    You reached the end
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-panel border border-border-std">
+              <ShoppingBag className="h-10 w-10 text-text-dim/30 mx-auto mb-3" />
+              <h3 className="text-base font-semibold mb-2">No products found</h3>
+              <p className="text-text-dim text-sm mb-4">Try changing category or search text.</p>
+              <Button
+                onClick={() => {
+                  setCategory('all');
+                  setSearch('');
+                }}
+                className="rounded-none border border-cyan bg-cyan/10 text-cyan hover:bg-cyan hover:text-void font-mono text-xs uppercase tracking-widest"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="py-6 sm:py-8 bg-magenta/5 border-t border-b border-border-std relative overflow-hidden">
+        <div className="absolute inset-0 scanline opacity-30 pointer-events-none" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex items-center justify-center gap-3 sm:gap-5 text-center">
+            <span className="text-lg sm:text-3xl text-magenta font-bold">*</span>
+            <h2 className="text-base sm:text-2xl font-bold uppercase text-white font-mono tracking-[0.15em]">
+              High Quality <span className="text-cyan">Offset Printing</span>
+            </h2>
+            <span className="text-lg sm:text-3xl text-magenta font-bold">*</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-void py-10 md:py-20 relative overflow-hidden border-b border-border-std">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-cyan/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center text-white border border-border-std bg-panel/50 backdrop-blur-md p-6 sm:p-10 md:p-14 relative">
+            <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-4 border-l-4 border-cyan"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-4 border-r-4 border-magenta"></div>
+
+            <h2 className="text-xl sm:text-3xl md:text-5xl font-bold font-display tracking-tight uppercase mb-3 sm:mb-4">
+              Experience <span className="text-magenta">Superior Quality</span>
+            </h2>
+            <p className="text-cyan font-mono text-[10px] sm:text-xs uppercase tracking-widest mb-4 sm:mb-6 border-y border-cyan/20 py-2 inline-block">
+              With our premium printing services
+            </p>
+            <p className="text-text-dim max-w-2xl mx-auto mb-8 text-xs sm:text-sm font-mono leading-relaxed">
+              &gt; Build your brand with AI designs, ready templates, and custom uploads.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
+              <Link href="/studio">
+                <Button size="lg" className="rounded-none border border-cyan bg-cyan/10 text-cyan hover:bg-cyan hover:text-void font-bold shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all font-mono tracking-widest uppercase h-11 px-7">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Launch Studio
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="lg" variant="outline" className="rounded-none border border-magenta text-magenta hover:bg-magenta hover:text-white font-bold transition-all font-mono tracking-widest uppercase h-11 px-7">
+                  Sign Up
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-panel py-12 md:py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern bg-[length:30px_30px] opacity-[0.03]" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-flow-col auto-cols-[85%] sm:auto-cols-auto sm:grid-flow-row sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-1">
+            <div className="flex flex-col border border-border-std p-4 sm:p-6 hover:border-cyan transition-colors group bg-void relative">
+              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
+                <Package className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
+              </div>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Bulk Order</h3>
+              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
+                Order in bulk for events, teams, and brands.
+              </p>
+            </div>
+
+            <div className="flex flex-col border border-border-std p-4 sm:p-6 hover:border-magenta transition-colors group bg-void relative">
+              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-magenta/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
+                <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
+              </div>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Pan-India Shipping</h3>
+              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
+                Fast shipping within 3-5 working days.
+              </p>
+            </div>
+
+            <div className="flex flex-col border border-border-std p-4 sm:p-6 hover:border-cyan transition-colors group bg-void relative">
+              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
+                <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
+              </div>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Multiple Printing</h3>
+              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
+                DTF, sublimation, and screen print options.
+              </p>
+            </div>
+
+            <div className="flex flex-col border border-border-std p-4 sm:p-6 hover:border-magenta transition-colors group bg-void relative">
+              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-magenta/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
+                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
+              </div>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">AI Design Studio</h3>
+              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
+                Generate or upload designs and buy instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }

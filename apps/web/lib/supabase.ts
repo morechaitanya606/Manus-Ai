@@ -60,10 +60,13 @@ export type Design = {
     user_id: string;
     prompt: string;
     status: DesignStatus;
+    image_url?: string | null;
     original_image_url: string | null;
     print_ready_url: string | null;
     style_preset: string | null;
     is_public: boolean;
+    likes_count?: number;
+    liked_by_me?: boolean;
     created_at: string;
     updated_at: string;
 };

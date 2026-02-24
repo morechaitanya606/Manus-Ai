@@ -6,6 +6,7 @@ const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+const DESIGN_BUCKET = 'user-designs';
 
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
@@ -66,7 +67,7 @@ serve(async (req) => {
         const fileName = `${designId}-nobg-${Date.now()}.png`;
 
         const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('designs')
+            .from(DESIGN_BUCKET)
             .upload(fileName, processedImageBlob, {
                 contentType: 'image/png',
                 upsert: true,
@@ -78,7 +79,7 @@ serve(async (req) => {
 
         // 4. Get the public URL for the new image
         const { data: publicUrlData } = supabase.storage
-            .from('designs')
+            .from(DESIGN_BUCKET)
             .getPublicUrl(fileName);
 
         const newImageUrl = publicUrlData.publicUrl;
@@ -86,14 +87,14 @@ serve(async (req) => {
         // 5. Update the design record in the database
         const { error: dbError } = await supabase
             .from('designs')
-            .update({ image_url: newImageUrl })
+            .update({ print_ready_url: newImageUrl })
             .eq('id', designId);
 
         if (dbError) {
             throw dbError;
         }
 
-        return new Response(JSON.stringify({ success: true, image_url: newImageUrl }), {
+        return new Response(JSON.stringify({ success: true, image_url: newImageUrl, print_ready_url: newImageUrl }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });

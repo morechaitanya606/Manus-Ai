@@ -13,6 +13,33 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 
+const COMMUNITY_UPLOAD_PROMPT_PREFIXES = ['custom user upload', 'custom admin upload', '[upload]', 'upload:'];
+const USAGE_RANGES = ['today', '7d', '30d'] as const;
+type UsageRange = (typeof USAGE_RANGES)[number];
+
+const getUsageRangeStart = (range: UsageRange) => {
+  const now = new Date();
+  if (range === 'today') {
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+  if (range === '7d') {
+    return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  }
+  return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+};
+
+const getUsageRangeLabel = (range: UsageRange) => {
+  if (range === 'today') return 'TODAY';
+  if (range === '7d') return '7D';
+  return '30D';
+};
+
+const isUploadPrompt = (value: unknown) => {
+  const prompt = String(value || '').trim().toLowerCase();
+  if (!prompt) return false;
+  return COMMUNITY_UPLOAD_PROMPT_PREFIXES.some((prefix) => prompt.startsWith(prefix));
+};
+
 export default function DashboardPage() {
   return (
     <AuthGuard requireAdmin>
@@ -26,22 +53,24 @@ function DashboardContent() {
   const [stats, setStats] = useState({
     totalRevenue: 0, totalOrders: 0, totalDesigns: 0, totalUsers: 0,
     pendingOrders: 0, failedDesigns: 0, printQueue: 0, printing: 0, shipped: 0,
+    apiTokensLeft: 0, apiTokensUsed: 0,
   });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [margin, setMargin] = useState('15');
   const [savingMargin, setSavingMargin] = useState(false);
+  const [usageRange, setUsageRange] = useState<UsageRange>('30d');
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    fetchStats(usageRange);
+  }, [usageRange]);
 
-  const fetchStats = async () => {
+  const fetchStats = async (range: UsageRange) => {
     const supabase = getSupabase();
 
     const [ordersRes, designsRes, usersRes, settingsRes, recentOrdersRes] = await Promise.all([
       supabase.from('orders').select('total_amount, status'),
-      supabase.from('designs').select('status'),
-      supabase.from('profiles').select('id'),
+      supabase.from('designs').select('status, prompt, user_id, created_at'),
+      supabase.from('profiles').select('id, role, username, ai_credits'),
       supabase.from('platform_settings').select('*').eq('key', 'platform_margin_percent').single(),
       supabase.from('orders')
         .select('id, status, total_amount, created_at, order_items(design_id, designs:design_id(original_image_url))')
@@ -51,17 +80,45 @@ function DashboardContent() {
 
     const orders = ordersRes.data || [];
     const designs = designsRes.data || [];
+    const profiles = usersRes.data || [];
+    const unlimitedUserIds = new Set(
+      profiles
+        .filter((profile: any) => {
+          const normalizedUsername = String(profile?.username || '').trim().toLowerCase();
+          return profile?.role === 'admin' || normalizedUsername === 'sys_admin';
+        })
+        .map((profile: any) => String(profile.id))
+    );
+
+    const apiTokensLeft = profiles
+      .filter((profile: any) => !unlimitedUserIds.has(String(profile.id)))
+      .reduce((sum: number, profile: any) => sum + Math.max(Number(profile?.ai_credits || 0), 0), 0);
+
+    const usageRangeStart = getUsageRangeStart(range);
+    const apiTokensUsed = designs.filter((design: any) => {
+      if (design?.status !== 'completed') return false;
+      if (!design?.user_id) return false;
+      if (unlimitedUserIds.has(String(design.user_id))) return false;
+      if (isUploadPrompt(design?.prompt)) return false;
+      if (!design?.created_at) return false;
+      const generatedAt = new Date(design.created_at);
+      if (Number.isNaN(generatedAt.getTime())) return false;
+      if (generatedAt < usageRangeStart) return false;
+      return true;
+    }).length;
 
     setStats({
       totalRevenue: orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + Number(o.total_amount), 0),
       totalOrders: orders.length,
       totalDesigns: designs.length,
-      totalUsers: usersRes.data?.length || 0,
+      totalUsers: profiles.length,
       pendingOrders: orders.filter((o) => o.status === 'pending').length,
       failedDesigns: designs.filter((d) => d.status === 'failed').length,
       printQueue: orders.filter((o) => o.status === 'paid').length,
       printing: orders.filter((o) => o.status === 'printing').length,
       shipped: orders.filter((o) => o.status === 'shipped').length,
+      apiTokensLeft,
+      apiTokensUsed,
     });
 
     setRecentOrders(recentOrdersRes.data || []);
@@ -83,6 +140,8 @@ function DashboardContent() {
     { icon: Package, label: 'TOTAL ORDERS', value: stats.totalOrders, color: 'text-cyan border-cyan bg-cyan/10 shadow-[0_0_10px_rgba(0,240,255,0.2)]' },
     { icon: Sparkles, label: 'DESIGNS GEN', value: stats.totalDesigns, color: 'text-magenta border-magenta bg-magenta/10 shadow-[0_0_10px_rgba(255,0,255,0.2)]' },
     { icon: Users, label: 'TOTAL USERS', value: stats.totalUsers, color: 'text-blue-400 border-blue-400 bg-blue-500/10 shadow-[0_0_10px_rgba(96,165,250,0.2)]' },
+    { icon: Zap, label: 'API TOKENS LEFT', value: stats.apiTokensLeft.toLocaleString(), color: 'text-emerald-400 border-emerald-400 bg-emerald-500/10 shadow-[0_0_10px_rgba(52,211,153,0.2)]' },
+    { icon: BarChart3, label: `API TOKENS USED (${getUsageRangeLabel(usageRange)})`, value: stats.apiTokensUsed.toLocaleString(), color: 'text-orange-400 border-orange-400 bg-orange-500/10 shadow-[0_0_10px_rgba(251,146,60,0.2)]' },
   ];
 
   const STATUS_COLOR: Record<string, string> = {
@@ -112,8 +171,29 @@ function DashboardContent() {
           <p className="mt-2 text-[10px] tracking-widest text-cyan uppercase">&gt; System online</p>
         </div>
 
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-mono tracking-widest uppercase text-text-dim">Token Usage Window:</span>
+          {USAGE_RANGES.map((range) => {
+            const isActive = usageRange === range;
+            return (
+              <button
+                key={range}
+                type="button"
+                onClick={() => setUsageRange(range)}
+                className={`px-3 py-1.5 border text-[10px] font-mono tracking-widest uppercase transition-colors ${
+                  isActive
+                    ? 'border-cyan bg-cyan/10 text-cyan'
+                    : 'border-border-std text-text-dim hover:border-cyan/60 hover:text-cyan'
+                }`}
+              >
+                {getUsageRangeLabel(range)}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
           {STAT_CARDS.map((card, i) => (
             <div
               key={card.label}
@@ -135,6 +215,9 @@ function DashboardContent() {
             </div>
           ))}
         </div>
+        <p className="mb-8 text-[9px] font-mono tracking-widest text-text-dim uppercase">
+          API usage is tracked as billable AI generations (1 generation = 1 token). Current usage window: {getUsageRangeLabel(usageRange)}. Upload-only designs and admin/sys_admin activity are excluded.
+        </p>
 
         {/* Print Queue + Alerts Row */}
         <div className="grid sm:grid-cols-3 gap-4 mb-8">

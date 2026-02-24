@@ -6,6 +6,77 @@ const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+const DESIGN_BUCKET = 'user-designs'
+
+async function generateWithLeonardo(prompt: string, apiKey: string) {
+    const start = Date.now();
+    const createRes = await fetch("https://cloud.leonardo.ai/api/rest/v1/generations", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "accept": "application/json"
+        },
+        body: JSON.stringify({
+            prompt: prompt,
+            modelId: "aa77f04e-3eec-4034-9c07-d0f619684628",
+            num_images: 1,
+            width: 1024,
+            height: 1024
+        })
+    });
+
+    if (!createRes.ok) {
+        throw new Error(`Leonardo generation failed: ${await createRes.text()}`);
+    }
+
+    const createData = await createRes.json();
+    const generationId = createData.sdGenerationJob?.generationId;
+
+    if (!generationId) {
+        throw new Error("Leonardo did not return generationId");
+    }
+
+    // Poll for results
+    while (Date.now() - start < 60000) { // 60 seconds max polling
+        await new Promise(r => setTimeout(r, 3000));
+
+        const getRes = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "accept": "application/json"
+            }
+        });
+
+        if (!getRes.ok) continue;
+
+        const getData = await getRes.json();
+        const status = getData.generations_by_pk?.status;
+
+        if (status === "COMPLETE") {
+            const images = getData.generations_by_pk?.generated_images;
+            if (images && images.length > 0) {
+                return images[0].url;
+            }
+        } else if (status === "FAILED") {
+            throw new Error("Leonardo generation failed");
+        }
+    }
+
+    throw new Error("Leonardo generation timed out");
+}
+
+async function generateWithPollinations(prompt: string, apiKey: string) {
+    // Note: Pollinations requires passing nologo=true to avoid watermarks. Usually no API key handles this.
+    // The previous implementation was throwing a 530 error, likely due to an issue with how it processes requests.
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Pollinations failed: ${await res.text()}`);
+    }
+    return res.blob();
+}
 
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
@@ -30,11 +101,14 @@ serve(async (req) => {
         // 2. Check Credits
         const { data: profile } = await supabase
             .from('profiles')
-            .select('ai_credits')
+            .select('ai_credits, role, username')
             .eq('id', user.id)
             .single()
 
-        if (!profile || profile.ai_credits < 1) {
+        const normalizedUsername = typeof profile?.username === 'string' ? profile.username.trim().toLowerCase() : ''
+        const isUnlimitedCreditsUser = profile?.role === 'admin' || normalizedUsername === 'sys_admin'
+
+        if (!profile || (!isUnlimitedCreditsUser && profile.ai_credits < 1)) {
             return new Response(JSON.stringify({ error: 'Insufficient credits' }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 402,
@@ -57,62 +131,44 @@ serve(async (req) => {
 
         console.log("Generating for prompt:", finalPrompt)
 
-        // 4. Call Replicate (Flux Schnell)
-        const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY')
-        if (!REPLICATE_API_KEY) {
-            throw new Error('REPLICATE_API_KEY is missing')
+        // 4. Generate Image (Leonardo -> Pollinations fallback)
+        let imageBlob: Blob | null = null;
+        let usedProvider = "";
+
+        try {
+            const leoApiKey = Deno.env.get('LEONARDO_API_KEY') || '1d533d92-7119-4fef-92d7-284d2bdd7f17';
+            console.log("Attempting Leonardo generation...");
+            const imageUrl = await generateWithLeonardo(finalPrompt, leoApiKey);
+            const imageRes = await fetch(imageUrl);
+
+            if (!imageRes.ok) throw new Error("Failed to download Leonardo image");
+
+            imageBlob = await imageRes.blob();
+            usedProvider = "Leonardo";
+            console.log("Successfully generated with Leonardo");
+        } catch (error) {
+            console.error("Leonardo generation failed, falling back to Pollinations:", error.message);
+            const polApiKey = Deno.env.get('POLLINATIONS_API_KEY') || 'sk_4Uz5BBfZS6gQIxo6mxICzvhFK6GBPc2H';
+            console.log("Attempting Pollinations generation...");
+            imageBlob = await generateWithPollinations(finalPrompt, polApiKey);
+            usedProvider = "Pollinations";
+            console.log("Successfully generated with Pollinations");
         }
 
-        const replicateResponse = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${REPLICATE_API_KEY}`,
-                "Content-Type": "application/json",
-                "Prefer": "wait"
-            },
-            body: JSON.stringify({
-                input: {
-                    prompt: finalPrompt,
-                    go_fast: true,
-                    num_outputs: 1,
-                    aspect_ratio: "1:1",
-                    output_format: "webp",
-                    output_quality: 90
-                }
-            })
-        })
-
-        if (!replicateResponse.ok) {
-            const err = await replicateResponse.text()
-            console.error("Replicate Error:", err)
-            throw new Error("Failed to generate image from AI")
+        if (!imageBlob) {
+            throw new Error("AI generation failed completely");
         }
 
-        const replicateData = await replicateResponse.json()
-        console.log("Replicate output:", replicateData.output)
+        // 5. Upload to Supabase Storage
+        const fileExt = usedProvider === "Pollinations" ? "jpg" : "webp";
+        const extMatch = imageBlob.type.match(/\/([a-zA-Z0-9]+)$/);
+        const actualExt = extMatch ? extMatch[1] : "webp";
+        const fileName = `${user.id}/${crypto.randomUUID()}.${actualExt === 'jpeg' ? 'jpg' : actualExt}`
 
-        let imageUrl = null;
-        if (Array.isArray(replicateData.output) && replicateData.output.length > 0) {
-            imageUrl = replicateData.output[0];
-        } else if (typeof replicateData.output === "string") {
-            imageUrl = replicateData.output;
-        }
-
-        if (!imageUrl) {
-            throw new Error("AI did not return a valid image URL")
-        }
-
-        // 5. Download the image to our server
-        const imageRes = await fetch(imageUrl)
-        if (!imageRes.ok) throw new Error("Failed to download generated image")
-        const imageBlob = await imageRes.blob()
-
-        // 6. Upload to Supabase Storage
-        const fileName = `${user.id}/${crypto.randomUUID()}.webp`
         const { data: storageData, error: storageError } = await supabase.storage
-            .from('designs')
+            .from(DESIGN_BUCKET)
             .upload(fileName, imageBlob, {
-                contentType: 'image/webp',
+                contentType: imageBlob.type,
             })
 
         if (storageError) {
@@ -120,25 +176,27 @@ serve(async (req) => {
             throw new Error('Failed to upload to storage')
         }
 
-        // 7. Get Public URL
+        // 6. Get Public URL
         const { data: publicUrlData } = supabase.storage
-            .from('designs')
+            .from(DESIGN_BUCKET)
             .getPublicUrl(fileName)
 
         const publicUrl = publicUrlData.publicUrl
 
-        // 8. Deduct Credit
-        const { error: creditError } = await supabase.rpc('decrement_credits', {
-            user_id_param: user.id,
-            amount: 1
-        })
+        // 7. Deduct Credit (skip for sys_admin/admin)
+        if (!isUnlimitedCreditsUser) {
+            const { error: creditError } = await supabase.rpc('decrement_credits', {
+                user_id_param: user.id,
+                amount: 1
+            })
 
-        // Fallback if RPC doesn't exist
-        if (creditError) {
-            await supabase.from('profiles').update({ ai_credits: profile.ai_credits - 1 }).eq('id', user.id)
+            // Fallback if RPC doesn't exist
+            if (creditError) {
+                await supabase.from('profiles').update({ ai_credits: Math.max((profile.ai_credits || 0) - 1, 0) }).eq('id', user.id)
+            }
         }
 
-        // 9. Insert into database
+        // 8. Insert into database
         const { data: record, error: dbError } = await supabase
             .from('designs')
             .insert({
@@ -147,7 +205,6 @@ serve(async (req) => {
                 style_preset: style_preset,
                 original_image_url: publicUrl,
                 print_ready_url: publicUrl,
-                image_url: publicUrl, // Duplicate to fix frontend expectations
                 status: 'completed',
                 is_public: false
             })
@@ -156,17 +213,25 @@ serve(async (req) => {
 
         if (dbError) {
             console.error("DB Error:", dbError)
-            throw new Error("Failed to save design record")
+            throw new Error("Failed to save design record: " + JSON.stringify(dbError))
         }
 
-        return new Response(JSON.stringify({ record }), {
+        const recordWithFallback = {
+            ...record,
+            image_url: record?.print_ready_url || record?.original_image_url || null,
+        }
+
+        return new Response(JSON.stringify({ record: recordWithFallback, metadata: { provider: usedProvider } }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         })
 
     } catch (error) {
-        console.error("Edge Function Error:", error.message)
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error("🔥 Edge Function Error Capture:", error)
+        if (error instanceof Error) {
+            console.error("Stack trace:", error.stack)
+        }
+        return new Response(JSON.stringify({ error: error.message || 'Unknown error occurred' }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         })

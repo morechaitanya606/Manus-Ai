@@ -27,7 +27,7 @@ const NAV_LINKS = [
   { href: '/gallery', label: 'Gallery' },
   { href: '/community', label: 'Community' },
   { href: '/studio', label: 'Studio' },
-  { href: '/dashboard/designs', label: 'My Designs' },
+  { href: '/my-designs', label: 'My Designs' },
 ];
 
 export function Navbar() {

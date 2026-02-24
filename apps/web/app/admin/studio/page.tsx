@@ -42,24 +42,24 @@ export default function AdminStudioPage() {
                 const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
                 const { data: storageData, error: storageError } = await supabase.storage
-                    .from('designs')
+                    .from('user-designs')
                     .upload(fileName, file);
 
                 if (storageError) throw storageError;
 
                 const { data: publicUrlData } = supabase.storage
-                    .from('designs')
+                    .from('user-designs')
                     .getPublicUrl(fileName);
 
                 const promptFromName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ');
 
                 const { error: dbError } = await supabase.from('designs').insert({
                     user_id: user.id,
-                    prompt: promptFromName,
+                    prompt: `[UPLOAD] ${promptFromName}`,
                     original_image_url: publicUrlData.publicUrl,
                     print_ready_url: publicUrlData.publicUrl,
                     status: 'completed',
-                    is_public: true,
+                    is_public: false,
                 });
 
                 if (dbError) throw dbError;
@@ -108,7 +108,7 @@ export default function AdminStudioPage() {
                 setCampaignProgress({ step: `Generating Image ${i + 1}/${prompts.length}`, current: i, total: prompts.length });
 
                 try {
-                    const bgResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-design`, {
+                    const bgResponse = await fetch('/api/generate-design', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
