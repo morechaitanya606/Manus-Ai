@@ -122,7 +122,7 @@ export default function HomePage() {
         </div>
 
         {/* Desktop Left Pane: Typography & CTA */}
-        <div className="hidden lg:flex w-full lg:w-1/2 h-full flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 relative border-r border-border-std">
+        <div className="hidden lg:flex w-full lg:w-1/2 flex-col justify-center px-6 lg:px-20 relative border-r border-border-std">
           {/* Decorative Corner */}
           <div className="absolute top-10 left-10 opacity-20 text-cyan hidden md:block">
             <QrCode className="h-10 w-10 text-4xl" />
@@ -142,7 +142,7 @@ export default function HomePage() {
 
             {/* Hero Heading */}
             <div className="flex flex-col gap-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-display leading-[0.9] tracking-tighter text-white uppercase glitch-text" data-text="DESIGN. PRINT. DELIVER.">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-display leading-[0.9] tracking-tighter text-white uppercase">
                 DESIGN. PRINT.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">DELIVER.</span>
               </h1>
@@ -188,7 +188,7 @@ export default function HomePage() {
         </div>
 
         {/* Right Pane: 3D Visualizer */}
-        <div className="hidden lg:flex w-1/2 h-full bg-void relative items-center justify-center overflow-hidden group/visualizer py-32">
+        <div className="hidden lg:flex w-1/2 bg-void relative items-center justify-center overflow-hidden group/visualizer">
           {/* Background Radial Glow */}
           <div className="absolute inset-0 bg-radial-gradient from-cyan/5 to-transparent opacity-50"></div>
 

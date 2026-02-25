@@ -1,0 +1,9 @@
+Testing Leonardo API...
+Leonardo init status: 200
+Polling status: PENDING
+Polling status: COMPLETE
+Success! Image URL: https://cdn.leonardo.ai/users/93eee475-895a-435d-b161-6d79df2f44d1/generations/329d4125-9039-4716-8825-16aea5a4f6a4/Leonardo_Kino_XL_A_cool_tshirt_design_of_a_cyberpunk_samurai_c_0.jpg
+
+Testing Pollinations API without Auth...
+Pollinations status: 530
+error code: 1033

@@ -21,6 +21,8 @@ function ProfileContent() {
     const [fullName, setFullName] = useState(profile?.full_name || '');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const isUnlimitedCreditsUser =
+        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
 
     const handleSave = async () => {
         if (!user) return;
@@ -73,7 +75,7 @@ function ProfileContent() {
                                     </span>
                                     <span className="flex items-center gap-2 text-[10px] tracking-widest px-3 py-1 border border-magenta/30 bg-magenta/10 text-magenta font-bold uppercase">
                                         <Zap className="h-3 w-3" />
-                                        CREDITS: {profile?.ai_credits ?? 0} CR
+                                        CREDITS: {isUnlimitedCreditsUser ? 'UNLIMITED' : `${profile?.ai_credits ?? 0} CR`}
                                     </span>
                                 </div>
                             </div>

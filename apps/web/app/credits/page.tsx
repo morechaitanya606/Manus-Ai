@@ -14,8 +14,15 @@ export default function CreditsPage() {
     const { session, profile } = useAuthStore();
     const queryClient = useQueryClient();
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const isUnlimitedCreditsUser =
+        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
 
     const handleBuy = async (pkg: typeof CREDIT_PACKAGES[0]) => {
+        if (isUnlimitedCreditsUser) {
+            toast.info('SYS_ADMIN has unlimited AI credits.');
+            return;
+        }
+
         if (!session?.user?.id) {
             toast.error('Please sign in to purchase credits.');
             return;
@@ -72,7 +79,7 @@ export default function CreditsPage() {
                             <span className="text-sm font-medium text-text-dim">Current Balance:</span>
                             <span className="text-lg font-bold text-white flex items-center">
                                 <Zap className="w-4 h-4 text-yellow-500 mr-1 fill-yellow-500" />
-                                {profile.ai_credits} Credits
+                                {isUnlimitedCreditsUser ? 'Unlimited' : `${profile.ai_credits} Credits`}
                             </span>
                         </div>
                     )}
@@ -121,11 +128,13 @@ export default function CreditsPage() {
 
                             <Button
                                 onClick={() => handleBuy(pkg)}
-                                disabled={processingId !== null}
+                                disabled={processingId !== null || isUnlimitedCreditsUser}
                                 variant={pkg.popular ? 'gradient' : 'outline'}
                                 className={`w-full py-6 text-lg ${pkg.popular ? 'shadow-[0_0_10px_rgba(0,240,255,0.1)] shadow-purple-500/30' : ''}`}
                             >
-                                {processingId === pkg.id ? (
+                                {isUnlimitedCreditsUser ? (
+                                    'Unlimited for SYS_ADMIN'
+                                ) : processingId === pkg.id ? (
                                     <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Processing...</>
                                 ) : (
                                     `Buy ${pkg.credits} Credits`
