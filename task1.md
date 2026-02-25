@@ -12,5 +12,11 @@
 10. add for image upscaling and bg removed npx supabase secrets set REPLICATE_API_KEY=your_key_here
 npx supabase functions deploy upscale-image if not added code will not run in both vercel and our codebase 
 
-pollinations.ai :- sk_4Uz5BBfZS6gQIxo6mxICzvhFK6GBPc2H
-lernodo key := 1d533d92-7119-4fef-92d7-284d2bdd7f17
+
+12. add both also in front back because user can add images in front and back  ----> done 
+
+today task 
+
+1. make all mockup completed
+2. make ai model perfect for upload image conversion
+3. make galary design proper sorted and properly add farbic material 

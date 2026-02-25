@@ -69,11 +69,17 @@ export default function HomePage() {
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
               className="w-full h-full flex items-center justify-center relative z-10"
             >
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r7kTRy35CA6EY8iGtdBkVVsbhG9Hlft-9R9iiiSWJnKfSjbYywGzr9md10kY9ghnnDCR1ZmUbTbjPw--wEA_nkeIeWMSPgyv0vq4ATBxtfugSCnNJEMHdUp6HX9bTpIe7p5U8QnOgaOiOJY-s0NWGXjgBo-iL4Bl3rEPJKPzA1MVh_qzKpdJiVz9EyxSvVq6CgXAy6b12wP5P_4JxWbBAU457vaS2-dnpKKuYZv0DhOWd__llO2AY3YJmJ5J6QXeXPG0Uxgb8VI"
-                alt="White T-Shirt Render"
-                className="w-[85%] h-[85%] object-contain filter grayscale contrast-125 brightness-90 drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]"
-              />
+              <div className="relative w-[85%] h-[85%]">
+                <Image
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r7kTRy35CA6EY8iGtdBkVVsbhG9Hlft-9R9iiiSWJnKfSjbYywGzr9md10kY9ghnnDCR1ZmUbTbjPw--wEA_nkeIeWMSPgyv0vq4ATBxtfugSCnNJEMHdUp6HX9bTpIe7p5U8QnOgaOiOJY-s0NWGXjgBo-iL4Bl3rEPJKPzA1MVh_qzKpdJiVz9EyxSvVq6CgXAy6b12wP5P_4JxWbBAU457vaS2-dnpKKuYZv0DhOWd__llO2AY3YJmJ5J6QXeXPG0Uxgb8VI"
+                  alt="White T-Shirt Render"
+                  fill
+                  unoptimized
+                  sizes="(max-width: 1024px) 85vw, 425px"
+                  className="object-contain filter grayscale contrast-125 brightness-90 drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]"
+                  priority
+                />
+              </div>
               <div className="absolute inset-0 bg-cyan mix-blend-overlay opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
 
               {/* Revealed Design Always Visible with No Glow */}
@@ -216,10 +222,13 @@ export default function HomePage() {
 
             {/* T-Shirt Image with Glitch/Hover Effect */}
             <div className="relative z-10 w-[400px] h-[500px]">
-              <img
+              <Image
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r7kTRy35CA6EY8iGtdBkVVsbhG9Hlft-9R9iiiSWJnKfSjbYywGzr9md10kY9ghnnDCR1ZmUbTbjPw--wEA_nkeIeWMSPgyv0vq4ATBxtfugSCnNJEMHdUp6HX9bTpIe7p5U8QnOgaOiOJY-s0NWGXjgBo-iL4Bl3rEPJKPzA1MVh_qzKpdJiVz9EyxSvVq6CgXAy6b12wP5P_4JxWbBAU457vaS2-dnpKKuYZv0DhOWd__llO2AY3YJmJ5J6QXeXPG0Uxgb8VI"
                 alt="Ghost T-Shirt Render"
-                className="w-full h-full object-contain filter grayscale contrast-150 brightness-75 opacity-80 mix-blend-screen drop-shadow-[0_0_15px_rgba(0,240,255,0.3)]"
+                fill
+                unoptimized
+                sizes="400px"
+                className="object-contain filter grayscale contrast-150 brightness-75 opacity-80 mix-blend-screen drop-shadow-[0_0_15px_rgba(0,240,255,0.3)]"
               />
               <div className="absolute inset-0 bg-cyan mix-blend-overlay opacity-0 group-hover/visualizer:opacity-20 transition-opacity duration-300"></div>
 
@@ -372,29 +381,45 @@ export default function HomePage() {
       )}
 
       {/* Features Section */}
-      <section className="py-24 bg-[hsl(var(--card))]">
+      <section className="relative z-20 py-24 bg-void border-t border-border-std border-dashed">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold font-display">
-              How <span className="gradient-text">EVERYDAYDROP</span> Works
+          <div className="flex flex-col items-center text-center mb-16 border-b border-border-std pb-8">
+            <div className="inline-flex items-center gap-2 border border-cyan/30 bg-cyan/5 px-3 py-1.5 mb-6">
+              <Terminal className="h-4 w-4 text-cyan" />
+              <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">OPERATION_MANUAL //</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tighter text-white uppercase">
+              How <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">EVERYDAYDROP</span> Works
             </h2>
-            <p className="mt-4 text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto">
-              From imagination to doorstep — create, customize, and get it printed on premium products
+            <p className="mt-4 text-text-dim font-mono text-sm max-w-2xl mx-auto tracking-wide">
+              &gt; From imagination to doorstep — create, customize, and get it printed on premium products.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((feature, i) => (
               <div
                 key={feature.title}
-                className="group relative bg-[hsl(var(--muted))] rounded-2xl p-6 hover:bg-[hsl(var(--card))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.08)] transition-all duration-300 border border-transparent hover:border-[hsl(var(--border))]"
+                className="group relative bg-panel border flex flex-col items-start border-border-std p-6 hover:border-cyan transition-colors duration-300 overflow-hidden"
               >
-                <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white mb-4 shadow-lg shadow-[hsl(var(--primary)/0.2)] group-hover:scale-110 transition-transform">
-                  <feature.icon className="h-6 w-6" />
+                {/* Crosshairs & Accents */}
+                <div className="absolute top-0 right-0 h-4 w-4 border-t border-r border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-0 left-0 h-4 w-4 border-b border-l border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                <div className="absolute top-2 right-2 text-[8px] font-mono text-cyan/50 tracking-widest">
+                  PHASE_0{i + 1}
                 </div>
-                <div className="text-xs font-bold text-[hsl(var(--primary))] mb-2">STEP {i + 1}</div>
-                <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">{feature.desc}</p>
+
+                <div className="flex items-center justify-center h-12 w-12 border border-cyan/30 bg-cyan/10 text-cyan mb-4 group-hover:bg-cyan group-hover:text-void transition-colors shadow-[0_0_10px_rgba(0,240,255,0.1)] group-hover:shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+                  <feature.icon className="h-5 w-5" />
+                </div>
+
+                <div className="text-[10px] font-mono font-bold text-magenta mb-2 uppercase tracking-widest">STEP {i + 1}</div>
+                <h3 className="text-lg font-mono font-bold text-white uppercase tracking-tight mb-2">{feature.title}</h3>
+                <p className="text-xs font-mono text-text-dim leading-relaxed">{feature.desc}</p>
+
+                {/* Hover scanline */}
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan shadow-[0_0_10px_#00F0FF] opacity-0 group-hover:opacity-50 group-hover:animate-scan"></div>
               </div>
             ))}
           </div>
@@ -402,111 +427,73 @@ export default function HomePage() {
       </section>
 
       {/* Bulk Order / Printing Banner */}
-      <section className="py-12 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <Package className="h-8 w-8 mx-auto mb-3 opacity-90" />
-              <h3 className="font-bold text-lg">Bulk Orders</h3>
-              <p className="text-sm text-white/80 mt-1">Order in bulk with ease — corporate branding, events, merch</p>
+      <section className="py-12 bg-magenta relative border-y border-magenta z-20 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern bg-[length:20px_20px] opacity-20 pointer-events-none mix-blend-overlay"></div>
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-white opacity-50 shadow-[0_0_10px_#FFF]"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-white opacity-50 shadow-[0_0_10px_#FFF]"></div>
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/20">
+            <div className="py-4 md:py-0 px-4">
+              <Package className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">Bulk Orders</h3>
+              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Order in bulk with ease — corporate branding, events, merch</p>
             </div>
-            <div>
-              <Printer className="h-8 w-8 mx-auto mb-3 opacity-90" />
-              <h3 className="font-bold text-lg">High Quality Printing</h3>
-              <p className="text-sm text-white/80 mt-1">Printed on our own machines — DTF, sublimation, screen print</p>
+            <div className="py-4 md:py-0 px-4">
+              <Printer className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">High Quality Printing</h3>
+              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Printed on our own machines — DTF, sublimation, screen print</p>
             </div>
-            <div>
-              <Zap className="h-8 w-8 mx-auto mb-3 opacity-90" />
-              <h3 className="font-bold text-lg">Fast Delivery</h3>
-              <p className="text-sm text-white/80 mt-1">Quick turnaround — shipped across India within 3-5 days</p>
+            <div className="py-4 md:py-0 px-4">
+              <Zap className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">Fast Delivery</h3>
+              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Quick turnaround — shipped across India within 3-5 days</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Preview */}
-      {products && products.length > 0 && (
-        <section className="py-24 bg-[hsl(var(--muted))]">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-12">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold font-display">
-                  Explore Our <span className="gradient-text">Products</span>
-                </h2>
-                <p className="mt-2 text-[hsl(var(--muted-foreground))]">
-                  Browse through our catalogue and design your own product
-                </p>
-              </div>
-              <Link href="/gallery">
-                <Button variant="outline" className="rounded-full">
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {products.slice(0, 5).map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/gallery/${product.id}`}
-                  className="group bg-[hsl(var(--card))] rounded-2xl overflow-hidden border border-[hsl(var(--border))] hover:shadow-xl hover:shadow-[hsl(var(--primary)/0.06)] transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="aspect-square bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--border))] relative overflow-hidden">
-                    {product.image_url ? (
-                      <Image
-                        src={product.image_url}
-                        alt={product.name}
-                        fill
-                        className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
-                        sizes="20vw"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <ShoppingBag className="h-12 w-12 text-[hsl(var(--muted-foreground)/0.3)]" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-sm group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold">Ôé╣{Number(product.base_price).toFixed(0)}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium capitalize">
-                        {product.category}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* CTA Section */}
-      <section className="py-24 bg-[hsl(var(--card))]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent))] rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-[hsl(var(--card))]/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[hsl(var(--card))]/10 blur-3xl translate-y-1/2 -translate-x-1/2" />
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--card))]/20 px-4 py-1.5 text-sm font-medium mb-6">
-                <Star className="h-4 w-4" />
-                Start for free — AI credits included
+      <section className="py-24 bg-void relative z-20 border-t border-border-std border-dashed flex justify-center">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 w-full">
+          <div className="border border-cyan/40 bg-panel/80 p-12 md:p-20 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-10 pointer-events-none"></div>
+
+            {/* glowing corner accents */}
+            <div className="absolute top-0 left-0 w-16 h-16 border-t-[3px] border-l-[3px] border-cyan shadow-[0_0_15px_rgba(0,240,255,0.5)]"></div>
+            <div className="absolute bottom-0 right-0 w-16 h-16 border-b-[3px] border-r-[3px] border-magenta shadow-[0_0_15px_rgba(211,45,255,0.5)]"></div>
+
+            {/* Cyberpunk Decor */}
+            <div className="absolute right-8 top-8 opacity-20 hidden md:block">
+              <QrCode className="w-24 h-24 text-cyan" />
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="inline-flex items-center gap-2 border border-magenta/50 bg-magenta/10 px-3 py-1 mb-6">
+                <Star className="h-3 w-3 text-magenta" />
+                <span className="font-mono text-[10px] font-bold text-magenta uppercase tracking-widest">Start for free — AI credits included</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">
-                Ready to Create Something Amazing?
+              <h2 className="text-4xl md:text-6xl font-bold font-display mb-6 tracking-tighter uppercase text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                Ready to Create<br />
+                <span className="text-cyan drop-shadow-[0_0_12px_rgba(0,240,255,0.6)]">Something Amazing?</span>
               </h2>
-              <p className="text-white/80 mb-8 max-w-lg mx-auto">
-                Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep
+              <p className="text-text-dim max-w-xl mx-auto mb-10 font-mono text-sm tracking-wide">
+                &gt; Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep.
               </p>
+
               <Link href="/signup">
-                <Button size="lg" className="rounded-full px-10 bg-[hsl(var(--card))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--card))]/90 font-semibold shadow-xl">
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <button className="relative group/btn bg-cyan hover:bg-white transition-colors h-16 px-10 flex items-center justify-between gap-6 shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] border-none outline-none">
+                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                  <span className="relative z-10 font-mono font-bold text-base text-black tracking-widest uppercase">
+                    [ Get Started Free ]
+                  </span>
+                  <ArrowRight className="relative z-10 h-6 w-6 text-black group-hover/btn:translate-x-1 transition-transform" />
+
+                  {/* Glitch sub-text */}
+                  <div className="absolute -bottom-6 right-0 font-mono text-[8px] text-cyan uppercase tracking-widest opacity-70">
+                    AUTH_REQUIRED //
+                  </div>
+                </button>
               </Link>
             </div>
           </div>
@@ -515,4 +502,3 @@ export default function HomePage() {
     </div>
   );
 }
-

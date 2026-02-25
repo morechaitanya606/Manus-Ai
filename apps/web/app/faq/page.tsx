@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search, Terminal, ArrowRight } from 'lucide-react';
 
 const FAQ_CATEGORIES = [
     {
@@ -73,15 +73,21 @@ export default function FAQPage() {
     })).filter(cat => cat.items.length > 0);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-void">
             {/* Hero */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-panel-highlight via-[hsl(var(--card))] to-[hsl(var(--muted))]">
+            <section className="relative overflow-hidden bg-void border-b border-border-std">
+                <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05]" />
+                <div className="absolute inset-0 scanline opacity-10 pointer-events-none" />
                 <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold font-display">
+                    <div className="inline-flex items-center gap-2 border border-cyan/30 bg-cyan/5 px-3 py-1.5 mb-6">
+                        <Terminal className="h-4 w-4 text-cyan" />
+                        <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">FAQ_DATABASE //</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase tracking-tighter">
                         Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Questions</span>
                     </h1>
-                    <p className="mt-6 text-lg text-text-dim">
-                        Everything you need to know about EVERYDAYDROP
+                    <p className="mt-6 text-text-dim font-mono text-sm">
+                        &gt; Everything you need to know about EVERYDAYDROP
                     </p>
                     {/* Search */}
                     <div className="mt-8 max-w-md mx-auto relative">
@@ -91,19 +97,19 @@ export default function FAQPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search questions..."
-                            className="w-full pl-12 pr-4 py-3 rounded-none border border-border-std border-dashed border border-border-std bg-panel text-sm focus:outline-none focus:ring-2 focus:ring-cyan transition"
+                            className="w-full pl-12 pr-4 py-3 border border-border-std bg-panel text-sm font-mono focus:outline-none focus:border-cyan transition-colors"
                         />
                     </div>
                 </div>
             </section>
 
             {/* FAQ Accordion */}
-            <section className="py-20 bg-panel">
+            <section className="py-20 bg-void">
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-10">
                     {filtered.map((cat) => (
                         <div key={cat.category}>
-                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                <span className="h-1 w-6 rounded-none border border-border-std border-dashed bg-gradient-to-r from-cyan to-magenta" />
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-mono text-white uppercase tracking-wider">
+                                <span className="h-1 w-6 bg-gradient-to-r from-cyan to-magenta" />
                                 {cat.category}
                             </h2>
                             <div className="space-y-2">
@@ -111,16 +117,16 @@ export default function FAQPage() {
                                     const key = `${cat.category}-${item.q}`;
                                     const isOpen = openItems.has(key);
                                     return (
-                                        <div key={key} className="border border-border-std rounded-none border border-border-std overflow-hidden">
+                                        <div key={key} className="border border-border-std overflow-hidden bg-panel">
                                             <button
                                                 onClick={() => toggle(key)}
-                                                className="w-full flex items-center justify-between p-4 text-left hover:bg-[hsl(var(--muted)/0.5)] transition"
+                                                className="w-full flex items-center justify-between p-4 text-left hover:bg-panel-highlight transition-colors"
                                             >
-                                                <span className="font-medium text-sm pr-4">{item.q}</span>
-                                                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-text-dim transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                                                <span className="font-mono text-sm pr-4 text-white">{item.q}</span>
+                                                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-cyan transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                             </button>
                                             {isOpen && (
-                                                <div className="px-4 pb-4 text-sm text-text-dim animate-fade-in">
+                                                <div className="px-4 pb-4 text-sm text-text-dim animate-fade-in font-mono border-t border-border-std pt-3">
                                                     {item.a}
                                                 </div>
                                             )}
@@ -134,12 +140,13 @@ export default function FAQPage() {
             </section>
 
             {/* Still have questions */}
-            <section className="py-16 bg-panel-highlight">
+            <section className="py-16 bg-panel border-t border-border-std">
                 <div className="mx-auto max-w-2xl px-4 text-center">
-                    <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-                    <p className="text-text-dim mb-6">Our team is happy to help with anything</p>
-                    <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan to-magenta text-white rounded-none border border-border-std border-dashed font-semibold hover:opacity-90 transition shadow-[0_0_10px_rgba(0,240,255,0.1)]">
+                    <h2 className="text-2xl font-bold mb-4 text-white font-mono uppercase tracking-wider">Still have questions?</h2>
+                    <p className="text-text-dim mb-6 font-mono text-sm">&gt; Our team is happy to help with anything</p>
+                    <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest shadow-[0_0_15px_rgba(0,240,255,0.2)]">
                         Contact Us
+                        <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
             </section>

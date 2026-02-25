@@ -9,17 +9,17 @@ import { Sparkles, CheckCircle2, Zap, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { hasUnlimitedCreditsAccess } from '../../lib/roles';
 
 export default function CreditsPage() {
     const { session, profile } = useAuthStore();
     const queryClient = useQueryClient();
     const [processingId, setProcessingId] = useState<string | null>(null);
-    const isUnlimitedCreditsUser =
-        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
+    const isUnlimitedCreditsUser = hasUnlimitedCreditsAccess(profile);
 
     const handleBuy = async (pkg: typeof CREDIT_PACKAGES[0]) => {
         if (isUnlimitedCreditsUser) {
-            toast.info('SYS_ADMIN has unlimited AI credits.');
+            toast.info('Admin accounts have unlimited AI credits.');
             return;
         }
 
@@ -133,7 +133,7 @@ export default function CreditsPage() {
                                 className={`w-full py-6 text-lg ${pkg.popular ? 'shadow-[0_0_10px_rgba(0,240,255,0.1)] shadow-purple-500/30' : ''}`}
                             >
                                 {isUnlimitedCreditsUser ? (
-                                    'Unlimited for SYS_ADMIN'
+                                    'Unlimited for Admin'
                                 ) : processingId === pkg.id ? (
                                     <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Processing...</>
                                 ) : (

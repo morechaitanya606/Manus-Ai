@@ -49,7 +49,7 @@ export default function SignupPage() {
                     </div>
                     <h1 className="text-2xl font-bold font-mono tracking-widest text-white uppercase mb-2">VERIFICATION REQUIRED</h1>
                     <p className="text-[10px] font-mono tracking-widest text-text-dim mb-8 uppercase leading-relaxed">
-                        &gt; We've sent an email to <strong>{email}</strong>.<br />
+                        &gt; We&apos;ve sent an email to <strong>{email}</strong>.<br />
                         &gt; Please verify your email to continue.
                     </p>
                     <Link href="/login">

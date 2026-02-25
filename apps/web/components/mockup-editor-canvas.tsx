@@ -75,7 +75,7 @@ export default function MockupEditorCanvas({ baseImage, designImage, onSave, onP
             designNodeRef.current.getLayer().batchDraw();
             setIsSelected(true);
         }
-    }, [designImg]);
+    }, [designImg, dimensions.width, dimensions.height]);
 
     const checkDeselect = (e: any) => {
         // deselect when clicked on empty area
@@ -157,8 +157,9 @@ export default function MockupEditorCanvas({ baseImage, designImage, onSave, onP
                     src={baseImage}
                     alt="Product Base"
                     fill
-                    className="object-contain pointer-events-none p-2 sm:p-4 z-10 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] opacity-90"
+                    className="object-contain pointer-events-none z-10 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] opacity-90"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
                 />
 
                 {/* Print area guide */}

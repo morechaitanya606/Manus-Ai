@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { hasUnlimitedCreditsAccess } from '../../../../../../lib/roles';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
@@ -36,8 +37,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unable to verify admin profile' }, { status: 403 });
     }
 
-    const isAdmin =
-      profile.role === 'admin' || String(profile.username || '').trim().toLowerCase() === 'sys_admin';
+    const isAdmin = hasUnlimitedCreditsAccess(profile);
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }

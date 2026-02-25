@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
 import { useAuthStore } from '../../stores/auth-store';
 import { useGenerateDesign, useUploadDesign, useRemoveBackground, useUpscaleImage } from '../../hooks/use-designs';
 import { useProducts } from '../../hooks/use-products';
-import { Sparkles, Terminal, Activity, Shuffle, ZoomIn, ZoomOut, Layers as LayersIcon, ArrowRight, Shirt, AlertCircle, Loader2, X, Download, Upload, Wand2, ScissorsLineDashed, ChevronDown } from 'lucide-react';
+import { Sparkles, Terminal, Activity, Shuffle, ZoomIn, ZoomOut, Layers as LayersIcon, ArrowRight, Shirt, AlertCircle, Loader2, X, Download, Upload, Wand2, ScissorsLineDashed, ChevronDown, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MockupEditor } from '../../components/mockup-editor';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
+import { hasUnlimitedCreditsAccess } from '../../lib/roles';
 
 const MockupViewer3D = dynamic(() => import('../../components/mockup-viewer-3d'), {
   ssr: false,
@@ -30,15 +31,18 @@ const GENERATION_STEPS = [
 ];
 
 const GARMENT_COLORS = [
-  { name: 'BLK', class: 'bg-[#16161A]' },
-  { name: 'WHT', class: 'bg-[#F5F5F5]' },
-  { name: 'GRY', class: 'bg-[#2A2A35]' },
+  { name: 'BLK', class: 'bg-[#16161A]', hex: '#16161A' },
+  { name: 'WHT', class: 'bg-[#F5F5F5]', hex: '#F5F5F5' },
+  { name: 'GRY', class: 'bg-[#2A2A35]', hex: '#2A2A35' },
+  { name: 'NVY', class: 'bg-[#1B2A4A]', hex: '#1B2A4A' },
+  { name: 'RED', class: 'bg-[#8B1A1A]', hex: '#8B1A1A' },
+  { name: 'GRN', class: 'bg-[#1A3C2A]', hex: '#1A3C2A' },
 ];
 
 const GARMENT_TYPES = [
   { id: 'tshirt', label: 'T-Shirt', icon: <Shirt className="w-3 h-3" /> },
   { id: 'hoodie', label: 'Hoodie', icon: <LayersIcon className="w-3 h-3" /> },
-  { id: 'longsleeve', label: 'Long Stv', icon: <Shirt className="w-3 h-3" /> },
+  { id: 'bag', label: 'Tote Bag', icon: <ShoppingBag className="w-3 h-3" /> },
 ];
 
 const PRINT_PLACEMENTS = [
@@ -98,6 +102,7 @@ export default function StudioPage() {
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [promptReferenceImage, setPromptReferenceImage] = useState<{ url: string; name: string } | null>(null);
   const [canvasZoom, setCanvasZoom] = useState(100);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(320);
 
   const [previewImages, setPreviewImages] = useState<{ front: string | null, back: string | null }>({ front: null, back: null });
   const [modalOpen, setModalOpen] = useState(false);
@@ -111,6 +116,7 @@ export default function StudioPage() {
   const signatureCacheRef = useRef<Map<string, string>>(new Map());
   const normalizedUrlCacheRef = useRef<Map<string, string>>(new Map());
   const generatedDesignsRef = useRef<StudioDesign[]>([]);
+  const isResizingLeftPanelRef = useRef(false);
 
   useEffect(() => {
     generatedDesignsRef.current = generatedDesigns;
@@ -137,7 +143,7 @@ export default function StudioPage() {
     return distance;
   };
 
-  const getComparableImageUrl = (imageUrl: string): string => {
+  const getComparableImageUrl = useCallback((imageUrl: string): string => {
     const raw = String(imageUrl || '').trim();
     if (!raw) return '';
 
@@ -154,18 +160,18 @@ export default function StudioPage() {
     const normalized = raw.slice(0, end);
     normalizedUrlCacheRef.current.set(raw, normalized);
     return normalized;
-  };
+  }, []);
 
-  const loadImageElement = (src: string) =>
+  const loadImageElement = useCallback((src: string) =>
     new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new window.Image();
       image.decoding = 'async';
       image.onload = () => resolve(image);
       image.onerror = () => reject(new Error('Image load failed'));
       image.src = src;
-    });
+    }), []);
 
-  const getImageSignature = async (imageUrl: string): Promise<string | null> => {
+  const getImageSignature = useCallback(async (imageUrl: string): Promise<string | null> => {
     if (!imageUrl) return null;
     const signatureKey = getComparableImageUrl(imageUrl) || imageUrl;
     const cached = signatureCacheRef.current.get(signatureKey);
@@ -215,7 +221,7 @@ export default function StudioPage() {
     } catch {
       return null;
     }
-  };
+  }, [getComparableImageUrl, loadImageElement]);
 
   const appendUniqueDesigns = async (incoming: StudioDesign[]) => {
     const uniqueIncoming: StudioDesign[] = [];
@@ -371,7 +377,7 @@ export default function StudioPage() {
     return () => {
       cancelled = true;
     };
-  }, [generatedDesigns]);
+  }, [generatedDesigns, getComparableImageUrl, getImageSignature]);
 
   const getCurrentLayerDesign = () => {
     const layerId = activeLayers[garmentView as 'front' | 'back'];
@@ -619,6 +625,42 @@ export default function StudioPage() {
     setCanvasZoom(100);
   };
 
+  const clampLeftPanelWidth = useCallback((value: number) => {
+    return Math.min(520, Math.max(280, value));
+  }, []);
+
+  const startLeftPanelResize = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (window.innerWidth < 1024) return;
+    event.preventDefault();
+    isResizingLeftPanelRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isResizingLeftPanelRef.current) return;
+      setLeftPanelWidth(clampLeftPanelWidth(event.clientX));
+    };
+
+    const stopResizing = () => {
+      if (!isResizingLeftPanelRef.current) return;
+      isResizingLeftPanelRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', stopResizing);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', stopResizing);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [clampLeftPanelWidth]);
+
   const handlePreviewAll = () => {
     // Only capture and export the canvases that have an active design loaded AND are allowed by printPlacement
     const useFront = printPlacement === 'front' || printPlacement === 'both';
@@ -657,18 +699,54 @@ export default function StudioPage() {
     );
   }
 
-  // For demonstration, map garment type/view to placeholder distinct base images.
-  // In a real app, these would map to your high-quality transparent PNGs from S3/local.
-  const placeholders: Record<string, string> = {
-    'tshirt_front': '/images/tshirt-base.jpg',
-    'tshirt_back': 'https://picsum.photos/seed/tshirtback/500/500',
-    'hoodie_front': 'https://picsum.photos/seed/hoodiefront/500/500',
-    'hoodie_back': 'https://picsum.photos/seed/hoodieback/500/500',
-    'longsleeve_front': 'https://picsum.photos/seed/longsleevefront/500/500',
-    'longsleeve_back': 'https://picsum.photos/seed/longsleeveback/500/500',
+  // Dynamic base image selection — picks the correct product photo based on garmentType + garmentColor
+  const getBaseImage = (type: string, view: string): string => {
+    const isWhite = garmentColor === 'WHT';
+
+    const imageMap: Record<string, Record<string, { white: string; black: string }>> = {
+      tshirt: {
+        front: {
+          white: '/images/mockups/tshirt_white_front.jpg',
+          black: '/images/mockups/tshirt_black_front.jpeg',
+        },
+        back: {
+          white: '/images/mockups/tshirt_white_back.jpeg',
+          black: '/images/mockups/tshirt_black_back.jpeg',
+        },
+      },
+      hoodie: {
+        front: {
+          white: '/images/mockups/hoodie_white_front.jpeg',
+          black: '/images/mockups/hoodie_black_front.jpeg',
+        },
+        back: {
+          white: '/images/mockups/hoodie_white_back.jpeg',
+          black: '/images/mockups/hoodie_black_back.jpeg',
+        },
+      },
+      bag: {
+        front: {
+          white: '/images/mockups/tote_bag.jpeg',
+          black: '/images/mockups/tote_bag.jpeg',
+        },
+        back: {
+          white: '/images/mockups/tote_bag.jpeg',
+          black: '/images/mockups/tote_bag.jpeg',
+        },
+      },
+    };
+
+    const product = imageMap[type];
+    if (!product) return '/images/mockups/tshirt_black_front.jpeg';
+    const side = product[view];
+    if (!side) return '/images/mockups/tshirt_black_front.jpeg';
+    return isWhite ? side.white : side.black;
   };
 
-  const currentBaseImage = placeholders[`${garmentType}_${garmentView}`] || products?.[0]?.image_url || 'https://picsum.photos/seed/shirt/500/500';
+  // Map garment color name to hex for 3D viewer
+  const garmentColorHex = GARMENT_COLORS.find(c => c.name === garmentColor)?.hex || '#2A2A35';
+
+  const currentBaseImage = getBaseImage(garmentType, garmentView);
   const activeDesignFront = generatedDesigns.find(d => d.id === activeLayers.front);
   const activeDesignBack = generatedDesigns.find(d => d.id === activeLayers.back);
   const currentActiveDesign = garmentView === 'front' ? activeDesignFront : activeDesignBack;
@@ -677,8 +755,7 @@ export default function StudioPage() {
   const canEditActive = Boolean(
     activeEditSource && (prompt.trim() || editText.trim() || editAddonIcon !== 'none')
   );
-  const isUnlimitedCreditsUser =
-    profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
+  const isUnlimitedCreditsUser = hasUnlimitedCreditsAccess(profile);
   const currentCredits = profile?.ai_credits ?? 0;
 
   return (
@@ -688,7 +765,10 @@ export default function StudioPage() {
       <div className="absolute inset-0 crt-overlay pointer-events-none z-[100]" />
 
       {/* LEFT PANEL: TOOLS & ASSETS */}
-      <aside className="w-full lg:w-[320px] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full">
+      <aside
+        style={{ ['--left-panel-width' as string]: `${leftPanelWidth}px` } as CSSProperties}
+        className="w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full"
+      >
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
           <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Design Prompt</span>
           <Terminal className="text-text-dim h-4 w-4" />
@@ -732,9 +812,12 @@ export default function StudioPage() {
               />
               {promptReferenceImage && (
                 <div className="mt-2 flex items-center gap-2 border border-cyan/30 bg-cyan/5 p-1.5 relative">
-                  <img
+                  <Image
                     src={promptReferenceImage.url}
                     alt="Reference preview"
+                    width={40}
+                    height={40}
+                    unoptimized
                     className="w-10 h-10 object-cover border border-border-std shrink-0"
                     onError={() => setPromptReferenceImage(null)}
                   />
@@ -954,10 +1037,13 @@ export default function StudioPage() {
                     <X className="w-3 h-3" />
                   </button>
                   <div className="absolute inset-0 bg-[linear-gradient(135deg,#f2f2f2_0%,#d9d9d9_45%,#2b2b35_100%)] opacity-95" />
-                  <img
+                  <Image
                     src={design.image_url}
                     alt="Generated Asset"
-                    className="relative z-10 w-full h-full object-contain p-2 drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                    fill
+                    unoptimized
+                    sizes="(max-width: 1024px) 45vw, 220px"
+                    className="relative z-10 object-contain p-2 drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]"
                     onError={() => removeDesignFromLibrary(design.id)}
                   />
                   <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/80 to-transparent p-1.5">
@@ -980,6 +1066,17 @@ export default function StudioPage() {
           </div>
         </div>
       </aside>
+
+      <div
+        onMouseDown={startLeftPanelResize}
+        className="hidden lg:flex w-2 shrink-0 cursor-col-resize select-none items-center justify-center border-r border-border-std bg-panel/30 hover:bg-cyan/10 transition-colors z-20"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize design prompt panel"
+        title="Drag to resize prompt panel"
+      >
+        <div className="h-16 w-[2px] bg-border-std" />
+      </div>
 
       {/* CENTER PANEL: THE STAGE */}
       <section className="w-full lg:flex-1 flex flex-col relative bg-void/50 min-h-[360px] sm:min-h-[500px]">
@@ -1039,18 +1136,24 @@ export default function StudioPage() {
                 {activeDesignFront ? (
                   <MockupEditor
                     editorRef={frontEditorRef}
-                    baseImage={placeholders[`${garmentType}_front`] || products?.[0]?.image_url || 'https://picsum.photos/seed/shirt/500/500'}
+                    baseImage={getBaseImage(garmentType, 'front')}
                     designImage={activeDesignFront.image_url}
                     onPreview={handlePreviewAll}
                   />
                 ) : (
                   <div className="relative w-full h-full flex-1">
-                    <img
+                    <Image
+                      src={getBaseImage(garmentType, 'front')}
                       alt="Base Substrate Front"
-                      className="w-full h-full object-contain filter grayscale contrast-125 brightness-90 opacity-50"
-                      src={placeholders[`${garmentType}_front`] || products?.[0]?.image_url || 'https://picsum.photos/seed/shirt/500/500'}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 1024px) 90vw, 500px"
+                      className="object-contain filter grayscale contrast-125 brightness-90 opacity-50"
                     />
-                    <div className="absolute top-[20%] left-[28%] w-[44%] h-[50%] border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none">
+                    <div className={`absolute border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none ${garmentType === 'hoodie' ? 'top-[32%] left-[30%] w-[40%] h-[38%]' :
+                        garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
+                          'top-[20%] left-[28%] w-[44%] h-[50%]'
+                      }`}>
                       <Sparkles className="h-8 w-8 text-cyan/40 mb-2" />
                       <span className="font-mono text-[10px] text-cyan/60 uppercase text-center px-4">Generate a design<br />for the Front</span>
                     </div>
@@ -1063,18 +1166,24 @@ export default function StudioPage() {
                 {activeDesignBack ? (
                   <MockupEditor
                     editorRef={backEditorRef}
-                    baseImage={placeholders[`${garmentType}_back`] || products?.[0]?.image_url || 'https://picsum.photos/seed/shirt/500/500'}
+                    baseImage={getBaseImage(garmentType, 'back')}
                     designImage={activeDesignBack.image_url}
                     onPreview={handlePreviewAll}
                   />
                 ) : (
                   <div className="relative w-full h-full flex-1">
-                    <img
+                    <Image
+                      src={getBaseImage(garmentType, 'back')}
                       alt="Base Substrate Back"
-                      className="w-full h-full object-contain filter grayscale contrast-125 brightness-90 opacity-50"
-                      src={placeholders[`${garmentType}_back`] || products?.[0]?.image_url || 'https://picsum.photos/seed/shirt/500/500'}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 1024px) 90vw, 500px"
+                      className="object-contain filter grayscale contrast-125 brightness-90 opacity-50"
                     />
-                    <div className="absolute top-[20%] left-[28%] w-[44%] h-[50%] border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none">
+                    <div className={`absolute border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none ${garmentType === 'hoodie' ? 'top-[32%] left-[30%] w-[40%] h-[38%]' :
+                        garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
+                          'top-[20%] left-[28%] w-[44%] h-[50%]'
+                      }`}>
                       <Sparkles className="h-8 w-8 text-cyan/40 mb-2" />
                       <span className="font-mono text-[10px] text-cyan/60 uppercase text-center px-4">Generate a design<br />for the Back</span>
                     </div>
@@ -1105,10 +1214,13 @@ export default function StudioPage() {
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3 bg-cyan/10 border border-cyan p-2 cursor-pointer group shadow-[0_0_10px_rgba(0,240,255,0.1)]">
                     <div className="w-8 h-8 bg-void border border-border-std overflow-hidden shrink-0">
-                      <img
-                        className="w-full h-full object-cover grayscale brightness-125"
+                      <Image
                         src={currentActiveDesign.image_url}
                         alt="Active Layer"
+                        width={32}
+                        height={32}
+                        unoptimized
+                        className="w-full h-full object-cover grayscale brightness-125"
                         onError={() => removeDesignFromLibrary(currentActiveDesign.id)}
                       />
                     </div>
@@ -1230,11 +1342,11 @@ export default function StudioPage() {
             <div className="space-y-1.5 pt-3 border-t border-dashed border-border-std">
               <div className="flex justify-between font-mono text-[9px]">
                 <span className="text-text-dim">MATERIAL</span>
-                <span className="text-white">100% COTTON</span>
+                <span className="text-white">{garmentType === 'bag' ? '100% CANVAS' : '100% COTTON'}</span>
               </div>
               <div className="flex justify-between font-mono text-[9px]">
                 <span className="text-text-dim">WEIGHT</span>
-                <span className="text-white">240 GSM</span>
+                <span className="text-white">{garmentType === 'bag' ? '12 OZ' : garmentType === 'hoodie' ? '340 GSM' : '240 GSM'}</span>
               </div>
             </div>
           </div>
@@ -1315,16 +1427,44 @@ export default function StudioPage() {
                   {/* Front Preview Shell */}
                   {previewImages.front ? (
                     <div className="relative h-[45%] sm:h-full w-full sm:w-auto aspect-[4/5] bg-panel/30 border border-border-std overflow-hidden">
-                      <img src={placeholders[`${garmentType}_front`] || products?.[0]?.image_url || ''} alt="Front Base" className="absolute inset-0 w-full h-full object-contain p-4 z-0 opacity-80" />
-                      <img src={previewImages.front} alt="Front Design" className="absolute inset-0 w-full h-full object-contain p-4 z-10 drop-shadow-md" />
+                      <Image
+                        src={getBaseImage(garmentType, 'front')}
+                        alt="Front Base"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 90vw, 320px"
+                        className="absolute inset-0 object-contain p-4 z-0 opacity-80"
+                      />
+                      <Image
+                        src={previewImages.front}
+                        alt="Front Design"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 90vw, 320px"
+                        className="absolute inset-0 object-contain p-4 z-10 drop-shadow-md"
+                      />
                     </div>
                   ) : null}
 
                   {/* Back Preview Shell */}
                   {previewImages.back ? (
                     <div className="relative h-[45%] sm:h-full w-full sm:w-auto aspect-[4/5] bg-panel/30 border border-border-std overflow-hidden">
-                      <img src={placeholders[`${garmentType}_back`] || products?.[0]?.image_url || ''} alt="Back Base" className="absolute inset-0 w-full h-full object-contain p-4 z-0 opacity-80" />
-                      <img src={previewImages.back} alt="Back Design" className="absolute inset-0 w-full h-full object-contain p-4 z-10 drop-shadow-md" />
+                      <Image
+                        src={getBaseImage(garmentType, 'back')}
+                        alt="Back Base"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 90vw, 320px"
+                        className="absolute inset-0 object-contain p-4 z-0 opacity-80"
+                      />
+                      <Image
+                        src={previewImages.back}
+                        alt="Back Design"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 90vw, 320px"
+                        className="absolute inset-0 object-contain p-4 z-10 drop-shadow-md"
+                      />
                     </div>
                   ) : null}
 
@@ -1336,7 +1476,7 @@ export default function StudioPage() {
                   )}
                 </div>
               ) : (
-                <MockupViewer3D frontTextureUrl={previewImages.front} backTextureUrl={previewImages.back} view={garmentView as 'front' | 'back'} />
+                <MockupViewer3D frontTextureUrl={previewImages.front} backTextureUrl={previewImages.back} view={garmentView as 'front' | 'back'} productType={garmentType as 'tshirt' | 'hoodie' | 'bag'} color={garmentColorHex} />
               )}
             </div>
 

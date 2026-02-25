@@ -7,10 +7,52 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 const DESIGN_BUCKET = 'user-designs'
+const LEONARDO_BASE_URL = (Deno.env.get('LEONARDO_BASE_URL') || 'https://cloud.leonardo.ai/api/rest/v1').replace(/\/+$/, '')
+const LEONARDO_MODEL_ID = Deno.env.get('LEONARDO_MODEL_ID') || 'aa77f04e-3eec-4034-9c07-d0f619684628'
+const LEONARDO_VISION_XL_MODEL_ID = Deno.env.get('LEONARDO_VISION_XL_MODEL_ID') || '6bef9f1b-29cb-40c7-b70d-ad2c397024d1'
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function getLeonardoApiKey() {
+    const apiKey = Deno.env.get('LEONARDO_API_KEY')?.trim()
+    if (!apiKey) {
+        throw new Error('Missing LEONARDO_API_KEY environment variable')
+    }
+    if (apiKey === LEONARDO_MODEL_ID || apiKey === LEONARDO_VISION_XL_MODEL_ID) {
+        throw new Error('LEONARDO_API_KEY is currently set to a model ID. Set your actual Leonardo API key in LEONARDO_API_KEY.')
+    }
+    return apiKey
+}
+
+function withLeonardoAuthHint(message: string) {
+    const lower = message.toLowerCase()
+    const isAuthError =
+        lower.includes('access-denied') ||
+        lower.includes('unauthorized') ||
+        lower.includes('authorization hook')
+
+    if (!isAuthError) return message
+
+    const configuredApiKey = Deno.env.get('LEONARDO_API_KEY')?.trim() || ''
+    const apiKeyLooksLikeModelId =
+        configuredApiKey === LEONARDO_MODEL_ID || configuredApiKey === LEONARDO_VISION_XL_MODEL_ID
+    const malformedApiKey = configuredApiKey ? !UUID_REGEX.test(configuredApiKey) : true
+
+    const hints = [
+        'Check LEONARDO_API_KEY in your Supabase env.',
+        apiKeyLooksLikeModelId
+            ? 'Current LEONARDO_API_KEY appears to be a model ID, not your Leonardo API key.'
+            : '',
+        malformedApiKey ? 'Leonardo API keys should be valid UUID values.' : '',
+    ]
+        .filter(Boolean)
+        .join(' ')
+
+    return `${message} ${hints}`.trim()
+}
 
 async function generateWithLeonardo(prompt: string, apiKey: string) {
     const start = Date.now();
-    const createRes = await fetch("https://cloud.leonardo.ai/api/rest/v1/generations", {
+    const createRes = await fetch(`${LEONARDO_BASE_URL}/generations`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${apiKey}`,
@@ -19,7 +61,7 @@ async function generateWithLeonardo(prompt: string, apiKey: string) {
         },
         body: JSON.stringify({
             prompt: prompt,
-            modelId: "aa77f04e-3eec-4034-9c07-d0f619684628",
+            modelId: LEONARDO_MODEL_ID,
             num_images: 1,
             width: 1024,
             height: 1024
@@ -27,7 +69,7 @@ async function generateWithLeonardo(prompt: string, apiKey: string) {
     });
 
     if (!createRes.ok) {
-        throw new Error(`Leonardo generation failed: ${await createRes.text()}`);
+        throw new Error(withLeonardoAuthHint(`Leonardo generation failed: ${await createRes.text()}`));
     }
 
     const createData = await createRes.json();
@@ -41,14 +83,19 @@ async function generateWithLeonardo(prompt: string, apiKey: string) {
     while (Date.now() - start < 60000) { // 60 seconds max polling
         await new Promise(r => setTimeout(r, 3000));
 
-        const getRes = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
+        const getRes = await fetch(`${LEONARDO_BASE_URL}/generations/${generationId}`, {
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "accept": "application/json"
             }
         });
 
-        if (!getRes.ok) continue;
+        if (!getRes.ok) {
+            if (getRes.status === 401 || getRes.status === 403) {
+                throw new Error(withLeonardoAuthHint(`Leonardo status polling failed: ${await getRes.text()}`));
+            }
+            continue;
+        }
 
         const getData = await getRes.json();
         const status = getData.generations_by_pk?.status;
@@ -66,16 +113,84 @@ async function generateWithLeonardo(prompt: string, apiKey: string) {
     throw new Error("Leonardo generation timed out");
 }
 
-async function generateWithPollinations(prompt: string, apiKey: string) {
-    // Note: Pollinations requires passing nologo=true to avoid watermarks. Usually no API key handles this.
-    // The previous implementation was throwing a 530 error, likely due to an issue with how it processes requests.
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
-    const res = await fetch(url);
+async function generateWithPollinations(prompt: string, apiKey?: string | null) {
+    const seed = Math.floor(Math.random() * 1000000)
+    const unifiedParams = new URLSearchParams({
+        width: '1024',
+        height: '1024',
+        nologo: 'true',
+        model: 'flux',
+        seed: String(seed),
+    })
+    if (apiKey) unifiedParams.set('key', apiKey)
+    const unifiedUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?${unifiedParams.toString()}`
+    const legacyPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`
+    const legacyAltUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`
 
-    if (!res.ok) {
-        throw new Error(`Pollinations failed: ${await res.text()}`);
+    const candidates = []
+    if (apiKey) {
+        candidates.push({ name: 'unified key query', url: unifiedUrl })
+        candidates.push({
+            name: 'unified key header',
+            url: `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&model=flux&seed=${seed}`,
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                'X-API-Key': apiKey,
+            }
+        })
     }
-    return res.blob();
+    candidates.push({ name: 'unified public', url: `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&model=flux&seed=${seed}` })
+    if (apiKey) {
+        candidates.push({
+            name: 'legacy prompt key header',
+            url: legacyPromptUrl,
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                'X-API-Key': apiKey,
+            }
+        })
+    }
+    candidates.push({ name: 'legacy prompt public', url: legacyPromptUrl })
+    candidates.push({ name: 'legacy p public', url: legacyAltUrl })
+
+    const failures = []
+    for (const candidate of candidates) {
+        const res = await fetch(candidate.url, {
+            headers: {
+                Accept: 'image/*',
+                ...(candidate.headers || {}),
+            }
+        })
+
+        if (!res.ok) {
+            const err = (await res.text()).replace(/\s+/g, ' ').trim()
+            failures.push(`${candidate.name}: ${err || res.status}`)
+            continue
+        }
+
+        const contentType = (res.headers.get('content-type') || '').toLowerCase()
+        if (contentType.startsWith('image/')) {
+            return res.blob()
+        }
+
+        if (contentType.includes('application/json')) {
+            const payload = await res.json().catch(() => null)
+            const imageUrl = typeof payload?.image === 'string' ? payload.image : (typeof payload?.url === 'string' ? payload.url : null)
+            if (imageUrl) {
+                const imageRes = await fetch(imageUrl)
+                if (imageRes.ok) return imageRes.blob()
+                failures.push(`${candidate.name}: image url download failed (${imageRes.status})`)
+                continue
+            }
+            failures.push(`${candidate.name}: json response without image data`)
+            continue
+        }
+
+        const body = (await res.text()).replace(/\s+/g, ' ').trim()
+        failures.push(`${candidate.name}: non-image response (${body.slice(0, 180)})`)
+    }
+
+    throw new Error(`Pollinations failed on all endpoints: ${failures.join(' | ')}`)
 }
 
 serve(async (req) => {
@@ -105,8 +220,9 @@ serve(async (req) => {
             .eq('id', user.id)
             .single()
 
+        const normalizedRole = String(profile?.role || '').trim().toLowerCase()
         const normalizedUsername = typeof profile?.username === 'string' ? profile.username.trim().toLowerCase() : ''
-        const isUnlimitedCreditsUser = profile?.role === 'admin' || normalizedUsername === 'sys_admin'
+        const isUnlimitedCreditsUser = normalizedRole === 'admin' || normalizedUsername === 'sys_admin'
 
         if (!profile || (!isUnlimitedCreditsUser && profile.ai_credits < 1)) {
             return new Response(JSON.stringify({ error: 'Insufficient credits' }), {
@@ -136,7 +252,7 @@ serve(async (req) => {
         let usedProvider = "";
 
         try {
-            const leoApiKey = Deno.env.get('LEONARDO_API_KEY') || '1d533d92-7119-4fef-92d7-284d2bdd7f17';
+            const leoApiKey = getLeonardoApiKey();
             console.log("Attempting Leonardo generation...");
             const imageUrl = await generateWithLeonardo(finalPrompt, leoApiKey);
             const imageRes = await fetch(imageUrl);
@@ -148,7 +264,7 @@ serve(async (req) => {
             console.log("Successfully generated with Leonardo");
         } catch (error) {
             console.error("Leonardo generation failed, falling back to Pollinations:", error.message);
-            const polApiKey = Deno.env.get('POLLINATIONS_API_KEY') || 'sk_4Uz5BBfZS6gQIxo6mxICzvhFK6GBPc2H';
+            const polApiKey = Deno.env.get('POLLINATIONS_API_KEY')?.trim() || null;
             console.log("Attempting Pollinations generation...");
             imageBlob = await generateWithPollinations(finalPrompt, polApiKey);
             usedProvider = "Pollinations";

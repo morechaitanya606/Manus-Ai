@@ -5,6 +5,7 @@ import { useAuthStore } from '../../stores/auth-store';
 import { AuthGuard } from '../../components/auth-guard';
 import { Button } from '../../components/ui/button';
 import { getSupabase } from '../../lib/supabase';
+import { hasUnlimitedCreditsAccess } from '../../lib/roles';
 import { User, Mail, Shield, Zap, Save, Loader2, Terminal } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -21,8 +22,7 @@ function ProfileContent() {
     const [fullName, setFullName] = useState(profile?.full_name || '');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
-    const isUnlimitedCreditsUser =
-        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
+    const isUnlimitedCreditsUser = hasUnlimitedCreditsAccess(profile);
 
     const handleSave = async () => {
         if (!user) return;
