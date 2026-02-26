@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../stores/auth-store';
+import { isAdminRole } from '../lib/roles';
 
 export function AuthGuard({
     children,
@@ -22,7 +23,7 @@ export function AuthGuard({
             return;
         }
 
-        if (requireAdmin && profile?.role !== 'admin') {
+        if (requireAdmin && !isAdminRole(profile?.role)) {
             router.push('/');
             return;
         }
@@ -37,7 +38,7 @@ export function AuthGuard({
     }
 
     if (!session) return null;
-    if (requireAdmin && profile?.role !== 'admin') return null;
+    if (requireAdmin && !isAdminRole(profile?.role)) return null;
 
     return <>{children}</>;
 }

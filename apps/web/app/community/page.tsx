@@ -11,6 +11,7 @@ import type { Design } from '../../lib/supabase';
 import { useAuthStore } from '../../stores/auth-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { hasUnlimitedCreditsAccess } from '../../lib/roles';
 
 type SortMode = 'trending' | 'loved' | 'latest';
 
@@ -25,14 +26,15 @@ export default function CommunityGalleryPage() {
     const [pendingLikeId, setPendingLikeId] = useState<string | null>(null);
     const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
-    const isAdminUser =
-        profile?.role === 'admin' || profile?.username?.trim().toLowerCase() === 'sys_admin';
+    const isAdminUser = hasUnlimitedCreditsAccess(profile);
+
+    const selectedDesignId = selectedDesign?.id;
 
     useEffect(() => {
-        if (!selectedDesign || !designs?.length) return;
-        const refreshed = designs.find((design) => design.id === selectedDesign.id);
+        if (!selectedDesignId || !designs?.length) return;
+        const refreshed = designs.find((design) => design.id === selectedDesignId);
         if (refreshed) setSelectedDesign(refreshed);
-    }, [designs, selectedDesign?.id]);
+    }, [designs, selectedDesignId]);
 
     const sortedDesigns = useMemo(() => {
         const source = [...(designs || [])];
@@ -291,7 +293,7 @@ export default function CommunityGalleryPage() {
                         <div className="md:w-1/2 p-6 md:p-8 flex flex-col h-[50vh] md:h-auto bg-panel/50 relative">
                             <h3 className="text-xl md:text-2xl font-bold font-mono tracking-widest text-white mb-2 uppercase border-b border-border-std pb-2">COMMUNITY DESIGN</h3>
                             <p className="text-cyan text-sm font-mono italic mb-6 leading-relaxed border-l-2 border-cyan pl-3 bg-cyan/5 p-2 tracking-wide">
-                                &gt; "{selectedDesign.prompt}"
+                                &gt; &quot;{selectedDesign.prompt}&quot;
                             </p>
                             <div className="mb-6 flex items-center justify-between border border-border-std bg-void/50 px-3 py-2">
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-text-dim">Loved By Community</span>

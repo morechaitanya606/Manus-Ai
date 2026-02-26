@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import { getSupabase, type Profile } from '../lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
+import { isAdminRole, isCreatorRole } from '../lib/roles';
 
 type AuthState = {
   session: Session | null;
@@ -35,11 +36,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   initialize: async () => {
     if (get().initialized) return;
+
+    // Prevent concurrent initializations in React Strict Mode
+    if ((get() as any)._initializing) return;
+    set({ _initializing: true } as any);
+
     const supabase = getSupabase();
 
     // Get initial session
     const { data: { session } } = await supabase.auth.getSession();
-    set({ session, user: session?.user ?? null, loading: false, initialized: true });
+    set({ session, user: session?.user ?? null, loading: false, initialized: true, _initializing: false } as any);
 
     if (session?.user) {
       get().fetchProfile();
@@ -116,6 +122,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   isAuthenticated: () => Boolean(get().session),
-  isAdmin: () => get().profile?.role === 'admin',
-  isCreator: () => get().profile?.role === 'creator' || get().profile?.role === 'admin',
+  isAdmin: () => isAdminRole(get().profile?.role),
+  isCreator: () => isCreatorRole(get().profile?.role),
 }));

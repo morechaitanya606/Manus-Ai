@@ -244,7 +244,7 @@ function MyDesignsContent() {
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs font-mono font-bold truncate text-white uppercase group-hover:text-cyan transition">{product.name}</p>
                                         <p className="text-[10px] text-text-dim font-mono tracking-widest mt-1 uppercase">
-                                            {product.category} // <span className="text-magenta">INR {Number(product.base_price).toFixed(0)}</span>
+                                            {product.category} | <span className="text-magenta">INR {Number(product.base_price).toFixed(0)}</span>
                                         </p>
                                     </div>
                                     <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-transparent group-hover:text-cyan transition-colors" />

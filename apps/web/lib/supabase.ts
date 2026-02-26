@@ -1,23 +1,38 @@
 import { createBrowserClient } from '@supabase/ssr';
 
 export function createClient() {
-    return createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key'
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error(
+            'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local'
+        );
+    }
+
+    return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-// Singleton for use across the app
+// Singleton for use across the app (with HMR support)
+const globalForSupabase = globalThis as unknown as {
+    supabaseClient: ReturnType<typeof createClient> | null;
+};
 let client: ReturnType<typeof createClient> | null = null;
 
 export function getSupabase() {
+    if (typeof window !== 'undefined') {
+        if (!globalForSupabase.supabaseClient) {
+            globalForSupabase.supabaseClient = createClient();
+        }
+        return globalForSupabase.supabaseClient;
+    }
     if (!client) {
         client = createClient();
     }
     return client;
 }
 
-// ─── Database Types ─── 
+// ─── Database Types ───
 
 export type UserRole = 'customer' | 'creator' | 'admin';
 export type DesignStatus = 'pending' | 'completed' | 'failed';

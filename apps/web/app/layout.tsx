@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { AppProviders } from '../components/providers';
+import { ErrorBoundary } from '../components/error-boundary';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ToastContainer } from '../components/ui/toast';
@@ -47,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProviders>
           <Navbar />
           <main className="flex-1">
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </main>
           <Footer />
           <ToastContainer />

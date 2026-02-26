@@ -207,11 +207,10 @@ export default function GalleryPage() {
               <button
                 key={cat.key}
                 onClick={() => setCategory(cat.key)}
-                className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${
-                  category === cat.key
+                className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${category === cat.key
                     ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
                     : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'
-                }`}
+                  }`}
               >
                 {cat.label}
               </button>
@@ -298,6 +297,13 @@ export default function GalleryPage() {
                           {(product.sizes || []).length} sizes
                         </span>
                       </div>
+
+                      {(product.fabric || product.gsm) && (
+                        <div className="mt-1.5 flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-text-dim uppercase tracking-widest">
+                          {product.fabric && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.fabric}</span>}
+                          {product.gsm && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.gsm} GSM</span>}
+                        </div>
+                      )}
 
                       <div className="mt-2 flex items-center gap-1 min-h-[16px] sm:min-h-[20px]">
                         {(product.colors || []).slice(0, 4).map((color) => (

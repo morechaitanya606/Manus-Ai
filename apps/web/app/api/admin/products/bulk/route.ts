@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isAdminRole } from '../../../../../lib/roles';
 
 // Use service role key for admin operations (fallback to placeholder during build)
 const supabaseAdmin = createClient(
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
             .eq('id', user.id)
             .single();
 
-        if (profile?.role !== 'admin') {
+        if (!isAdminRole(profile?.role)) {
             return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 

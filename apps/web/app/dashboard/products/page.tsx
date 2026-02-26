@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { AuthGuard } from '../../../components/auth-guard';
@@ -93,11 +93,11 @@ function DashboardProductsContent() {
                                         <div>
                                             <p className="font-mono font-bold text-white tracking-widest uppercase text-sm group-hover:text-cyan transition-colors">{product.name}</p>
                                             <p className="text-[10px] text-text-dim font-mono tracking-widest uppercase mt-1">
-                                                CAT: {product.category} // <span className="font-bold text-magenta">₹{Number(product.base_price).toFixed(0)}</span> // VARIANTS: {product.colors.length} COL, {product.sizes.length} SIZ
+                                                CAT: {product.category} | <span className="font-bold text-magenta">₹{Number(product.base_price).toFixed(0)}</span> | VARIANTS: {product.colors.length} COL, {product.sizes.length} SIZ
                                             </p>
                                             {product.fabric && (
                                                 <p className="text-[9px] text-text-dim/70 font-mono tracking-widest uppercase mt-1">
-                                                    MAT: {product.fabric}{product.gsm ? ` // ${product.gsm} GSM` : ''}
+                                                    MAT: {product.fabric}{product.gsm ? ` | ${product.gsm} GSM` : ''}
                                                 </p>
                                             )}
                                         </div>
@@ -125,3 +125,4 @@ function DashboardProductsContent() {
         </div>
     );
 }
+

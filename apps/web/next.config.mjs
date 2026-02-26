@@ -4,13 +4,46 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb'
-    }
+    },
+    serverComponentsExternalPackages: ['razorpay', 'crypto']
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**'
+        hostname: '*.supabase.co'
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.in'
+      },
+      {
+        protocol: 'https',
+        hostname: 'image.pollinations.ai'
+      },
+      {
+        protocol: 'https',
+        hostname: 'gen.pollinations.ai'
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos'
+      },
+      {
+        protocol: 'https',
+        hostname: 'cloud.leonardo.ai'
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.leonardo.ai'
+      },
+      {
+        protocol: 'https',
+        hostname: 'imgproxy.fourthwall.com'
       },
       {
         protocol: 'http',

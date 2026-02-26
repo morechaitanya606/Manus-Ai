@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { hasUnlimitedCreditsAccess } from '../../lib/roles';
 
 const COMMUNITY_UPLOAD_PROMPT_PREFIXES = ['custom user upload', 'custom admin upload', '[upload]', 'upload:'];
 const USAGE_RANGES = ['today', '7d', '30d'] as const;
@@ -83,10 +84,7 @@ function DashboardContent() {
     const profiles = usersRes.data || [];
     const unlimitedUserIds = new Set(
       profiles
-        .filter((profile: any) => {
-          const normalizedUsername = String(profile?.username || '').trim().toLowerCase();
-          return profile?.role === 'admin' || normalizedUsername === 'sys_admin';
-        })
+        .filter((profile: any) => hasUnlimitedCreditsAccess(profile))
         .map((profile: any) => String(profile.id))
     );
 
