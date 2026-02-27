@@ -67,9 +67,9 @@ export default function HomePage() {
             <motion.div
               animate={{ y: [-10, 10, -10], rotateY: [-5, 5, -5] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="w-full h-full flex items-center justify-center relative z-10"
+              className="absolute inset-0 flex items-center justify-center z-10"
             >
-              <div className="relative w-[85%] h-[85%]">
+              <div className="relative w-[85%] h-[85%] max-w-[300px] max-h-[400px]">
                 <Image
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r7kTRy35CA6EY8iGtdBkVVsbhG9Hlft-9R9iiiSWJnKfSjbYywGzr9md10kY9ghnnDCR1ZmUbTbjPw--wEA_nkeIeWMSPgyv0vq4ATBxtfugSCnNJEMHdUp6HX9bTpIe7p5U8QnOgaOiOJY-s0NWGXjgBo-iL4Bl3rEPJKPzA1MVh_qzKpdJiVz9EyxSvVq6CgXAy6b12wP5P_4JxWbBAU457vaS2-dnpKKuYZv0DhOWd__llO2AY3YJmJ5J6QXeXPG0Uxgb8VI"
                   alt="White T-Shirt Render"
@@ -229,6 +229,7 @@ export default function HomePage() {
                 unoptimized
                 sizes="400px"
                 className="object-contain filter grayscale contrast-150 brightness-75 opacity-80 mix-blend-screen drop-shadow-[0_0_15px_rgba(0,240,255,0.3)]"
+                priority
               />
               <div className="absolute inset-0 bg-cyan mix-blend-overlay opacity-0 group-hover/visualizer:opacity-20 transition-opacity duration-300"></div>
 

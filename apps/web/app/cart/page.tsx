@@ -67,6 +67,9 @@ export default function CartPage() {
                                         </h3>
                                         <p className="text-[10px] font-mono tracking-widest text-text-dim uppercase mt-1">
                                             [{item.color.slice(0, 3)}] <span className="text-magenta mx-1">|</span> [{item.size}]
+                                            {!item.designImage && (
+                                                <span className="ml-2 text-cyan">| PLAIN BLANK</span>
+                                            )}
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between mt-3">

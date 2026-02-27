@@ -8,25 +8,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -k \"npm run dev --workspace @atelier/api\" \"npm run dev --workspace @atelier/web\" \"npm run dev:worker --workspace @atelier/api\"",
-    "dev:api": "npm run dev --workspace @atelier/api",
+    "dev": "npm run dev --workspace @atelier/web",
     "dev:web": "npm run dev --workspace @atelier/web",
-    "dev:worker": "npm run dev:worker --workspace @atelier/api",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "db:migrate": "npm run db:migrate --workspace @atelier/api",
-    "db:seed": "npm run db:seed --workspace @atelier/api",
-    "docker:up": "docker compose -f docker-compose.saas.yml up --build",
-    "docker:down": "docker compose -f docker-compose.saas.yml down",
-    "legacy:dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "legacy:dev:with-worker": "concurrently \"npm run dev --prefix backend\" \"npm run worker:orders --prefix backend\" \"npm run dev --prefix frontend\"",
-    "legacy:build": "npm run build --prefix frontend"
+    "lint": "npm run lint --workspaces --if-present"
   },
   "engines": {
     "node": ">=20.11.0"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
   }
 }

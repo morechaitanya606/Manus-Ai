@@ -24,9 +24,11 @@ import { useTheme } from './theme-provider';
 import { BrandLogo } from './icons/brand-logo';
 
 const NAV_LINKS = [
+  { href: '/shop', label: 'Shop' },
+  { href: '/products', label: 'Blanks' },
+  { href: '/studio', label: 'Studio' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/community', label: 'Community' },
-  { href: '/studio', label: 'Studio' },
   { href: '/my-designs', label: 'My Designs' },
 ];
 

@@ -5,8 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useProducts } from '../../hooks/use-products';
 import { Button } from '../../components/ui/button';
-import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Package, Truck, Printer, Layers, X } from 'lucide-react';
+import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Package, Truck, Printer, Layers, X, Filter } from 'lucide-react';
 import type { Product } from '../../hooks/use-products';
+import { GalleryFilters, FilterState, initialFilterState } from '../../components/gallery-filters';
 
 const CATEGORIES = [
   { key: 'all', label: 'All' },
@@ -54,6 +55,8 @@ export default function GalleryPage() {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
+  const [filters, setFilters] = useState<FilterState>(initialFilterState);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
   const [nextBatchSize, setNextBatchSize] = useState(PAGE_SIZE);
@@ -67,7 +70,80 @@ export default function GalleryPage() {
         !search.trim() ||
         product.name.toLowerCase().includes(search.toLowerCase()) ||
         product.category.toLowerCase().includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
+
+      if (!matchesCategory || !matchesSearch) return false;
+
+      // Price filter
+      if (filters.price.length > 0) {
+        const price = Number(product.base_price || 0);
+        const matchesPrice = filters.price.some(range => {
+          if (range === 'lt500') return price < 500;
+          if (range === '500-1000') return price >= 500 && price <= 1000;
+          if (range === '1000-1500') return price > 1000 && price <= 1500;
+          if (range === '1500-2000') return price > 1500 && price <= 2000;
+          if (range === 'gt2000') return price > 2000;
+          return false;
+        });
+        if (!matchesPrice) return false;
+      }
+
+      // Color filter
+      if (filters.color.length > 0) {
+        const pColors = (product.colors || []).map(c => c.toLowerCase());
+        const matchesColor = filters.color.some(c => pColors.includes(c.toLowerCase()));
+        if (!matchesColor) return false;
+      }
+
+      // Size filter
+      if (filters.size.length > 0) {
+        const pSizes = product.sizes || [];
+        const matchesSize = filters.size.some(s => pSizes.includes(s));
+        if (!matchesSize) return false;
+      }
+
+      // Fit filter
+      if (filters.fit.length > 0) {
+        if (!filters.fit.includes(product.fit)) return false;
+      }
+
+      // Fabric filter
+      if (filters.fabric.length > 0) {
+        if (!filters.fabric.includes(product.fabric)) return false;
+      }
+
+      // Neck filter
+      if (filters.neck.length > 0) {
+        const pFeatures = product.features || [];
+        const matches = filters.neck.some(n => pFeatures.includes(n));
+        const matchesDefault = filters.neck.includes('Round Neck') && pFeatures.some((f: string) => f.toLowerCase().includes('round neck'));
+        if (!matches && !matchesDefault) return false;
+      }
+
+      // Sleeve filter
+      if (filters.sleeve.length > 0) {
+        const pFeatures = product.features || [];
+        const matches = filters.sleeve.some(s => pFeatures.includes(s));
+        const matchesDefault = filters.sleeve.includes('Short Sleeves') && pFeatures.some((f: string) => f.toLowerCase().includes('short sleeve'));
+        if (!matches && !matchesDefault) return false;
+      }
+
+      // Pattern filter
+      if (filters.pattern.length > 0) {
+        const pFeatures = product.features || [];
+        const matches = filters.pattern.some(p => pFeatures.includes(p));
+        const matchesPrinted = filters.pattern.includes('Printed') && pFeatures.some((f: string) => f.toLowerCase().includes('print'));
+        const matchesSolid = filters.pattern.includes('Solid') && pFeatures.some((f: string) => f.toLowerCase().includes('solid'));
+        if (!matches && !matchesPrinted && !matchesSolid) return false;
+      }
+
+      // Availability filter
+      if (filters.availability.length > 0) {
+        const isInStock = product.is_active;
+        if (filters.availability.includes('in_stock') && !isInStock) return false;
+        if (filters.availability.includes('out_stock') && isInStock) return false;
+      }
+
+      return true;
     });
   }, [products, category, search]);
 
@@ -208,8 +284,8 @@ export default function GalleryPage() {
                 key={cat.key}
                 onClick={() => setCategory(cat.key)}
                 className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${category === cat.key
-                    ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
-                    : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'
+                  ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
+                  : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'
                   }`}
               >
                 {cat.label}
@@ -241,135 +317,156 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      <section className="py-6 sm:py-10">
+      <section className="py-6 sm:py-10 bg-void">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-          {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-              {Array.from({ length: 8 }).map((_, index) => (
-                <div key={index} className="bg-panel border border-border-std overflow-hidden animate-pulse">
-                  <div className="aspect-square bg-panel-highlight" />
-                  <div className="p-3 sm:p-4 space-y-2">
-                    <div className="h-3.5 bg-panel-highlight rounded w-3/4" />
-                    <div className="h-3 bg-panel-highlight rounded w-1/2" />
-                  </div>
-                </div>
-              ))}
+          <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+
+            {/* Mobile Filter Toggle */}
+            <div className="lg:hidden w-full flex justify-end">
+              <button onClick={() => setShowMobileFilters(!showMobileFilters)} className="flex items-center gap-2 border border-border-std px-4 py-2 font-mono text-xs text-text-dim hover:text-cyan hover:border-cyan uppercase tracking-widest transition-colors bg-panel/50">
+                <Filter className="w-4 h-4" /> Filters {Object.values(filters).some(arr => arr.length > 0) && '(Active)'}
+              </button>
             </div>
-          ) : sortedProducts.length > 0 ? (
-            <div>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-                {visibleProducts.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/gallery/${product.id}`}
-                    className="group bg-panel border border-border-std overflow-hidden hover:border-cyan/70 hover:shadow-[0_0_15px_rgba(0,240,255,0.12)] transition-all duration-300"
-                  >
-                    <div className="aspect-square bg-panel-highlight relative overflow-hidden">
-                      <span className="absolute top-2 left-2 z-20 text-[9px] font-mono uppercase tracking-widest bg-void/80 border border-border-std px-1.5 py-0.5 text-text-dim">
-                        {product.category}
-                      </span>
-                      {product.image_url ? (
-                        <Image
-                          src={product.image_url}
-                          alt={product.name}
-                          fill
-                          unoptimized
-                          className="object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <ShoppingBag className="h-10 w-10 text-text-dim/30" />
-                        </div>
-                      )}
-                    </div>
 
-                    <div className="p-2.5 sm:p-4">
-                      <h3 className="font-bold text-[11px] sm:text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
-                        {product.name}
-                      </h3>
+            {/* Sidebar Filters */}
+            <aside className={`lg:sticky lg:top-36 lg:h-[calc(100vh-160px)] z-40 lg:w-64 shrink-0 transition-all ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
+              <GalleryFilters filters={filters} onFilterChange={setFilters} products={products || []} />
+            </aside>
 
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">
-                          INR {Number(product.base_price).toFixed(0)}
-                        </span>
-                        <span className="text-[9px] sm:text-[10px] font-mono text-text-dim uppercase tracking-widest">
-                          {(product.sizes || []).length} sizes
-                        </span>
-                      </div>
-
-                      {(product.fabric || product.gsm) && (
-                        <div className="mt-1.5 flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-text-dim uppercase tracking-widest">
-                          {product.fabric && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.fabric}</span>}
-                          {product.gsm && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.gsm} GSM</span>}
-                        </div>
-                      )}
-
-                      <div className="mt-2 flex items-center gap-1 min-h-[16px] sm:min-h-[20px]">
-                        {(product.colors || []).slice(0, 4).map((color) => (
-                          <span
-                            key={color}
-                            className="h-3.5 w-3.5 sm:h-4 sm:w-4 border border-border-std"
-                            style={{ backgroundColor: toCssColor(color) }}
-                            title={color}
-                          />
-                        ))}
-                        {(product.colors || []).length > 4 && (
-                          <span className="text-[9px] sm:text-[10px] text-text-dim ml-1 font-mono">
-                            +{product.colors.length - 4}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-2 sm:mt-3 inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-white transition-colors">
-                        Customize
-                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                {isLoadingNextBatch &&
-                  Array.from({ length: nextBatchSize }).map((_, index) => (
-                    <div key={`next-skeleton-${index}`} className="bg-panel border border-border-std overflow-hidden">
-                      <div className="aspect-square skeleton" />
-                      <div className="p-2.5 sm:p-4 space-y-2">
-                        <div className="h-3.5 w-4/5 skeleton" />
-                        <div className="h-3 w-3/5 skeleton" />
-                        <div className="h-3 w-2/5 skeleton" />
+            {/* Product Grid */}
+            <div className="flex-1 w-full min-w-0">
+              {isLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <div key={index} className="bg-panel border border-border-std overflow-hidden animate-pulse">
+                      <div className="aspect-square bg-panel-highlight" />
+                      <div className="p-3 sm:p-4 space-y-2">
+                        <div className="h-3.5 bg-panel-highlight rounded w-3/4" />
+                        <div className="h-3 bg-panel-highlight rounded w-1/2" />
                       </div>
                     </div>
                   ))}
-              </div>
+                </div>
+              ) : sortedProducts.length > 0 ? (
+                <div>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                    {visibleProducts.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={`/gallery/${product.id}`}
+                        className="group bg-panel border border-border-std overflow-hidden hover:border-cyan/70 hover:shadow-[0_0_15px_rgba(0,240,255,0.12)] transition-all duration-300"
+                      >
+                        <div className="aspect-square bg-panel-highlight relative overflow-hidden">
+                          <span className="absolute top-2 left-2 z-20 text-[9px] font-mono uppercase tracking-widest bg-void/80 border border-border-std px-1.5 py-0.5 text-text-dim">
+                            {product.category}
+                          </span>
+                          {product.image_url ? (
+                            <Image
+                              src={product.image_url}
+                              alt={product.name}
+                              fill
+                              unoptimized
+                              className="object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-300"
+                              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <ShoppingBag className="h-10 w-10 text-text-dim/30" />
+                            </div>
+                          )}
+                        </div>
 
-              <div className="pt-6 flex justify-center">
-                {hasMore ? (
-                  <div ref={loadMoreRef} className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-cyan">
-                    <Loader2 className={`h-4 w-4 ${isLoadingNextBatch ? 'animate-spin' : ''}`} />
-                    {isLoadingNextBatch ? 'Loading More' : 'Scroll For More'}
+                        <div className="p-2.5 sm:p-4">
+                          <h3 className="font-bold text-[11px] sm:text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
+                            {product.name}
+                          </h3>
+
+                          <div className="mt-2 flex items-center justify-between">
+                            <span className="text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">
+                              ₹{Number(product.base_price).toFixed(0)}
+                            </span>
+                            <span className="text-[9px] sm:text-[10px] font-mono text-text-dim uppercase tracking-widest">
+                              {(product.sizes || []).length} sizes
+                            </span>
+                          </div>
+
+                          {(product.fabric || product.gsm) && (
+                            <div className="mt-1.5 flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-text-dim uppercase tracking-widest">
+                              {product.fabric && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.fabric}</span>}
+                              {product.gsm && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.gsm} GSM</span>}
+                            </div>
+                          )}
+
+                          <div className="mt-2 flex items-center gap-1 min-h-[16px] sm:min-h-[20px]">
+                            {(product.colors || []).slice(0, 4).map((color) => (
+                              <span
+                                key={color}
+                                className="h-3.5 w-3.5 sm:h-4 sm:w-4 border border-border-std"
+                                style={{ backgroundColor: toCssColor(color) }}
+                                title={color}
+                              />
+                            ))}
+                            {(product.colors || []).length > 4 && (
+                              <span className="text-[9px] sm:text-[10px] text-text-dim ml-1 font-mono">
+                                +{product.colors.length - 4}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="mt-2 sm:mt-3 flex items-center justify-between">
+                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-white transition-colors">
+                              Customize / Buy Plain
+                              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                    {isLoadingNextBatch &&
+                      Array.from({ length: nextBatchSize }).map((_, index) => (
+                        <div key={`next-skeleton-${index}`} className="bg-panel border border-border-std overflow-hidden">
+                          <div className="aspect-square skeleton" />
+                          <div className="p-2.5 sm:p-4 space-y-2">
+                            <div className="h-3.5 w-4/5 skeleton" />
+                            <div className="h-3 w-3/5 skeleton" />
+                            <div className="h-3 w-2/5 skeleton" />
+                          </div>
+                        </div>
+                      ))}
                   </div>
-                ) : sortedProducts.length > PAGE_SIZE ? (
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-text-dim border border-border-std px-3 py-1.5">
-                    You reached the end
+
+                  <div className="pt-6 flex justify-center">
+                    {hasMore ? (
+                      <div ref={loadMoreRef} className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-cyan">
+                        <Loader2 className={`h-4 w-4 ${isLoadingNextBatch ? 'animate-spin' : ''}`} />
+                        {isLoadingNextBatch ? 'Loading More' : 'Scroll For More'}
+                      </div>
+                    ) : sortedProducts.length > PAGE_SIZE ? (
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-text-dim border border-border-std px-3 py-1.5">
+                        You reached the end
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
+                </div>
+              ) : (
+                <div className="text-center py-16 bg-panel border border-border-std">
+                  <ShoppingBag className="h-10 w-10 text-text-dim/30 mx-auto mb-3" />
+                  <h3 className="text-base font-semibold mb-2">No products found</h3>
+                  <p className="text-text-dim text-sm mb-4">Try changing category, clearing filters, or search text.</p>
+                  <Button
+                    onClick={() => {
+                      setCategory('all');
+                      setSearch('');
+                      setFilters(initialFilterState);
+                    }}
+                    className="rounded-none border border-cyan bg-cyan/10 text-cyan hover:bg-cyan hover:text-void font-mono text-xs uppercase tracking-widest"
+                  >
+                    Reset All Filters
+                  </Button>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="text-center py-16 bg-panel border border-border-std">
-              <ShoppingBag className="h-10 w-10 text-text-dim/30 mx-auto mb-3" />
-              <h3 className="text-base font-semibold mb-2">No products found</h3>
-              <p className="text-text-dim text-sm mb-4">Try changing category or search text.</p>
-              <Button
-                onClick={() => {
-                  setCategory('all');
-                  setSearch('');
-                }}
-                className="rounded-none border border-cyan bg-cyan/10 text-cyan hover:bg-cyan hover:text-void font-mono text-xs uppercase tracking-widest"
-              >
-                Reset Filters
-              </Button>
-            </div>
-          )}
+          </div>
         </div>
       </section>
 

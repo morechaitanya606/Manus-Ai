@@ -20,7 +20,7 @@ const getLogEnabled = () => {
   );
 };
 
-export const isDebugLoggingEnabled = getLogEnabled();
+const isDebugLoggingEnabled = getLogEnabled();
 
 export const logger = {
   debug: (...args: unknown[]) => {

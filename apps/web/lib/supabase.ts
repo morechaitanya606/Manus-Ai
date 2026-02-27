@@ -36,7 +36,7 @@ export function getSupabase() {
 
 export type UserRole = 'customer' | 'creator' | 'admin';
 export type DesignStatus = 'pending' | 'completed' | 'failed';
-export type ProductCategory = 'tshirt' | 'hoodie' | 'cap' | 'tote' | 'poster';
+
 export type OrderStatus = 'pending' | 'paid' | 'fulfilled' | 'shipped' | 'delivered' | 'cancelled';
 
 export type Profile = {
@@ -50,25 +50,7 @@ export type Profile = {
     updated_at: string;
 };
 
-export type Product = {
-    id: string;
-    name: string;
-    description: string | null;
-    category: ProductCategory;
-    base_price: number;
-    fulfillment_product_id: string | null;
-    images: string[];
-    colors: string[];
-    sizes: string[];
-    is_active: boolean;
-    gsm: number | null;
-    fabric: string | null;
-    fit: string | null;
-    printing_methods: string[] | null;
-    features: string[] | null;
-    created_at: string;
-    updated_at: string;
-};
+
 
 export type Design = {
     id: string;
@@ -86,15 +68,7 @@ export type Design = {
     updated_at: string;
 };
 
-export type Mockup = {
-    id: string;
-    design_id: string;
-    product_id: string;
-    color: string;
-    placement: string;
-    mockup_url: string | null;
-    created_at: string;
-};
+
 
 export type Order = {
     id: string;
@@ -126,8 +100,3 @@ export type OrderItem = {
     created_at: string;
 };
 
-export type PlatformSetting = {
-    key: string;
-    value: unknown;
-    updated_at: string;
-};

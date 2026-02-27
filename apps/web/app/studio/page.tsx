@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState, useRef, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
+import { useCallback, useEffect, useState, useRef, Suspense, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '../../stores/auth-store';
 import { useGenerateDesign, useUploadDesign, useRemoveBackground, useUpscaleImage } from '../../hooks/use-designs';
-import { useProducts } from '../../hooks/use-products';
+import { useProducts, useProduct } from '../../hooks/use-products';
 import { Sparkles, Terminal, Activity, Shuffle, ZoomIn, ZoomOut, Layers as LayersIcon, ArrowRight, Shirt, AlertCircle, Loader2, X, Download, Upload, Wand2, ScissorsLineDashed, ChevronDown, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -30,14 +31,39 @@ const GENERATION_STEPS = [
   'Finalizing Asset...',
 ];
 
-const GARMENT_COLORS = [
-  { name: 'BLK', class: 'bg-[#16161A]', hex: '#16161A' },
-  { name: 'WHT', class: 'bg-[#F5F5F5]', hex: '#F5F5F5' },
-  { name: 'GRY', class: 'bg-[#2A2A35]', hex: '#2A2A35' },
-  { name: 'NVY', class: 'bg-[#1B2A4A]', hex: '#1B2A4A' },
-  { name: 'RED', class: 'bg-[#8B1A1A]', hex: '#8B1A1A' },
-  { name: 'GRN', class: 'bg-[#1A3C2A]', hex: '#1A3C2A' },
-];
+const getColorHexFromName = (colorName: string): string => {
+  const normalized = colorName.trim().toLowerCase();
+
+  // Custom vibrant mappings
+  const colorMap: Record<string, string> = {
+    'black': '#16161A',
+    'white': '#F5F5F5',
+    'grey': '#2A2A35',
+    'gray': '#2A2A35',
+    'navy': '#1B2A4A',
+    'red': '#8B1A1A',
+    'green': '#1A3C2A',
+    'olive': '#3B4A31',
+    'blue': '#1A365D',
+    'yellow': '#B7791F',
+    'orange': '#C05621',
+    'pink': '#97266D',
+    'purple': '#44337A',
+    'brown': '#5E4028',
+    'tan': '#D6BC98',
+    'cream': '#FFFDD0',
+  };
+
+  if (colorMap[normalized]) return colorMap[normalized];
+
+  // Check if it's already a valid hex
+  if (/^#([0-9A-F]{3}){1,2}$/i.test(normalized)) {
+    return normalized;
+  }
+
+  // Fallback to letting the browser/threejs attempt to parse it directly
+  return normalized || '#16161A';
+};
 
 const GARMENT_TYPES = [
   { id: 'tshirt', label: 'T-Shirt', icon: <Shirt className="w-3 h-3" /> },
@@ -76,19 +102,25 @@ const ADDON_ICON_OPTIONS: Array<{ value: AddonIcon; label: string }> = [
   { value: 'fire', label: 'Fire' },
 ];
 
-export default function StudioPage() {
+function StudioContent() {
+  const searchParams = useSearchParams();
+  const initGarmentType = searchParams.get('product') || 'tshirt';
+  const initGarmentColor = searchParams.get('color') || 'BLK';
+  const initProductId = searchParams.get('productId') || undefined;
+
   const { session, profile } = useAuthStore();
-  const { data: products } = useProducts();
+  const { data: allProducts } = useProducts();
+  const { data: selectedProduct } = useProduct(initProductId);
   const generateDesign = useGenerateDesign();
   const uploadDesign = useUploadDesign();
   const removeBackground = useRemoveBackground();
   const upscaleImage = useUpscaleImage();
 
   const [prompt, setPrompt] = useState('');
-  const [garmentType, setGarmentType] = useState('tshirt');
+  const [garmentType, setGarmentType] = useState(initGarmentType);
   const [printPlacement, setPrintPlacement] = useState<'front' | 'back' | 'both'>('front');
   const [garmentView, setGarmentView] = useState<'front' | 'back'>('front');
-  const [garmentColor, setGarmentColor] = useState('BLK');
+  const [garmentColor, setGarmentColor] = useState(initGarmentColor);
   const [garmentSize, setGarmentSize] = useState('M');
   const [stylePreset, setStylePreset] = useState('none');
   const [editText, setEditText] = useState('');
@@ -743,8 +775,13 @@ export default function StudioPage() {
     return isWhite ? side.white : side.black;
   };
 
+  // Available Colors Calculation
+  const availableColors = selectedProduct && selectedProduct.colors && selectedProduct.colors.length > 0
+    ? selectedProduct.colors.map(c => c.name)
+    : ['BLK', 'WHT', 'GRY', 'NVY', 'RED', 'GRN']; // Fallback options
+
   // Map garment color name to hex for 3D viewer
-  const garmentColorHex = GARMENT_COLORS.find(c => c.name === garmentColor)?.hex || '#2A2A35';
+  const garmentColorHex = getColorHexFromName(garmentColor);
 
   const currentBaseImage = getBaseImage(garmentType, garmentView);
   const activeDesignFront = generatedDesigns.find(d => d.id === activeLayers.front);
@@ -1151,8 +1188,8 @@ export default function StudioPage() {
                       className="object-contain filter grayscale contrast-125 brightness-90 opacity-50"
                     />
                     <div className={`absolute border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none ${garmentType === 'hoodie' ? 'top-[32%] left-[30%] w-[40%] h-[38%]' :
-                        garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
-                          'top-[20%] left-[28%] w-[44%] h-[50%]'
+                      garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
+                        'top-[20%] left-[28%] w-[44%] h-[50%]'
                       }`}>
                       <Sparkles className="h-8 w-8 text-cyan/40 mb-2" />
                       <span className="font-mono text-[10px] text-cyan/60 uppercase text-center px-4">Generate a design<br />for the Front</span>
@@ -1181,8 +1218,8 @@ export default function StudioPage() {
                       className="object-contain filter grayscale contrast-125 brightness-90 opacity-50"
                     />
                     <div className={`absolute border-2 border-dashed border-cyan/20 flex flex-col items-center justify-center bg-cyan/5 pointer-events-none ${garmentType === 'hoodie' ? 'top-[32%] left-[30%] w-[40%] h-[38%]' :
-                        garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
-                          'top-[20%] left-[28%] w-[44%] h-[50%]'
+                      garmentType === 'bag' ? 'top-[18%] left-[28%] w-[44%] h-[52%]' :
+                        'top-[20%] left-[28%] w-[44%] h-[50%]'
                       }`}>
                       <Sparkles className="h-8 w-8 text-cyan/40 mb-2" />
                       <span className="font-mono text-[10px] text-cyan/60 uppercase text-center px-4">Generate a design<br />for the Back</span>
@@ -1312,15 +1349,24 @@ export default function StudioPage() {
             <div className="mb-4">
               <label className="block font-mono text-[10px] text-text-dim mb-2 uppercase tracking-widest border-l-2 border-cyan pl-2">GARMENT COLOR</label>
               <div className="flex gap-2">
-                {GARMENT_COLORS.map(color => (
-                  <button
-                    key={color.name}
-                    onClick={() => setGarmentColor(color.name)}
-                    className={`relative w-8 h-8 border transition-all ${color.class} ${garmentColor === color.name ? 'border-cyan ring-1 ring-cyan scale-110 z-10 shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'border-border-std opacity-50 hover:opacity-100 hover:border-text-dim'}`}
-                  >
-                    <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan uppercase opacity-0 group-hover:opacity-100 transition-opacity">{color.name}</span>
-                  </button>
-                ))}
+                {availableColors.map((colorName) => {
+                  const hexCode = getColorHexFromName(colorName);
+                  const isLight = hexCode.toLowerCase() === '#f5f5f5' || hexCode.toLowerCase() === '#ffffff';
+
+                  return (
+                    <button
+                      key={colorName}
+                      onClick={() => setGarmentColor(colorName)}
+                      className={`relative w-8 h-8 rounded-sm border transition-all ${garmentColor === colorName
+                        ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110 z-10'
+                        : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
+                        }`}
+                      style={{ backgroundColor: hexCode }}
+                    >
+                      <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan uppercase opacity-0 group-hover:opacity-100 transition-opacity">{colorName}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1357,7 +1403,7 @@ export default function StudioPage() {
           <div className="space-y-1 mb-4">
             <div className="flex justify-between font-mono text-[10px] tracking-widest">
               <span className="text-text-dim uppercase">Base Price</span>
-              <span className="text-white">₹ {products?.[0]?.base_price ? Number(products[0].base_price).toFixed(0) : '999'}</span>
+              <span className="text-white">₹ {allProducts?.[0]?.base_price ? Number(allProducts[0].base_price).toFixed(0) : '999'}</span>
             </div>
             {currentActiveDesign && (
               <div className="flex justify-between font-mono text-[10px] text-cyan tracking-widest">
@@ -1369,12 +1415,12 @@ export default function StudioPage() {
             <div className="flex justify-between font-mono text-sm font-bold items-end tracking-widest pt-1 border-t-2 border-transparent relative">
               <span className="text-magenta uppercase">Total Price</span>
               <span className="text-white text-lg leading-none shadow-cyan">
-                ₹ {currentActiveDesign ? Number(products?.[0]?.base_price || 999) + 500 : Number(products?.[0]?.base_price || 999)}
+                ₹ {currentActiveDesign ? Number(allProducts?.[0]?.base_price || 999) + 500 : Number(allProducts?.[0]?.base_price || 999)}
               </span>
             </div>
           </div>
 
-          <Link href={currentActiveDesign ? `/gallery/${products?.[0]?.id || ''}?design=${currentActiveDesign.id}` : '#'} className={!currentActiveDesign ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
+          <Link href={currentActiveDesign ? `/gallery/${allProducts?.[0]?.id || ''}?design=${currentActiveDesign.id}` : '#'} className={!currentActiveDesign ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
             <button disabled={!currentActiveDesign} className="relative w-full bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-mono font-bold text-xs py-3 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_15px_rgba(0,240,255,0.3)] overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
               PROCEED TO BUY
@@ -1507,5 +1553,13 @@ export default function StudioPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function StudioPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-void"><Loader2 className="w-8 h-8 animate-spin text-cyan" /></div>}>
+      <StudioContent />
+    </Suspense>
   );
 }

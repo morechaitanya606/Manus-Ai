@@ -355,7 +355,7 @@ async function generateWithLeonardoImg2Img(
         },
         body: JSON.stringify({
             prompt,
-            modelId: LEONARDO_VISION_XL_MODEL_ID,
+            modelId: LEONARDO_MODEL_ID, // Use base model as Vision XL rejects init_image_id
             num_images: 1,
             width: 1024,
             height: 1024,

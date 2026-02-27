@@ -58,7 +58,8 @@ function DashboardContent() {
   });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [margin, setMargin] = useState('15');
-  const [savingMargin, setSavingMargin] = useState(false);
+  const [dropDate, setDropDate] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
   const [usageRange, setUsageRange] = useState<UsageRange>('30d');
 
   useEffect(() => {
@@ -68,11 +69,12 @@ function DashboardContent() {
   const fetchStats = async (range: UsageRange) => {
     const supabase = getSupabase();
 
-    const [ordersRes, designsRes, usersRes, settingsRes, recentOrdersRes] = await Promise.all([
+    const [ordersRes, designsRes, usersRes, marginSettingsRes, dropSettingsRes, recentOrdersRes] = await Promise.all([
       supabase.from('orders').select('total_amount, status'),
       supabase.from('designs').select('status, prompt, user_id, created_at'),
       supabase.from('profiles').select('id, role, username, ai_credits'),
       supabase.from('platform_settings').select('*').eq('key', 'platform_margin_percent').single(),
+      supabase.from('platform_settings').select('*').eq('key', 'shop_drop_date').single(),
       supabase.from('orders')
         .select('id, status, total_amount, created_at, order_items(design_id, designs:design_id(original_image_url))')
         .order('created_at', { ascending: false })
@@ -121,16 +123,40 @@ function DashboardContent() {
 
     setRecentOrders(recentOrdersRes.data || []);
 
-    if (settingsRes.data) {
-      setMargin(String(settingsRes.data.value));
+    if (marginSettingsRes.data) {
+      setMargin(String(marginSettingsRes.data.value));
+    }
+
+    if (dropSettingsRes.data?.value) {
+      // Format for datetime-local input: YYYY-MM-DDTHH:mm
+      try {
+        const date = new Date(dropSettingsRes.data.value);
+        const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+        const localISOTime = (new Date(date.getTime() - tzOffset)).toISOString().slice(0, 16);
+        setDropDate(localISOTime);
+      } catch (e) {
+        console.error("Failed to parse drop date", e);
+      }
     }
   };
 
-  const handleSaveMargin = async () => {
-    setSavingMargin(true);
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
     const supabase = getSupabase();
-    await supabase.from('platform_settings').update({ value: margin }).eq('key', 'platform_margin_percent');
-    setSavingMargin(false);
+
+    const promises = [
+      supabase.from('platform_settings').upsert({ key: 'platform_margin_percent', value: margin })
+    ];
+
+    if (dropDate) {
+      promises.push(
+        // Try to store as proper ISO string depending on what Supabase accepts, but datetime-local + Z handles it generally
+        supabase.from('platform_settings').upsert({ key: 'shop_drop_date', value: new Date(dropDate).toISOString() })
+      );
+    }
+
+    await Promise.all(promises);
+    setSavingSettings(false);
   };
 
   const STAT_CARDS = [
@@ -178,11 +204,10 @@ function DashboardContent() {
                 key={range}
                 type="button"
                 onClick={() => setUsageRange(range)}
-                className={`px-3 py-1.5 border text-[10px] font-mono tracking-widest uppercase transition-colors ${
-                  isActive
-                    ? 'border-cyan bg-cyan/10 text-cyan'
-                    : 'border-border-std text-text-dim hover:border-cyan/60 hover:text-cyan'
-                }`}
+                className={`px-3 py-1.5 border text-[10px] font-mono tracking-widest uppercase transition-colors ${isActive
+                  ? 'border-cyan bg-cyan/10 text-cyan'
+                  : 'border-border-std text-text-dim hover:border-cyan/60 hover:text-cyan'
+                  }`}
               >
                 {getUsageRangeLabel(range)}
               </button>
@@ -397,8 +422,20 @@ function DashboardContent() {
                 />
                 <p className="text-[9px] font-mono tracking-widest text-text-dim mt-2 uppercase">&gt; APPLIED TO ALL TRANSACTIONS</p>
               </div>
-              <Button onClick={handleSaveMargin} className="w-full py-4 mt-2 rounded-none bg-cyan/10 border border-cyan text-cyan font-mono font-bold tracking-widest uppercase hover:bg-cyan hover:text-void animate-in transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)] disabled:opacity-50" disabled={savingMargin}>
-                {savingMargin ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> SAVING...</> : 'SAVE SETTINGS'}
+
+              <div>
+                <label className="block text-[10px] font-mono tracking-widest text-text-dim uppercase mb-2">SHOP DROP SCHEDULE</label>
+                <input
+                  type="datetime-local"
+                  value={dropDate}
+                  onChange={(e) => setDropDate(e.target.value)}
+                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
+                />
+                <p className="text-[9px] font-mono tracking-widest text-text-dim mt-2 uppercase">&gt; COUNTDOWN TARGET DATE & TIME</p>
+              </div>
+
+              <Button onClick={handleSaveSettings} className="w-full py-4 mt-2 rounded-none bg-cyan/10 border border-cyan text-cyan font-mono font-bold tracking-widest uppercase hover:bg-cyan hover:text-void animate-in transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)] disabled:opacity-50" disabled={savingSettings}>
+                {savingSettings ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> SAVING...</> : 'SAVE SETTINGS'}
               </Button>
             </div>
           </div>
