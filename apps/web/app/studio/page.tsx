@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useRef, Suspense, type CSSProperties,
 import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '../../stores/auth-store';
 import { useGenerateDesign, useUploadDesign, useRemoveBackground, useUpscaleImage } from '../../hooks/use-designs';
-import { useProducts } from '../../hooks/use-products';
+import { useProducts, useProduct } from '../../hooks/use-products';
 import { Sparkles, Terminal, Activity, Shuffle, ZoomIn, ZoomOut, Layers as LayersIcon, ArrowRight, Shirt, AlertCircle, Loader2, X, Download, Upload, Wand2, ScissorsLineDashed, ChevronDown, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -1358,8 +1358,8 @@ function StudioContent() {
                       key={colorName}
                       onClick={() => setGarmentColor(colorName)}
                       className={`relative w-8 h-8 rounded-sm border transition-all ${garmentColor === colorName
-                          ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110 z-10'
-                          : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
+                        ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110 z-10'
+                        : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
                         }`}
                       style={{ backgroundColor: hexCode }}
                     >
@@ -1403,7 +1403,7 @@ function StudioContent() {
           <div className="space-y-1 mb-4">
             <div className="flex justify-between font-mono text-[10px] tracking-widest">
               <span className="text-text-dim uppercase">Base Price</span>
-              <span className="text-white">₹ {products?.[0]?.base_price ? Number(products[0].base_price).toFixed(0) : '999'}</span>
+              <span className="text-white">₹ {allProducts?.[0]?.base_price ? Number(allProducts[0].base_price).toFixed(0) : '999'}</span>
             </div>
             {currentActiveDesign && (
               <div className="flex justify-between font-mono text-[10px] text-cyan tracking-widest">
@@ -1415,12 +1415,12 @@ function StudioContent() {
             <div className="flex justify-between font-mono text-sm font-bold items-end tracking-widest pt-1 border-t-2 border-transparent relative">
               <span className="text-magenta uppercase">Total Price</span>
               <span className="text-white text-lg leading-none shadow-cyan">
-                ₹ {currentActiveDesign ? Number(products?.[0]?.base_price || 999) + 500 : Number(products?.[0]?.base_price || 999)}
+                ₹ {currentActiveDesign ? Number(allProducts?.[0]?.base_price || 999) + 500 : Number(allProducts?.[0]?.base_price || 999)}
               </span>
             </div>
           </div>
 
-          <Link href={currentActiveDesign ? `/gallery/${products?.[0]?.id || ''}?design=${currentActiveDesign.id}` : '#'} className={!currentActiveDesign ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
+          <Link href={currentActiveDesign ? `/gallery/${allProducts?.[0]?.id || ''}?design=${currentActiveDesign.id}` : '#'} className={!currentActiveDesign ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
             <button disabled={!currentActiveDesign} className="relative w-full bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-mono font-bold text-xs py-3 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_15px_rgba(0,240,255,0.3)] overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
               PROCEED TO BUY
