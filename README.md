@@ -14,6 +14,22 @@
 - **Printful Integration** — Automated print-on-demand fulfillment routing
 - **Admin Dashboard** — Comprehensive portal for tracking revenue, managing orders, refunds, and product catalogs
 
+## 📋 Recent Updates (v2.0.0)
+
+- **Codebase Cleanup:** Removed unused scripts, outdated documentation (`task1.md`, `Product_Specification.md`), and cleaned up unused Supabase edge functions.
+- **TypeScript & Linting Fixes:** Resolved rigorous type-checking and linting errors across the entire monorepo, verifying everything with a successful production build.
+- **UI Enhancements:** Refined Studio UI spacing and ensured all code is thoroughly typed.
+
+- **AI Design Studio** — Generate, upscale, and remove backgrounds using AI (Google Gemini 2.0 Flash, Leonardo, Pollinations)
+- **Interactive 2D & 3D Editor** — Perfectly position designs on digital apparel using Konva and React Three Fiber
+- **7 Premium Materials** — Bamboo, Hemp, Linen, Cotton 240 GSM, Bleach Art, Denim
+- **Multiple Printing Methods** — DTF, Screen Print, Puff, HD, Embroidery, Bleach Art
+- **Dark Mode** — Modern Next.js interface with full dark mode support using shadcn/ui and Framer Motion
+- **Community & Social** — Community gallery with a design likes/trending system and dedicated cloud storage
+- **Order & Credit Management** — Razorpay integration for checkout and platform credit purchasing
+- **Printful Integration** — Automated print-on-demand fulfillment routing
+- **Admin Dashboard** — Comprehensive portal for tracking revenue, managing orders, refunds, and product catalogs
+
 ## 🛒 Product Catalog
 
 | Product | Material | Price |
