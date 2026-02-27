@@ -31,39 +31,113 @@ const GENERATION_STEPS = [
   'Finalizing Asset...',
 ];
 
-const getColorHexFromName = (colorName: string): string => {
-  const normalized = colorName.trim().toLowerCase();
+const normalizeColorToken = (value: string): string => value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-  // Custom vibrant mappings
-  const colorMap: Record<string, string> = {
-    'black': '#16161A',
-    'white': '#F5F5F5',
-    'grey': '#2A2A35',
-    'gray': '#2A2A35',
-    'navy': '#1B2A4A',
-    'red': '#8B1A1A',
-    'green': '#1A3C2A',
-    'olive': '#3B4A31',
-    'blue': '#1A365D',
-    'yellow': '#B7791F',
-    'orange': '#C05621',
-    'pink': '#97266D',
-    'purple': '#44337A',
-    'brown': '#5E4028',
-    'tan': '#D6BC98',
-    'cream': '#FFFDD0',
+const COLOR_TOKEN_ALIASES: Record<string, string> = {
+  blk: 'black',
+  black: 'black',
+  wht: 'white',
+  white: 'white',
+  offwhite: 'white',
+  ivory: 'white',
+  natural: 'white',
+  gry: 'gray',
+  grey: 'gray',
+  gray: 'gray',
+  heathergray: 'gray',
+  heathergrey: 'gray',
+  nvy: 'navy',
+  navy: 'navy',
+  red: 'red',
+  maroon: 'red',
+  burgundy: 'red',
+  grn: 'green',
+  green: 'green',
+  olive: 'olive',
+  blue: 'blue',
+  blu: 'blue',
+  yellow: 'yellow',
+  ylw: 'yellow',
+  orange: 'orange',
+  org: 'orange',
+  pink: 'pink',
+  pnk: 'pink',
+  purple: 'purple',
+  ppl: 'purple',
+  brown: 'brown',
+  brn: 'brown',
+  tan: 'tan',
+  cream: 'cream',
+};
+
+const COLOR_HEX_MAP: Record<string, string> = {
+  black: '#16161A',
+  white: '#F5F5F5',
+  gray: '#2A2A35',
+  navy: '#1B2A4A',
+  red: '#8B1A1A',
+  green: '#1A3C2A',
+  olive: '#3B4A31',
+  blue: '#1A365D',
+  yellow: '#B7791F',
+  orange: '#C05621',
+  pink: '#97266D',
+  purple: '#44337A',
+  brown: '#5E4028',
+  tan: '#D6BC98',
+  cream: '#FFFDD0',
+};
+
+const canonicalizeColorToken = (value: string): string => {
+  const normalized = normalizeColorToken(value);
+  return COLOR_TOKEN_ALIASES[normalized] || normalized;
+};
+
+const parseHexColor = (hex: string): { r: number; g: number; b: number } | null => {
+  const normalized = hex.replace('#', '').trim();
+  if (!/^[0-9a-f]{3}([0-9a-f]{3})?$/i.test(normalized)) return null;
+
+  const full = normalized.length === 3
+    ? normalized.split('').map((char) => `${char}${char}`).join('')
+    : normalized;
+
+  return {
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16),
   };
+};
 
-  if (colorMap[normalized]) return colorMap[normalized];
+const getColorHexFromName = (colorName: string): string => {
+  const trimmed = colorName.trim();
 
-  // Check if it's already a valid hex
-  if (/^#([0-9A-F]{3}){1,2}$/i.test(normalized)) {
-    return normalized;
+  if (/^#([0-9A-F]{3}){1,2}$/i.test(trimmed)) {
+    return trimmed;
   }
 
-  // Fallback to letting the browser/threejs attempt to parse it directly
-  return normalized || '#16161A';
+  const canonical = canonicalizeColorToken(trimmed);
+  return COLOR_HEX_MAP[canonical] || '#16161A';
 };
+
+const isLightColor = (value: string): boolean => {
+  const canonical = canonicalizeColorToken(value);
+  if (canonical === 'white' || canonical === 'cream' || canonical === 'tan') return true;
+
+  const rgb = parseHexColor(getColorHexFromName(value));
+  if (!rgb) return false;
+
+  const luminance = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
+  return luminance >= 0.72;
+};
+
+const FALLBACK_COLORS = [
+  { name: 'BLK', hex: '#16161A' },
+  { name: 'WHT', hex: '#F5F5F5' },
+  { name: 'GRY', hex: '#2A2A35' },
+  { name: 'NVY', hex: '#1B2A4A' },
+  { name: 'RED', hex: '#8B1A1A' },
+  { name: 'GRN', hex: '#1A3C2A' },
+];
 
 const GARMENT_TYPES = [
   { id: 'tshirt', label: 'T-Shirt', icon: <Shirt className="w-3 h-3" /> },
@@ -733,7 +807,7 @@ function StudioContent() {
 
   // Dynamic base image selection — picks the correct product photo based on garmentType + garmentColor
   const getBaseImage = (type: string, view: string): string => {
-    const isWhite = garmentColor === 'WHT';
+    const isWhite = isLightColor(garmentColor);
 
     const imageMap: Record<string, Record<string, { white: string; black: string }>> = {
       tshirt: {
@@ -777,8 +851,11 @@ function StudioContent() {
 
   // Available Colors Calculation
   const availableColors = selectedProduct && selectedProduct.colors && selectedProduct.colors.length > 0
-    ? selectedProduct.colors.map(c => c.name)
-    : ['BLK', 'WHT', 'GRY', 'NVY', 'RED', 'GRN']; // Fallback options
+    ? selectedProduct.colors.map((c) => ({
+      name: c.name,
+      hex: c.hex?.trim() && /^#([0-9A-F]{3}){1,2}$/i.test(c.hex) ? c.hex : getColorHexFromName(c.name),
+    }))
+    : FALLBACK_COLORS;
 
   // Map garment color name to hex for 3D viewer
   const garmentColorHex = getColorHexFromName(garmentColor);
@@ -1349,19 +1426,22 @@ function StudioContent() {
             <div className="mb-4">
               <label className="block font-mono text-[10px] text-text-dim mb-2 uppercase tracking-widest border-l-2 border-cyan pl-2">GARMENT COLOR</label>
               <div className="flex gap-2">
-                {availableColors.map((colorName) => {
-                  const hexCode = getColorHexFromName(colorName);
-                  const isLight = hexCode.toLowerCase() === '#f5f5f5' || hexCode.toLowerCase() === '#ffffff';
+                {availableColors.map((colorOption) => {
+                  const colorName = colorOption.name;
+                  const hexCode = colorOption.hex || getColorHexFromName(colorName);
+                  const isLight = isLightColor(hexCode);
+                  const isActive = canonicalizeColorToken(garmentColor) === canonicalizeColorToken(colorName);
 
                   return (
                     <button
                       key={colorName}
                       onClick={() => setGarmentColor(colorName)}
-                      className={`relative w-8 h-8 rounded-sm border transition-all ${garmentColor === colorName
+                      className={`group relative w-8 h-8 rounded-sm border transition-all ${isActive
                         ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110 z-10'
                         : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
                         }`}
                       style={{ backgroundColor: hexCode }}
+                      title={colorName}
                     >
                       <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan uppercase opacity-0 group-hover:opacity-100 transition-opacity">{colorName}</span>
                     </button>
