@@ -1,17 +1,18 @@
-# The Quote Shop 🎨
+# EVERYDAYDROP 🎨
 
 > India's AI-powered custom print-on-demand platform — sustainable materials, premium quality, doorstep delivery.
 
 ## 🌟 Features
 
-- **AI Design Studio** — Generate stunning designs from text prompts using AI (Gemini 2.0 Flash)
+- **AI Design Studio** — Generate, upscale, and remove backgrounds using AI (Google Gemini 2.0 Flash, Leonardo, Pollinations)
+- **Interactive 2D & 3D Editor** — Perfectly position designs on digital apparel using Konva and React Three Fiber
 - **7 Premium Materials** — Bamboo, Hemp, Linen, Cotton 240 GSM, Bleach Art, Denim
 - **Multiple Printing Methods** — DTF, Screen Print, Puff, HD, Embroidery, Bleach Art
-- **Dark Mode** — Full dark mode support with system preference detection
-- **Product Recommendations** — Smart "You might also like" suggestions on product pages
-- **Order Management** — Admin dashboard for tracking orders, printing, and shipping
-- **Razorpay Payments** — Secure checkout with UPI, cards, net banking
-- **Pan-India Shipping** — Flat ₹99 shipping, free above ₹2,000
+- **Dark Mode** — Modern Next.js interface with full dark mode support using shadcn/ui and Framer Motion
+- **Community & Social** — Community gallery with a design likes/trending system and dedicated cloud storage
+- **Order & Credit Management** — Razorpay integration for checkout and platform credit purchasing
+- **Printful Integration** — Automated print-on-demand fulfillment routing
+- **Admin Dashboard** — Comprehensive portal for tracking revenue, managing orders, refunds, and product catalogs
 
 ## 🛒 Product Catalog
 
@@ -27,10 +28,12 @@
 
 ## 🏗️ Tech Stack
 
-- **Frontend** — Next.js 14, React, TypeScript, Tailwind CSS
-- **Backend** — Supabase (Postgres, Auth, Storage, Edge Functions)
-- **AI** — Google Gemini 2.0 Flash (Image Generation)
-- **Payments** — Razorpay
+- **Frontend** — Next.js 15, React 18, TypeScript, Tailwind CSS, shadcn/ui
+- **State & Data** — Zustand, React Query
+- **Graphics** — React Three Fiber, Three.js, Konva
+- **Backend** — Supabase (PostgreSQL, Auth, Storage Buckets, Edge Functions)
+- **AI** — Google Generative AI, Leonardo API, Pollinations API
+- **Payments & E-Commerce** — Razorpay, Printful API
 - **Deployment** — Vercel
 
 ## 📁 Project Structure
@@ -41,25 +44,27 @@ apps/web/
 │   ├── (auth)/          # Login, Signup pages
 │   ├── (marketing)/     # Homepage
 │   ├── about/           # About us
-│   ├── how-it-works/    # Step-by-step guide
-│   ├── pricing/         # Pricing table
-│   ├── printing-types/  # Printing methods + materials
-│   ├── faq/             # FAQ with search
-│   ├── contact/         # Contact form
-│   ├── gallery/         # Product catalog + detail pages
-│   ├── studio/          # AI Design Studio
+│   ├── admin/           # Admin portal
+│   ├── community/       # Community gallery
+│   ├── credits/         # Credit purchasing
+│   ├── drop/            # Drop catalog
+│   ├── gallery/         # General gallery
+│   ├── shop/            # General shop catalog
+│   ├── studio/          # AI Design Studio (2D & 3D Editor)
 │   ├── my-designs/      # Saved designs
 │   ├── cart/            # Shopping cart
 │   ├── checkout/        # Payment checkout
 │   ├── orders/          # User orders
 │   ├── profile/         # User profile
 │   └── dashboard/       # Admin dashboard
-│       ├── orders/      # Order fulfillment
-│       └── products/    # Product management
 ├── components/          # Shared UI components
 ├── hooks/               # React Query hooks
-├── stores/              # Zustand state stores
-└── lib/                 # Supabase client, utilities
+├── stores/              # Zustand state stores (Auth, Cart)
+└── lib/                 # Supabase client, Razorpay, Pollinations utilities
+
+supabase/
+├── migrations/          # PostgreSQL database schemas
+└── functions/           # Edge functions (AI ops, payments, etc.)
 ```
 
 ## 🚀 Getting Started
@@ -176,10 +181,10 @@ Click the Moon/Sun icon in the navbar to toggle. Preference is saved in localSto
 
 ## 📞 Contact
 
-- **Email**: contact@thequoteshop.in
+- **Email**: contact@everydaydrop.in
 - **Phone**: +91 70284 78109
 - **Location**: Pune, Maharashtra, India
 
 ---
 
-Made with ❤️ in India | © 2026 The Quote Shop
+Made with ❤️ in India | © 2026 EVERYDAYDROP

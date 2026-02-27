@@ -1,27 +1,106 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key';
+const RETRYABLE_ERROR_PATTERN = /(ssl handshake failed|error code 525|cloudflare|fetch failed|network|timeout|5\d\d|econnreset|enotfound|eai_again)/i;
+
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key'
+    supabaseUrl,
+    supabaseAnonKey
 );
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-    _request: Request,
-    { params }: { params: { id: string } }
-) {
-    try {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function getErrorMessage(error: unknown): string {
+    if (typeof error === 'string') return error;
+    if (error && typeof error === 'object' && 'message' in error) {
+        return String((error as { message?: unknown }).message || 'Unknown error');
+    }
+    return 'Unknown error';
+}
+
+function summarizeError(message: string): string {
+    const clean = message.replace(/\s+/g, ' ').trim();
+    if (clean.length <= 180) return clean;
+    return `${clean.slice(0, 177)}...`;
+}
+
+function isRetryableError(message: string): boolean {
+    return RETRYABLE_ERROR_PATTERN.test(message);
+}
+
+function isNotFoundError(error: unknown, message: string): boolean {
+    if (error && typeof error === 'object') {
+        const maybeCode = 'code' in error ? String((error as { code?: unknown }).code || '') : '';
+        const maybeStatus = 'status' in error ? Number((error as { status?: unknown }).status) : NaN;
+
+        if (maybeCode === 'PGRST116' || maybeStatus === 406) return true;
+    }
+
+    return /(0 rows|no rows|multiple \(or no\) rows returned|not found)/i.test(message);
+}
+
+async function fetchProductByIdWithRetry(id: string, maxAttempts = 3) {
+    let lastMessage = 'Unknown error';
+    let retryable = false;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         const { data: product, error } = await supabase
             .from('products')
             .select('*')
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
-        if (error || !product) {
+        if (!error) {
+            return { product, error: null as string | null, retryable: false };
+        }
+
+        lastMessage = getErrorMessage(error);
+        retryable = isRetryableError(lastMessage);
+        const notFound = isNotFoundError(error, lastMessage);
+
+        if (notFound) {
+            return { product: null, error: null as string | null, retryable: false, notFound: true };
+        }
+
+        if (!retryable || attempt === maxAttempts) {
+            break;
+        }
+
+        await sleep(attempt * 250);
+    }
+
+    return { product: null, error: lastMessage, retryable, notFound: false };
+}
+
+export async function GET(
+    _request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const { product, error, retryable, notFound } = await fetchProductByIdWithRetry(id);
+
+        if (notFound) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 });
         }
+
+        if (error) {
+            console.error('Product detail fetch error:', summarizeError(error));
+            return NextResponse.json(
+                {
+                    error: retryable
+                        ? 'Products service temporarily unavailable. Please retry shortly.'
+                        : 'Failed to fetch product',
+                },
+                { status: retryable ? 503 : 500 }
+            );
+        }
+
+        if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
         return NextResponse.json({
             id: product.id,

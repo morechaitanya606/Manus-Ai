@@ -213,7 +213,7 @@ export default function ProductDetailPage() {
 
                         {/* Design Actions */}
                         <div className="bg-panel rounded-none border border-border-std border border-border-std p-4">
-                            <h3 className="font-semibold text-sm mb-3">🎨 Add Your Design</h3>
+                            <h3 className="font-semibold text-sm mb-3">🎨 Want to Customize?</h3>
 
                             {designImage ? (
                                 <div className="flex items-center justify-between">
@@ -246,12 +246,12 @@ export default function ProductDetailPage() {
                                         className="flex flex-col items-center gap-2 p-4 rounded-none border border-border-std border-2 border-dashed border-border-std hover:border-cyan hover:bg-[hsl(var(--primary)/0.03)] transition cursor-pointer"
                                     >
                                         <Upload className="h-6 w-6 text-cyan" />
-                                        <span className="text-xs font-medium">Upload Design</span>
+                                        <span className="text-xs font-medium">Upload Art</span>
                                         <span className="text-[10px] text-text-dim">PNG, JPG, SVG</span>
                                     </button>
-                                    <Link href="/studio" className="flex flex-col items-center gap-2 p-4 rounded-none border border-border-std border-2 border-dashed border-border-std hover:border-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/0.03)] transition">
+                                    <Link href={`/studio?productId=${product.id}&product=${product.category?.toLowerCase() || 'tshirt'}&color=${selectedColor || product.colors[0]?.name || 'Black'}`} className="flex flex-col items-center gap-2 p-4 rounded-none border border-border-std border-2 border-dashed border-border-std hover:border-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/0.03)] transition">
                                         <Sparkles className="h-6 w-6 text-magenta" />
-                                        <span className="text-xs font-medium">AI Generate</span>
+                                        <span className="text-xs font-medium">AI Studio</span>
                                         <span className="text-[10px] text-text-dim">Create with AI</span>
                                     </Link>
                                 </div>
@@ -358,24 +358,28 @@ export default function ProductDetailPage() {
                                 {added ? (
                                     <><Check className="mr-3 h-5 w-5" /> ADDED TO CART</>
                                 ) : (
-                                    <><ShoppingCart className="mr-3 h-5 w-5" /> ADD TO CART</>
+                                    <><ShoppingCart className="mr-3 h-5 w-5" /> CUSTOMIZE & BUY</>
                                 )}
                             </Button>
                             {!designImage && (
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="flex-1 rounded-none border border-magenta text-magenta hover:bg-magenta hover:text-white font-mono font-bold tracking-widest uppercase h-14"
-                                    onClick={() => fileRef.current?.click()}
+                                    className="flex-1 rounded-none border border-text-dim text-white hover:bg-white/10 font-mono font-bold tracking-widest uppercase h-14"
+                                    onClick={handleAddToCart}
                                 >
-                                    <ImagePlus className="mr-3 h-5 w-5" /> UPLOAD DESIGN
+                                    <ShoppingBag className="mr-3 h-5 w-5" /> BUY PLAIN
                                 </Button>
                             )}
                         </div>
 
-                        {designImage && (
+                        {designImage ? (
                             <p className="text-xs text-green-600 mt-2 text-center">
                                 {isAiDesign ? '✨ Your AI-generated design will be printed on this product' : '✅ Your custom design will be printed on this product'}
+                            </p>
+                        ) : (
+                            <p className="text-xs text-text-dim mt-2 text-center">
+                                You are purchasing a blank, uncustomized product.
                             </p>
                         )}
                     </div>
@@ -395,7 +399,7 @@ function RecommendedProducts({ currentProductId, category }: { currentProductId:
     // Same category first (excluding current), then other products
     const sameCategory = allProducts.filter(p => p.id !== currentProductId && p.category === category);
     const otherProducts = allProducts.filter(p => p.id !== currentProductId && p.category !== category);
-    const recommended = [...sameCategory, ...otherProducts].slice(0, 4);
+    const recommended = [...sameCategory, ...otherProducts].slice(0, 8);
 
     if (recommended.length === 0) return null;
 

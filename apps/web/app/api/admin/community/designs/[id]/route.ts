@@ -9,7 +9,7 @@ const supabaseAdmin = createClient(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('Authorization') || request.headers.get('authorization');
@@ -42,7 +42,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const designId = params?.id;
+    const { id: designId } = await params;
     if (!designId) {
       return NextResponse.json({ error: 'Design ID is required' }, { status: 400 });
     }

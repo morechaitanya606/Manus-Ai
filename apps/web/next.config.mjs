@@ -4,9 +4,9 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb'
-    },
-    serverComponentsExternalPackages: ['razorpay', 'crypto']
+    }
   },
+  serverExternalPackages: ['razorpay', 'crypto'],
   images: {
     remotePatterns: [
       {

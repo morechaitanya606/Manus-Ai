@@ -5,10 +5,11 @@ const USD_TO_INR = 85;
 
 export async function GET(
     _request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const res = await fetch(`https://api.printful.com/products/${params.id}`, {
+        const { id } = await params;
+        const res = await fetch(`https://api.printful.com/products/${id}`, {
             headers: {
                 'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
             },

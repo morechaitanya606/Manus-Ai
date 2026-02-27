@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-export type CartItem = {
+type CartItem = {
     id: string;
     productId: string;
     productName: string;
