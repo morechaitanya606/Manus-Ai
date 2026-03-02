@@ -118,7 +118,7 @@ function FulfillmentDashboard() {
                         <Package className="h-3 w-3" />
                         <span>LOGISTICS</span>
                     </div>
-                    <h1 className="text-3xl font-bold font-mono tracking-widest text-white uppercase mt-2">
+                    <h1 className="text-3xl font-bold font-mono tracking-widest text-text-main uppercase mt-2">
                         ORDER <span className="text-magenta">FULFILLMENT</span>
                     </h1>
                     <p className="mt-2 text-[10px] tracking-widest text-cyan uppercase">
@@ -136,15 +136,15 @@ function FulfillmentDashboard() {
                     </div>
                     <div className="bg-void border border-cyan p-4 relative shadow-[0_0_15px_rgba(0,240,255,0.15)] group">
                         <p className="text-[10px] font-mono tracking-widest uppercase text-cyan">AWAITING PRINT</p>
-                        <p className="text-2xl font-bold text-white mt-1 group-hover:text-cyan transition-colors">{statusCounts.paid || 0}</p>
+                        <p className="text-2xl font-bold text-text-main mt-1 group-hover:text-cyan transition-colors">{statusCounts.paid || 0}</p>
                     </div>
                     <div className="bg-void border border-magenta p-4 relative shadow-[0_0_15px_rgba(255,0,255,0.15)] group">
                         <p className="text-[10px] font-mono tracking-widest uppercase text-magenta">PRINTING ACTIVE</p>
-                        <p className="text-2xl font-bold text-white mt-1 group-hover:text-magenta transition-colors">{statusCounts.printing || 0}</p>
+                        <p className="text-2xl font-bold text-text-main mt-1 group-hover:text-magenta transition-colors">{statusCounts.printing || 0}</p>
                     </div>
                     <div className="bg-void border border-blue-500 p-4 relative shadow-[0_0_15px_rgba(59,130,246,0.15)] group">
                         <p className="text-[10px] font-mono tracking-widest uppercase text-blue-500">SHIPPED</p>
-                        <p className="text-2xl font-bold text-white mt-1 group-hover:text-blue-500 transition-colors">{(statusCounts.shipped || 0) + (statusCounts.delivered || 0)}</p>
+                        <p className="text-2xl font-bold text-text-main mt-1 group-hover:text-blue-500 transition-colors">{(statusCounts.shipped || 0) + (statusCounts.delivered || 0)}</p>
                     </div>
                 </div>
 
@@ -156,7 +156,7 @@ function FulfillmentDashboard() {
                             onClick={() => setTab(t)}
                             className={`px-4 py-2 text-[10px] font-mono tracking-widest uppercase border border-border-std whitespace-nowrap transition-all ${tab === t
                                 ? 'bg-cyan/10 border-cyan text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
-                                : 'bg-void text-text-dim hover:text-white hover:border-cyan/50'
+                                : 'bg-void text-text-dim hover:text-text-main hover:border-cyan/50'
                                 }`}
                         >
                             {t === 'all' ? `ALL (${orders.length})` : `${t} (${statusCounts[t] || 0})`}
@@ -188,7 +188,7 @@ function FulfillmentDashboard() {
                                                 <Package className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <p className="font-mono font-bold text-white tracking-widest text-sm uppercase">
+                                                <p className="font-mono font-bold text-text-main tracking-widest text-sm uppercase">
                                                     ORD_{order.id.slice(0, 8)}
                                                     <span className="font-normal text-text-dim ml-2">— {customerName}</span>
                                                 </p>
@@ -202,10 +202,10 @@ function FulfillmentDashboard() {
                                             <span className={`text-[9px] font-mono tracking-widest px-3 py-1 border border-dashed uppercase ${config.color}`}>
                                                 {config.label}
                                             </span>
-                                            <span className="font-bold font-mono text-white text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
+                                            <span className="font-bold font-mono text-text-main text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
                                             {config.nextStatus && (
                                                 <Button
-                                                    className="rounded-none bg-void border border-text-dim/50 text-text-dim hover:text-white hover:border-cyan hover:bg-cyan/10 transition-colors font-mono tracking-widest uppercase text-[9px] px-3 py-1 h-auto"
+                                                    className="rounded-none bg-void border border-text-dim/50 text-text-dim hover:text-text-main hover:border-cyan hover:bg-cyan/10 transition-colors font-mono tracking-widest uppercase text-[9px] px-3 py-1 h-auto"
                                                     onClick={(e) => { e.stopPropagation(); handleStatusAction(order.id, config.nextStatus!); }}
                                                     disabled={updating === order.id}
                                                 >
@@ -226,12 +226,12 @@ function FulfillmentDashboard() {
                                             <div className="grid md:grid-cols-2 gap-6">
                                                 {/* Items */}
                                                 <div>
-                                                    <h4 className="font-mono font-bold text-white tracking-widest uppercase text-sm mb-4 flex items-center gap-2">
+                                                    <h4 className="font-mono font-bold text-text-main tracking-widest uppercase text-sm mb-4 flex items-center gap-2">
                                                         <Package className="w-4 h-4 text-cyan" /> ORDER CONTENTS
                                                     </h4>
                                                     <div className="space-y-3">
                                                         {items.map((item: any, i: number) => (
-                                                            <div key={i} className="p-4 bg-panel border border-border-std font-mono text-xs text-white">
+                                                            <div key={i} className="p-4 bg-panel border border-border-std font-mono text-xs text-text-main">
                                                                 <div className="flex items-center justify-between mb-3 border-b border-border-std pb-2">
                                                                     <div>
                                                                         <p className="font-bold tracking-widest uppercase text-cyan">{item.products?.name || 'PRODUCT'}</p>
@@ -305,7 +305,7 @@ function FulfillmentDashboard() {
                                                             <span>SHIPPING</span><span>₹{Number(order.shipping_cost || 0).toLocaleString()}</span>
                                                         </div>
                                                         <div className="border-t border-border-std border-dashed my-2"></div>
-                                                        <div className="flex justify-between font-bold text-white text-xs">
+                                                        <div className="flex justify-between font-bold text-text-main text-xs">
                                                             <span>TOTAL</span><span className="text-cyan">₹{Number(order.total_amount).toLocaleString()}</span>
                                                         </div>
                                                     </div>
@@ -315,7 +315,7 @@ function FulfillmentDashboard() {
                                                 <div>
                                                     {address && (
                                                         <div className="mb-6">
-                                                            <h4 className="font-mono font-bold text-white tracking-widest uppercase text-sm mb-4 flex items-center gap-2 border-b border-border-std pb-2">
+                                                            <h4 className="font-mono font-bold text-text-main tracking-widest uppercase text-sm mb-4 flex items-center gap-2 border-b border-border-std pb-2">
                                                                 <MapPin className="h-4 w-4 text-cyan" /> DELIVERY ADDRESS
                                                             </h4>
                                                             <div className="p-4 bg-void border border-border-std text-[10px] font-mono tracking-widest uppercase space-y-1">
@@ -340,7 +340,7 @@ function FulfillmentDashboard() {
 
                                                     {/* Status Timeline */}
                                                     <div className="p-4 bg-void border border-border-std">
-                                                        <h4 className="font-mono font-bold text-white tracking-widest uppercase text-[10px] mb-3 border-b border-border-std pb-2">ORDER STATUS</h4>
+                                                        <h4 className="font-mono font-bold text-text-main tracking-widest uppercase text-[10px] mb-3 border-b border-border-std pb-2">ORDER STATUS</h4>
                                                         <div className="flex items-center gap-2 text-[8px] font-mono tracking-widest uppercase overflow-x-auto cyber-scrollbar pb-1">
                                                             {['paid', 'printing', 'shipped', 'delivered'].map((s, i) => (
                                                                 <div key={s} className="flex items-center gap-2 whitespace-nowrap">
@@ -383,7 +383,7 @@ function FulfillmentDashboard() {
                         <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan/50"></div>
 
                         <div className="flex items-center justify-between mb-6 border-b border-border-std pb-4">
-                            <h3 className="font-bold text-white tracking-widest uppercase flex items-center gap-2">
+                            <h3 className="font-bold text-text-main tracking-widest uppercase flex items-center gap-2">
                                 <Truck className="h-4 w-4 text-cyan" /> ENTER TRACKING NUMBER
                             </h3>
                             <button onClick={() => setShowTrackingModal(null)} className="p-1 border border-transparent hover:border-red-500 hover:text-red-500 transition-colors">
@@ -399,12 +399,12 @@ function FulfillmentDashboard() {
                             value={trackingInput}
                             onChange={(e) => setTrackingInput(e.target.value)}
                             placeholder="> e.g. TRK-92837498237"
-                            className="w-full pl-3 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50 mb-6"
+                            className="w-full pl-3 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50 mb-6"
                             autoFocus
                         />
                         <div className="flex gap-4">
                             <Button
-                                className="flex-1 rounded-none border border-border-std bg-void text-text-dim hover:text-white hover:border-cyan hover:bg-cyan/10 uppercase tracking-widest text-[10px] py-4"
+                                className="flex-1 rounded-none border border-border-std bg-void text-text-dim hover:text-text-main hover:border-cyan hover:bg-cyan/10 uppercase tracking-widest text-[10px] py-4"
                                 onClick={() => updateStatus(showTrackingModal, 'shipped')}
                                 disabled={updating === showTrackingModal}
                             >

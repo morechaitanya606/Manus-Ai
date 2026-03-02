@@ -46,6 +46,10 @@ export default function ShopItemPage() {
     const { id } = useParams<{ id: string }>();
     const item = MOCK_SHOP_ITEMS.find(i => i.id === id);
     const [selectedSize, setSelectedSize] = useState(item?.sizes?.[0] || '');
+    const formatPriceINR = (amount: string | number | null | undefined) => {
+        const value = Number(amount);
+        return Number.isFinite(value) ? value.toFixed(2) : '0.00';
+    };
 
     if (!item) {
         return (
@@ -93,8 +97,8 @@ export default function ShopItemPage() {
                     {/* Right: Details */}
                     <div className="flex flex-col">
                         <div className="border-l-2 border-magenta pl-6 mb-8">
-                            <h1 className="text-3xl md:text-5xl font-mono font-bold text-white mb-2 uppercase tracking-tight leading-none">{item.name}</h1>
-                            <p className="text-magenta font-mono text-xl tracking-widest">${parseFloat(item.price).toFixed(2)}</p>
+                            <h1 className="text-3xl md:text-5xl font-mono font-bold text-text-main mb-2 uppercase tracking-tight leading-none">{item.name}</h1>
+                            <p className="text-magenta font-mono text-xl tracking-widest">₹{formatPriceINR(item.price)}</p>
                         </div>
 
                         <div className="prose prose-invert border-b border-border-std pb-8 mb-8">
@@ -103,14 +107,14 @@ export default function ShopItemPage() {
 
                         <div className="mb-8 border-b border-border-std pb-8">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="text-white font-mono text-[10px] uppercase tracking-widest">Size</span>
+                                <span className="text-text-main font-mono text-[10px] uppercase tracking-widest">Size</span>
                             </div>
                             <div className="flex flex-wrap gap-3">
                                 {item.sizes.map(size => (
                                     <button
                                         key={size}
                                         onClick={() => setSelectedSize(size)}
-                                        className={`w-12 h-12 flex items-center justify-center font-mono text-sm transition-colors ${selectedSize === size ? 'border border-magenta text-magenta bg-magenta/10 font-bold' : 'border border-border-std text-text-dim hover:border-text-dim hover:text-white'}`}
+                                        className={`w-12 h-12 flex items-center justify-center font-mono text-sm transition-colors ${selectedSize === size ? 'border border-magenta text-magenta bg-magenta/10 font-bold' : 'border border-border-std text-text-dim hover:border-text-dim hover:text-text-main'}`}
                                     >
                                         {size}
                                     </button>

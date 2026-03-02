@@ -177,7 +177,7 @@ function NewProductForm() {
                             <Plus className="h-3 w-3" />
                             <span>NEW_COMPONENT_ENTRY</span>
                         </div>
-                        <h1 className="text-2xl font-bold font-mono tracking-widest text-white uppercase">
+                        <h1 className="text-2xl font-bold font-mono tracking-widest text-text-main uppercase">
                             ADD // <span className="text-magenta">PRODUCT</span>
                         </h1>
                         <p className="text-[10px] tracking-widest text-cyan uppercase mt-1">&gt; INITIALIZE COMPONENT DATA PARAMETERS</p>
@@ -463,7 +463,7 @@ function NewProductForm() {
                     {/* Save */}
                     <div className="flex justify-end gap-4 pt-6 pb-12 border-t border-border-std mt-8 relative z-10">
                         <Link href="/dashboard/products">
-                            <Button className="rounded-none bg-void border border-border-std text-text-dim font-mono tracking-widest text-xs uppercase px-6 py-5 hover:text-white hover:border-white transition-all">
+                            <Button className="rounded-none bg-void border border-border-std text-text-dim font-mono tracking-widest text-xs uppercase px-6 py-5 hover:text-text-main hover:border-white transition-all">
                                 CANCEL
                             </Button>
                         </Link>

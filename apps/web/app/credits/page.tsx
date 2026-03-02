@@ -57,7 +57,7 @@ export default function CreditsPage() {
             <div className="max-w-4xl mx-auto">
 
                 <div className="mb-8">
-                    <Link href="/studio" className="inline-flex items-center text-sm font-medium text-text-dim hover:text-white transition-colors">
+                    <Link href="/studio" className="inline-flex items-center text-sm font-medium text-text-dim hover:text-text-main transition-colors">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Studio
                     </Link>
@@ -67,7 +67,7 @@ export default function CreditsPage() {
                     <div className="inline-flex items-center justify-center p-3 bg-purple-100 rounded-none border border-border-std border-dashed mb-4">
                         <Sparkles className="w-8 h-8 text-purple-600" />
                     </div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl mb-4">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-text-main sm:text-5xl mb-4">
                         Supercharge Your Creativity
                     </h1>
                     <p className="text-xl text-text-dim max-w-2xl mx-auto">
@@ -77,7 +77,7 @@ export default function CreditsPage() {
                     {profile && (
                         <div className="mt-6 inline-flex items-center gap-2 bg-panel border border-border-std rounded-none border border-border-std border-dashed px-6 py-2 shadow-sm">
                             <span className="text-sm font-medium text-text-dim">Current Balance:</span>
-                            <span className="text-lg font-bold text-white flex items-center">
+                            <span className="text-lg font-bold text-text-main flex items-center">
                                 <Zap className="w-4 h-4 text-yellow-500 mr-1 fill-yellow-500" />
                                 {isUnlimitedCreditsUser ? 'Unlimited' : `${profile.ai_credits} Credits`}
                             </span>
@@ -103,8 +103,8 @@ export default function CreditsPage() {
                             )}
 
                             <div className="mb-6">
-                                <h3 className="text-xl font-bold text-white">{pkg.title}</h3>
-                                <div className="mt-4 flex items-baseline text-5xl font-extrabold text-white">
+                                <h3 className="text-xl font-bold text-text-main">{pkg.title}</h3>
+                                <div className="mt-4 flex items-baseline text-5xl font-extrabold text-text-main">
                                     ₹{pkg.price}
                                 </div>
                             </div>
@@ -113,7 +113,7 @@ export default function CreditsPage() {
                                 <ul className="space-y-4 mb-8">
                                     <li className="flex items-center">
                                         <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mr-3" />
-                                        <span className="text-lg font-semibold text-white">{pkg.credits} AI Generations</span>
+                                        <span className="text-lg font-semibold text-text-main">{pkg.credits} AI Generations</span>
                                     </li>
                                     <li className="flex items-center">
                                         <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mr-3" />

@@ -45,7 +45,7 @@ export default function AboutPage() {
                         <Terminal className="h-4 w-4 text-cyan" />
                         <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">ABOUT_US //</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-bold font-display text-text-main uppercase tracking-tighter">
                         About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">EVERYDAYDROP</span>
                     </h1>
                     <p className="mt-6 text-text-dim max-w-2xl mx-auto font-mono text-sm">
@@ -57,7 +57,7 @@ export default function AboutPage() {
             {/* Our Story Timeline */}
             <section className="py-20 bg-void border-b border-border-std border-dashed">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold font-display text-center mb-16 text-white uppercase tracking-tighter">
+                    <h2 className="text-3xl font-bold font-display text-center mb-16 text-text-main uppercase tracking-tighter">
                         Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Journey</span>
                     </h2>
                     <div className="relative">
@@ -66,7 +66,7 @@ export default function AboutPage() {
                             <div key={item.year} className={`relative flex items-center mb-12 last:mb-0 ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                                 <div className={`w-5/12 ${i % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
                                     <div className="text-sm font-bold text-cyan font-mono mb-1">{item.year}</div>
-                                    <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
+                                    <h3 className="text-lg font-bold text-text-main mb-1">{item.title}</h3>
                                     <p className="text-sm text-text-dim font-mono">{item.desc}</p>
                                 </div>
                                 <div className="absolute left-1/2 transform -translate-x-1/2 h-4 w-4 bg-cyan border-4 border-void" />
@@ -80,7 +80,7 @@ export default function AboutPage() {
             {/* Our Values */}
             <section className="py-20 bg-panel border-b border-border-std border-dashed">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold font-display text-center mb-4 text-white uppercase tracking-tighter">
+                    <h2 className="text-3xl font-bold font-display text-center mb-4 text-text-main uppercase tracking-tighter">
                         What We <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Stand For</span>
                     </h2>
                     <p className="text-center text-text-dim mb-12 max-w-2xl mx-auto font-mono text-sm">
@@ -91,7 +91,7 @@ export default function AboutPage() {
                             <div key={v.title} className="group bg-void border border-border-std p-6 hover:border-cyan hover:shadow-[0_0_10px_rgba(0,240,255,0.1)] transition-all duration-300 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 h-4 w-4 border-t border-r border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="text-3xl mb-3">{v.emoji}</div>
-                                <h3 className="font-bold text-white mb-2 font-mono uppercase">{v.title}</h3>
+                                <h3 className="font-bold text-text-main mb-2 font-mono uppercase">{v.title}</h3>
                                 <p className="text-xs text-text-dim font-mono leading-relaxed">{v.desc}</p>
                             </div>
                         ))}
@@ -102,7 +102,7 @@ export default function AboutPage() {
             {/* Materials */}
             <section className="py-20 bg-void border-b border-border-std border-dashed">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold font-display text-center mb-4 text-white uppercase tracking-tighter">
+                    <h2 className="text-3xl font-bold font-display text-center mb-4 text-text-main uppercase tracking-tighter">
                         Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Materials</span>
                     </h2>
                     <p className="text-center text-text-dim mb-12 font-mono text-sm">
@@ -113,7 +113,7 @@ export default function AboutPage() {
                             <div key={m.name} className="flex items-start gap-4 p-5 bg-panel border border-border-std hover:border-cyan transition-colors group">
                                 <span className="text-2xl flex-shrink-0">{m.icon}</span>
                                 <div>
-                                    <h3 className="font-bold text-white font-mono">{m.name}</h3>
+                                    <h3 className="font-bold text-text-main font-mono">{m.name}</h3>
                                     <p className="text-sm text-text-dim mt-1 font-mono">{m.desc}</p>
                                 </div>
                             </div>
@@ -126,14 +126,14 @@ export default function AboutPage() {
             <section className="py-16 bg-magenta relative overflow-hidden border-y border-magenta">
                 <div className="absolute inset-0 bg-grid-pattern bg-[length:20px_20px] opacity-20 pointer-events-none mix-blend-overlay"></div>
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <h2 className="text-3xl font-bold font-display mb-6 text-white uppercase tracking-widest">Our Printing Technology</h2>
-                    <p className="text-white/80 mb-10 max-w-2xl mx-auto font-mono text-sm">
+                    <h2 className="text-3xl font-bold font-display mb-6 text-text-main uppercase tracking-widest">Our Printing Technology</h2>
+                    <p className="text-text-main/80 mb-10 max-w-2xl mx-auto font-mono text-sm">
                         &gt; We use state-of-the-art printing machines in-house — no outsourcing, no compromises on quality
                     </p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {['DTF Printing', 'Screen Print', 'Sublimation', 'Embroidery'].map((method) => (
                             <div key={method} className="bg-white/10 backdrop-blur p-4 border border-white/20">
-                                <p className="font-mono font-bold text-white uppercase tracking-widest text-sm">{method}</p>
+                                <p className="font-mono font-bold text-text-main uppercase tracking-widest text-sm">{method}</p>
                             </div>
                         ))}
                     </div>

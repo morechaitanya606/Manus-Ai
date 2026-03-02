@@ -34,7 +34,7 @@ function OrdersContent() {
                         <Package className="h-3 w-3" />
                         <span>LOGISTICS_DATA</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-white">
+                    <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-text-main">
                         My <span className="text-cyan">Orders</span>
                     </h1>
                 </div>
@@ -63,7 +63,7 @@ function OrdersContent() {
                                             <Package className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                                         </div>
                                         <div>
-                                            <p className="font-mono font-bold text-sm text-white uppercase group-hover:text-cyan transition-colors">
+                                            <p className="font-mono font-bold text-sm text-text-main uppercase group-hover:text-cyan transition-colors">
                                                 <span className="text-cyan">{">"}</span> ORDER_ID // {order.id.slice(0, 8)}...
                                             </p>
                                             <p className="text-[10px] font-mono tracking-widest text-text-dim mt-1 uppercase">
@@ -88,7 +88,7 @@ function OrdersContent() {
                     <div className="text-center py-24 animate-fade-in border border-border-std bg-panel relative overflow-hidden">
                         <div className="absolute inset-0 scanline opacity-20 pointer-events-none" />
                         <ShoppingBag className="h-12 w-12 text-cyan/30 mx-auto mb-4" />
-                        <h3 className="text-lg font-mono font-bold text-white uppercase tracking-widest mb-2">NO_PURCHASE_HISTORY</h3>
+                        <h3 className="text-lg font-mono font-bold text-text-main uppercase tracking-widest mb-2">NO_PURCHASE_HISTORY</h3>
                         <p className="text-[10px] font-mono tracking-widest text-text-dim mb-8 border-l border-border-std pl-3 max-w-xs mx-auto text-left uppercase">
                             &gt; Your logistics data is empty. <br />
                             &gt; Initialize a purchase to track.

@@ -59,7 +59,7 @@ function OrderDetailContent() {
                         <Package className="h-3 w-3" />
                         <span>LOGISTICS_DATA_NODE</span>
                     </div>
-                    <h1 className="text-3xl font-bold font-mono text-white uppercase tracking-widest mt-2 border-b border-border-std pb-4">
+                    <h1 className="text-3xl font-bold font-mono text-text-main uppercase tracking-widest mt-2 border-b border-border-std pb-4">
                         ORDER_ID // <span className="text-cyan">{order.id.slice(0, 8)}...</span>
                     </h1>
                     <p className="text-[10px] text-text-dim mt-4 font-mono uppercase tracking-widest bg-panel border-l-2 border-cyan pl-3 py-1 w-fit">
@@ -92,9 +92,9 @@ function OrderDetailContent() {
                     {order.tracking_number && (
                         <div className="flex items-center gap-3 p-3 bg-void border border-border-std border-l-2 border-l-cyan mt-6">
                             <Truck className="h-4 w-4 text-cyan" />
-                            <span className="text-[10px] font-mono tracking-widest text-white uppercase">TRACKING_ID: {order.tracking_number}</span>
+                            <span className="text-[10px] font-mono tracking-widest text-text-main uppercase">TRACKING_ID: {order.tracking_number}</span>
                             {order.tracking_url && (
-                                <a href={order.tracking_url} target="_blank" rel="noopener" className="ml-auto text-cyan hover:text-white transition-colors text-[10px] font-mono tracking-widest uppercase flex items-center gap-2 border border-cyan/30 bg-cyan/10 px-3 py-1">
+                                <a href={order.tracking_url} target="_blank" rel="noopener" className="ml-auto text-cyan hover:text-text-main transition-colors text-[10px] font-mono tracking-widest uppercase flex items-center gap-2 border border-cyan/30 bg-cyan/10 px-3 py-1">
                                     TRACE_LINK <ExternalLink className="h-3 w-3" />
                                 </a>
                             )}
@@ -106,12 +106,12 @@ function OrderDetailContent() {
                     {/* Items */}
                     <div className="bg-panel border border-border-std p-6 animate-slide-up animation-delay-100 relative">
                         <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-magenta/50"></div>
-                        <h3 className="font-mono font-bold text-white uppercase tracking-widest mb-6 border-b border-border-std pb-2">PURCHASED_ASSETS</h3>
+                        <h3 className="font-mono font-bold text-text-main uppercase tracking-widest mb-6 border-b border-border-std pb-2">PURCHASED_ASSETS</h3>
                         <div className="space-y-4">
                             {order.order_items?.map((item) => (
                                 <div key={item.id} className="flex justify-between items-center text-sm bg-void p-3 border border-border-std group hover:border-cyan/50 transition-colors">
                                     <div>
-                                        <p className="font-mono font-bold text-xs text-white uppercase">{(item.product as unknown as { name: string })?.name || 'GENERIC_PRODUCT'}</p>
+                                        <p className="font-mono font-bold text-xs text-text-main uppercase">{(item.product as unknown as { name: string })?.name || 'GENERIC_PRODUCT'}</p>
                                         <p className="text-[10px] text-text-dim font-mono tracking-widest uppercase mt-1">
                                             [{item.color?.slice(0, 3) || 'N/A'}] <span className="text-magenta px-1">|</span> [{item.size || 'N/A'}] <span className="text-magenta px-1">|</span> QTY: {item.quantity}
                                         </p>
@@ -122,8 +122,8 @@ function OrderDetailContent() {
                         </div>
                         <hr className="my-6 border-border-std border-dashed" />
                         <div className="space-y-2 text-[10px] font-mono tracking-widest uppercase text-text-dim border border-border-std bg-void p-4">
-                            <div className="flex justify-between"><span>SUBTOTAL</span><span className="text-white">₹{Number(order.subtotal).toFixed(0)}</span></div>
-                            <div className="flex justify-between"><span>SHIPPING_FEE</span><span className="text-white">₹{Number(order.shipping_cost).toFixed(0)}</span></div>
+                            <div className="flex justify-between"><span>SUBTOTAL</span><span className="text-text-main">₹{Number(order.subtotal).toFixed(0)}</span></div>
+                            <div className="flex justify-between"><span>SHIPPING_FEE</span><span className="text-text-main">₹{Number(order.shipping_cost).toFixed(0)}</span></div>
                             <div className="flex justify-between font-bold text-sm mt-4 pt-4 border-t border-border-std border-dashed text-cyan"><span>FINAL_AMOUNT</span><span>₹{Number(order.total_amount).toFixed(0)}</span></div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ function OrderDetailContent() {
                     {/* Shipping Address */}
                     <div className="bg-panel border border-border-std p-6 animate-slide-up animation-delay-200 relative">
                         <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan/50"></div>
-                        <h3 className="font-mono font-bold text-white uppercase tracking-widest flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+                        <h3 className="font-mono font-bold text-text-main uppercase tracking-widest flex items-center gap-3 mb-6 border-b border-border-std pb-2">
                             <MapPin className="h-4 w-4 text-cyan" />
                             DESTINATION_COORDS
                         </h3>

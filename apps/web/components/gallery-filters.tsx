@@ -55,7 +55,7 @@ function FilterSection({ title, options, selectedOptions, onChange, defaultExpan
                 className="flex w-full items-center justify-between text-left focus:outline-none"
                 onClick={() => setExpanded(!expanded)}
             >
-                <h3 className="text-[13px] font-bold uppercase tracking-widest text-white font-mono">{title}</h3>
+                <h3 className="text-[13px] font-bold uppercase tracking-widest text-text-main font-mono">{title}</h3>
                 {expanded ? <ChevronUp className="h-4 w-4 text-text-dim" /> : <ChevronDown className="h-4 w-4 text-text-dim" />}
             </button>
 
@@ -69,7 +69,7 @@ function FilterSection({ title, options, selectedOptions, onChange, defaultExpan
                                     {isSelected && <Check className="h-3 w-3" />}
                                 </div>
                                 <div className="flex flex-1 items-center justify-between min-w-0">
-                                    <span className={`text-[11px] font-mono tracking-wide truncate ${isSelected ? 'text-cyan' : 'text-text-dim group-hover:text-white transition-colors'}`}>
+                                    <span className={`text-[11px] font-mono tracking-wide truncate ${isSelected ? 'text-cyan' : 'text-text-dim group-hover:text-text-main transition-colors'}`}>
                                         {opt.label}
                                     </span>
                                     {opt.count !== undefined && (
@@ -85,7 +85,7 @@ function FilterSection({ title, options, selectedOptions, onChange, defaultExpan
                     {isShowMoreActive && !showAll && (
                         <button
                             onClick={() => setShowAll(true)}
-                            className="text-[10px] text-cyan hover:text-white font-mono tracking-widest mt-2 focus:outline-none"
+                            className="text-[10px] text-cyan hover:text-text-main font-mono tracking-widest mt-2 focus:outline-none"
                         >
                             + {options.length - 5} MORE
                         </button>
@@ -151,14 +151,14 @@ export function GalleryFilters({ filters, onFilterChange, products }: GalleryFil
     return (
         <div className="w-full flex-shrink-0 lg:w-64 flex flex-col h-full bg-void border border-border-std shadow-lg">
             <div className="flex items-center justify-between p-4 border-b border-border-std bg-panel/50 backdrop-blur-sm sticky top-0 z-10">
-                <h2 className="font-bold font-mono uppercase tracking-widest text-white flex items-center gap-2 text-[14px]">
+                <h2 className="font-bold font-mono uppercase tracking-widest text-text-main flex items-center gap-2 text-[14px]">
                     <span className="w-1.5 h-1.5 bg-cyan border border-cyan/50 shadow-[0_0_5px_#00f0ff]"></span>
                     Filters
                 </h2>
                 {hasActiveFilters && (
                     <button
                         onClick={handleClearAll}
-                        className="text-[10px] font-mono text-cyan hover:text-white uppercase tracking-widest flex items-center gap-1 transition-colors"
+                        className="text-[10px] font-mono text-cyan hover:text-text-main uppercase tracking-widest flex items-center gap-1 transition-colors"
                     >
                         <X className="h-3 w-3" /> Clear
                     </button>

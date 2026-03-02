@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-red-500"></div>
                         </div>
                         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                        <h2 className="text-xl font-mono font-bold text-white mb-2 uppercase tracking-widest">
+                        <h2 className="text-xl font-mono font-bold text-text-main mb-2 uppercase tracking-widest">
                             System Error
                         </h2>
                         <p className="text-text-dim font-mono text-xs mb-2">

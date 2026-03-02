@@ -83,7 +83,7 @@ export default function FAQPage() {
                         <Terminal className="h-4 w-4 text-cyan" />
                         <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">FAQ_DATABASE //</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-bold font-display text-text-main uppercase tracking-tighter">
                         Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Questions</span>
                     </h1>
                     <p className="mt-6 text-text-dim font-mono text-sm">
@@ -108,7 +108,7 @@ export default function FAQPage() {
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-10">
                     {filtered.map((cat) => (
                         <div key={cat.category}>
-                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-mono text-white uppercase tracking-wider">
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 font-mono text-text-main uppercase tracking-wider">
                                 <span className="h-1 w-6 bg-gradient-to-r from-cyan to-magenta" />
                                 {cat.category}
                             </h2>
@@ -122,7 +122,7 @@ export default function FAQPage() {
                                                 onClick={() => toggle(key)}
                                                 className="w-full flex items-center justify-between p-4 text-left hover:bg-panel-highlight transition-colors"
                                             >
-                                                <span className="font-mono text-sm pr-4 text-white">{item.q}</span>
+                                                <span className="font-mono text-sm pr-4 text-text-main">{item.q}</span>
                                                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-cyan transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                             </button>
                                             {isOpen && (
@@ -142,7 +142,7 @@ export default function FAQPage() {
             {/* Still have questions */}
             <section className="py-16 bg-panel border-t border-border-std">
                 <div className="mx-auto max-w-2xl px-4 text-center">
-                    <h2 className="text-2xl font-bold mb-4 text-white font-mono uppercase tracking-wider">Still have questions?</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-text-main font-mono uppercase tracking-wider">Still have questions?</h2>
                     <p className="text-text-dim mb-6 font-mono text-sm">&gt; Our team is happy to help with anything</p>
                     <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest shadow-[0_0_15px_rgba(0,240,255,0.2)]">
                         Contact Us

@@ -145,6 +145,13 @@ const GARMENT_TYPES = [
   { id: 'bag', label: 'Tote Bag', icon: <ShoppingBag className="w-3 h-3" /> },
 ];
 
+const mapCategoryToGarmentType = (category: string): 'tshirt' | 'hoodie' | 'bag' => {
+  const value = category.toLowerCase();
+  if (value.includes('hood') || value.includes('sweater')) return 'hoodie';
+  if (value.includes('bag') || value.includes('tote')) return 'bag';
+  return 'tshirt';
+};
+
 const PRINT_PLACEMENTS = [
   { id: 'front', label: 'Front' },
   { id: 'back', label: 'Back' },
@@ -793,7 +800,7 @@ function StudioContent() {
           <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan"></div>
 
           <Terminal className="h-12 w-12 text-cyan mx-auto mb-4" />
-          <h1 className="text-xl font-mono font-bold text-white mb-2 uppercase tracking-widest">Sign in to start creating</h1>
+          <h1 className="text-xl font-mono font-bold text-text-main mb-2 uppercase tracking-widest">Sign in to start creating</h1>
           <p className="text-text-dim font-mono text-xs mb-8">Create an account to access the AI Design Studio and generate custom designs.</p>
           <div className="flex gap-4 justify-center">
             <Link href="/login" className="px-6 py-2 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest">
@@ -857,6 +864,15 @@ function StudioContent() {
     }))
     : FALLBACK_COLORS;
 
+  const fallbackProductForType = (allProducts || []).find(
+    (product) => mapCategoryToGarmentType(product.category) === garmentType
+  );
+  const selectedProductMatchesType =
+    !!selectedProduct && mapCategoryToGarmentType(selectedProduct.category) === garmentType;
+  const checkoutProduct = selectedProductMatchesType ? selectedProduct : fallbackProductForType;
+  const checkoutBasePrice = Number(checkoutProduct?.base_price || 999);
+  const resolvedCheckoutBasePrice = Number.isFinite(checkoutBasePrice) ? checkoutBasePrice : 999;
+
   // Map garment color name to hex for 3D viewer
   const garmentColorHex = getColorHexFromName(garmentColor);
 
@@ -871,6 +887,10 @@ function StudioContent() {
   );
   const isUnlimitedCreditsUser = hasUnlimitedCreditsAccess(profile);
   const currentCredits = profile?.ai_credits ?? 0;
+  const canProceedToBuy = Boolean(currentActiveDesign && checkoutProduct?.id);
+  const checkoutHref = canProceedToBuy
+    ? `/gallery/${checkoutProduct!.id}?design=${encodeURIComponent(currentActiveDesign!.id)}&color=${encodeURIComponent(garmentColor)}`
+    : '#';
 
   return (
     <div className="min-h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)] flex flex-col lg:flex-row overflow-y-auto overflow-x-hidden lg:overflow-hidden relative bg-void text-text-main selection:bg-cyan selection:text-void">
@@ -979,7 +999,7 @@ function StudioContent() {
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleShufflePrompt}
-              className="flex-shrink-0 bg-transparent border border-border-std hover:border-text-dim text-text-dim hover:text-white font-mono text-xs py-2 px-3 transition-colors flex items-center justify-center gap-1"
+              className="flex-shrink-0 bg-transparent border border-border-std hover:border-text-dim text-text-dim hover:text-text-main font-mono text-xs py-2 px-3 transition-colors flex items-center justify-center gap-1"
               title="Random Prompt"
             >
               <Shuffle className="h-3 w-3" />
@@ -1226,7 +1246,7 @@ function StudioContent() {
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
               <span className="font-mono text-[9px] sm:text-[10px] text-magenta uppercase">CREDIT_BALANCE:</span>
-              <span className="font-mono text-[11px] sm:text-xs text-white font-bold whitespace-nowrap">
+              <span className="font-mono text-[11px] sm:text-xs text-text-main font-bold whitespace-nowrap">
                 {isUnlimitedCreditsUser ? 'UNLIMITED' : `${currentCredits} CR`}
               </span>
             </div>
@@ -1375,7 +1395,7 @@ function StudioContent() {
                   <Shirt className="h-4 w-4 text-text-dim" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-mono text-[10px] text-white truncate">Base: {garmentType.toUpperCase()} ({garmentView.toUpperCase()})</div>
+                  <div className="font-mono text-[10px] text-text-main truncate">Base: {garmentType.toUpperCase()} ({garmentView.toUpperCase()})</div>
                   <div className="font-mono text-[8px] text-text-dim">Locked Base</div>
                 </div>
               </div>
@@ -1393,7 +1413,7 @@ function StudioContent() {
                   <button
                     key={type.id}
                     onClick={() => setGarmentType(type.id)}
-                    className={`flex-1 flex gap-1 items-center justify-center py-2 border transition-all text-[9px] font-mono uppercase tracking-widest ${garmentType === type.id ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]' : 'border-border-std text-text-dim hover:text-white hover:border-cyan/50'}`}
+                    className={`flex-1 flex gap-1 items-center justify-center py-2 border transition-all text-[9px] font-mono uppercase tracking-widest ${garmentType === type.id ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]' : 'border-border-std text-text-dim hover:text-text-main hover:border-cyan/50'}`}
                   >
                     {type.icon} {type.label}
                   </button>
@@ -1407,7 +1427,7 @@ function StudioContent() {
                       setPrintPlacement(placement.id as 'front' | 'back' | 'both');
                       if (placement.id !== 'both') setGarmentView(placement.id as 'front' | 'back');
                     }}
-                    className={`flex-1 py-1.5 border transition-all text-[9px] font-mono uppercase tracking-widest ${printPlacement === placement.id ? 'border-magenta bg-magenta/10 text-magenta shadow-[0_0_10px_rgba(255,0,255,0.2)]' : 'border-border-std text-text-dim hover:text-white hover:border-magenta/50'}`}
+                    className={`flex-1 py-1.5 border transition-all text-[9px] font-mono uppercase tracking-widest ${printPlacement === placement.id ? 'border-magenta bg-magenta/10 text-magenta shadow-[0_0_10px_rgba(255,0,255,0.2)]' : 'border-border-std text-text-dim hover:text-text-main hover:border-magenta/50'}`}
                   >
                     {placement.label}
                   </button>
@@ -1417,8 +1437,8 @@ function StudioContent() {
               {printPlacement === 'both' && (
                 <div className="flex gap-2 mt-2 pt-2 border-t border-dashed border-border-std">
                   <span className="text-[9px] text-text-dim flex items-center shrink-0">EDITING:</span>
-                  <button onClick={() => setGarmentView('front')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'front' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-white'}`}>FRONT</button>
-                  <button onClick={() => setGarmentView('back')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'back' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-white'}`}>BACK</button>
+                  <button onClick={() => setGarmentView('front')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'front' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>FRONT</button>
+                  <button onClick={() => setGarmentView('back')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'back' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>BACK</button>
                 </div>
               )}
             </div>
@@ -1457,7 +1477,7 @@ function StudioContent() {
                   <button
                     key={size}
                     onClick={() => setGarmentSize(size)}
-                    className={`font-mono text-[10px] py-1.5 transition-colors border ${garmentSize === size ? 'border-magenta bg-magenta/10 text-magenta font-bold shadow-[0_0_10px_rgba(255,0,255,0.2)]' : 'border-border-std text-text-dim hover:text-white hover:border-magenta/50 hover:bg-magenta/5'}`}
+                    className={`font-mono text-[10px] py-1.5 transition-colors border ${garmentSize === size ? 'border-magenta bg-magenta/10 text-magenta font-bold shadow-[0_0_10px_rgba(255,0,255,0.2)]' : 'border-border-std text-text-dim hover:text-text-main hover:border-magenta/50 hover:bg-magenta/5'}`}
                   >
                     {size}
                   </button>
@@ -1468,11 +1488,11 @@ function StudioContent() {
             <div className="space-y-1.5 pt-3 border-t border-dashed border-border-std">
               <div className="flex justify-between font-mono text-[9px]">
                 <span className="text-text-dim">MATERIAL</span>
-                <span className="text-white">{garmentType === 'bag' ? '100% CANVAS' : '100% COTTON'}</span>
+                <span className="text-text-main">{garmentType === 'bag' ? '100% CANVAS' : '100% COTTON'}</span>
               </div>
               <div className="flex justify-between font-mono text-[9px]">
                 <span className="text-text-dim">WEIGHT</span>
-                <span className="text-white">{garmentType === 'bag' ? '12 OZ' : garmentType === 'hoodie' ? '340 GSM' : '240 GSM'}</span>
+                <span className="text-text-main">{garmentType === 'bag' ? '12 OZ' : garmentType === 'hoodie' ? '340 GSM' : '240 GSM'}</span>
               </div>
             </div>
           </div>
@@ -1483,7 +1503,7 @@ function StudioContent() {
           <div className="space-y-1 mb-4">
             <div className="flex justify-between font-mono text-[10px] tracking-widest">
               <span className="text-text-dim uppercase">Base Price</span>
-              <span className="text-white">₹ {allProducts?.[0]?.base_price ? Number(allProducts[0].base_price).toFixed(0) : '999'}</span>
+              <span className="text-text-main">₹ {resolvedCheckoutBasePrice.toFixed(0)}</span>
             </div>
             {currentActiveDesign && (
               <div className="flex justify-between font-mono text-[10px] text-cyan tracking-widest">
@@ -1494,14 +1514,14 @@ function StudioContent() {
             <div className="h-px bg-border-std border-b border-dashed border-border-std my-3"></div>
             <div className="flex justify-between font-mono text-sm font-bold items-end tracking-widest pt-1 border-t-2 border-transparent relative">
               <span className="text-magenta uppercase">Total Price</span>
-              <span className="text-white text-lg leading-none shadow-cyan">
-                ₹ {currentActiveDesign ? Number(allProducts?.[0]?.base_price || 999) + 500 : Number(allProducts?.[0]?.base_price || 999)}
+              <span className="text-text-main text-lg leading-none shadow-cyan">
+                ₹ {currentActiveDesign ? resolvedCheckoutBasePrice + 500 : resolvedCheckoutBasePrice}
               </span>
             </div>
           </div>
 
-          <Link href={currentActiveDesign ? `/gallery/${allProducts?.[0]?.id || ''}?design=${currentActiveDesign.id}` : '#'} className={!currentActiveDesign ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
-            <button disabled={!currentActiveDesign} className="relative w-full bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-mono font-bold text-xs py-3 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_15px_rgba(0,240,255,0.3)] overflow-hidden">
+          <Link href={checkoutHref} className={!canProceedToBuy ? 'pointer-events-none opacity-50 inline-block w-full' : 'inline-block w-full'}>
+            <button disabled={!canProceedToBuy} className="relative w-full bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void font-mono font-bold text-xs py-3 transition-colors flex items-center justify-center gap-2 group shadow-[0_0_15px_rgba(0,240,255,0.3)] overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
               PROCEED TO BUY
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -1527,13 +1547,13 @@ function StudioContent() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setPreviewMode('2d')}
-                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-widest border transition-all ${previewMode === '2d' ? 'border-cyan bg-cyan/20 text-cyan' : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'}`}
+                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-widest border transition-all ${previewMode === '2d' ? 'border-cyan bg-cyan/20 text-cyan' : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-text-main'}`}
                 >
                   2D Flat
                 </button>
                 <button
                   onClick={() => setPreviewMode('3d')}
-                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-widest border transition-all ${previewMode === '3d' ? 'border-magenta bg-magenta/20 text-magenta' : 'border-border-std text-text-dim hover:border-magenta/50 hover:text-white'}`}
+                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-widest border transition-all ${previewMode === '3d' ? 'border-magenta bg-magenta/20 text-magenta' : 'border-border-std text-text-dim hover:border-magenta/50 hover:text-text-main'}`}
                 >
                   3D View
                 </button>
@@ -1607,7 +1627,7 @@ function StudioContent() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 shrink-0">
-              <button onClick={() => setModalOpen(false)} className="flex-1 py-2 font-mono text-xs uppercase tracking-widest border border-border-std text-text-dim hover:text-white hover:border-text-dim transition-all">
+              <button onClick={() => setModalOpen(false)} className="flex-1 py-2 font-mono text-xs uppercase tracking-widest border border-border-std text-text-dim hover:text-text-main hover:border-text-dim transition-all">
                 Dismiss
               </button>
               {previewImages.front && (

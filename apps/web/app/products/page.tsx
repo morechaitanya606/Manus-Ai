@@ -9,6 +9,10 @@ import { Shirt, Loader2, PenTool } from 'lucide-react';
 export default function ProductsPage() {
     const { data: products, isLoading, error } = useProducts();
     const [selectedFabric, setSelectedFabric] = useState<string>('All');
+    const formatPriceINR = (amount: string | number | null | undefined) => {
+        const value = Number(amount);
+        return Number.isFinite(value) ? value.toFixed(2) : '0.00';
+    };
 
     if (isLoading) {
         return (
@@ -38,7 +42,7 @@ export default function ProductsPage() {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-8 border-l-4 border-cyan pl-6 py-2 bg-gradient-to-r from-panel/80 to-transparent w-full md:w-3/4 lg:w-1/2">
-                    <h1 className="text-4xl font-mono font-bold text-white mb-2 uppercase tracking-tight">Select a Blank</h1>
+                    <h1 className="text-4xl font-mono font-bold text-text-main mb-2 uppercase tracking-tight">Select a Blank</h1>
                     <p className="text-text-dim text-sm font-mono max-w-2xl">
                         Choose a premium blank garment to start your design journey. Our high-quality canvases are built to make your art pop.
                     </p>
@@ -86,8 +90,8 @@ export default function ProductsPage() {
                             <div className="p-5 flex-1 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2 gap-4">
-                                        <h3 className="font-mono font-bold text-white uppercase text-base tracking-wide line-clamp-1">{product.name}</h3>
-                                        <span className="font-mono text-cyan shrink-0 font-bold">${parseFloat(product.base_price).toFixed(2)}</span>
+                                        <h3 className="font-mono font-bold text-text-main uppercase text-base tracking-wide line-clamp-1">{product.name}</h3>
+                                        <span className="font-mono text-cyan shrink-0 font-bold">₹{formatPriceINR(product.base_price)}</span>
                                     </div>
                                     <p className="text-text-dim text-[11px] font-mono mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
                                 </div>

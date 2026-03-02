@@ -19,11 +19,11 @@ export function Footer() {
                     <div className="col-span-2 md:col-span-2 border-b border-white/5 pb-8 md:border-b-0 md:pb-0">
                         <Link href="/" className="flex items-center gap-2 mb-3">
                             <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
-                                <BrandLogo className="h-5 w-5 text-white" />
+                                <BrandLogo className="h-5 w-5 text-text-main" />
                                 <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
                                 <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
                             </div>
-                            <span className="font-display font-bold text-lg tracking-widest text-white uppercase">EVERYDAY<span className="text-cyan">DROP</span></span>
+                            <span className="font-display font-bold text-lg tracking-widest text-text-main uppercase">EVERYDAY<span className="text-cyan">DROP</span></span>
                         </Link>
                         <p className="text-sm text-text-dim mb-4">
                             India&apos;s AI-powered custom print-on-demand platform. Sustainable materials, premium quality.
@@ -40,11 +40,11 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-sm mb-3">Shop</h4>
                         <nav className="flex flex-col gap-2 text-sm text-text-dim">
-                            <Link href="/gallery" className="hover:text-white transition">Gallery</Link>
-                            <Link href="/studio" className="hover:text-white transition">AI Studio</Link>
-                            <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
-                            <Link href="/printing-types" className="hover:text-white transition">Printing Types</Link>
-                            <Link href="/my-designs" className="hover:text-white transition">My Designs</Link>
+                            <Link href="/gallery" className="hover:text-text-main transition">Gallery</Link>
+                            <Link href="/studio" className="hover:text-text-main transition">AI Studio</Link>
+                            <Link href="/pricing" className="hover:text-text-main transition">Pricing</Link>
+                            <Link href="/printing-types" className="hover:text-text-main transition">Printing Types</Link>
+                            <Link href="/my-designs" className="hover:text-text-main transition">My Designs</Link>
                         </nav>
                     </div>
 
@@ -52,10 +52,10 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-sm mb-3">Company</h4>
                         <nav className="flex flex-col gap-2 text-sm text-text-dim">
-                            <Link href="/about" className="hover:text-white transition">About Us</Link>
-                            <Link href="/how-it-works" className="hover:text-white transition">How It Works</Link>
-                            <Link href="/faq" className="hover:text-white transition">FAQ</Link>
-                            <Link href="/contact" className="hover:text-white transition">Contact</Link>
+                            <Link href="/about" className="hover:text-text-main transition">About Us</Link>
+                            <Link href="/how-it-works" className="hover:text-text-main transition">How It Works</Link>
+                            <Link href="/faq" className="hover:text-text-main transition">FAQ</Link>
+                            <Link href="/contact" className="hover:text-text-main transition">Contact</Link>
                         </nav>
                     </div>
 
@@ -63,9 +63,9 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-sm mb-3">Support</h4>
                         <nav className="flex flex-col gap-2 text-sm text-text-dim">
-                            <Link href="/faq" className="hover:text-white transition">Help Center</Link>
-                            <Link href="/contact" className="hover:text-white transition">Bulk Orders</Link>
-                            <a href="mailto:contact@everydaydrop.in" className="hover:text-white transition">Email Us</a>
+                            <Link href="/faq" className="hover:text-text-main transition">Help Center</Link>
+                            <Link href="/contact" className="hover:text-text-main transition">Bulk Orders</Link>
+                            <a href="mailto:contact@everydaydrop.in" className="hover:text-text-main transition">Email Us</a>
                         </nav>
                         <div className="mt-4">
                             <p className="text-xs text-text-dim">🕐 Mon-Sat, 10 AM - 7 PM</p>
@@ -79,10 +79,10 @@ export function Footer() {
                         © {new Date().getFullYear()} EVERYDAYDROP. All rights reserved. Made in India 🇮🇳
                     </p>
                     <div className="flex gap-4 text-xs text-text-dim">
-                        <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
-                        <Link href="/terms" className="hover:text-white transition">Terms</Link>
-                        <Link href="/shipping" className="hover:text-white transition">Shipping</Link>
-                        <Link href="/refunds" className="hover:text-white transition">Refunds</Link>
+                        <Link href="/privacy" className="hover:text-text-main transition">Privacy</Link>
+                        <Link href="/terms" className="hover:text-text-main transition">Terms</Link>
+                        <Link href="/shipping" className="hover:text-text-main transition">Shipping</Link>
+                        <Link href="/refunds" className="hover:text-text-main transition">Refunds</Link>
                     </div>
                 </div>
             </div>

@@ -43,7 +43,7 @@ export default function HomePage() {
           {/* Typography */}
           <div className="mb-6 flex flex-col z-10 relative">
             <h1 className="text-5xl font-display font-bold leading-[0.85] tracking-tighter uppercase mb-4">
-              <span className="text-white">DESIGN.</span><br />
+              <span className="text-text-main">DESIGN.</span><br />
               <span className="text-cyan drop-shadow-[0_0_10px_rgba(0,240,255,0.6)]">PRINT. DELIVER.</span>
             </h1>
 
@@ -91,7 +91,7 @@ export default function HomePage() {
                     EVERYDAY<br />DROP
                   </span>
                   <div className="w-16 h-1 bg-blue-700 mt-4 opacity-100"></div>
-                  <span className="font-mono text-[8px] text-white tracking-[0.4em] uppercase mt-3 opacity-90 font-bold">
+                  <span className="font-mono text-[8px] text-text-main tracking-[0.4em] uppercase mt-3 opacity-90 font-bold">
                     EST. 2026
                   </span>
                 </div>
@@ -103,15 +103,15 @@ export default function HomePage() {
               <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">RENDER_SCALE</div>
               <div className="font-mono text-[12px] text-cyan font-bold leading-tight">1:1</div>
               <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">NODE_LOCATION</div>
-              <div className="font-mono text-[12px] text-white font-bold leading-tight">MUM-01</div>
+              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">MUM-01</div>
             </div>
 
             {/* Bottom Left Text */}
             <div className="absolute bottom-3 left-3 text-left z-20">
               <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">PIPELINE_LATENCY</div>
-              <div className="font-mono text-[12px] text-white font-bold leading-tight">0.02ms</div>
+              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">0.02ms</div>
               <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">FABRIC_STOCK</div>
-              <div className="font-mono text-[12px] text-white font-bold leading-tight">98.4%</div>
+              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">98.4%</div>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function HomePage() {
 
             {/* Hero Heading */}
             <div className="flex flex-col gap-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-display leading-[0.9] tracking-tighter text-white uppercase">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-display leading-[0.9] tracking-tighter text-text-main uppercase">
                 DESIGN. PRINT.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">DELIVER.</span>
               </h1>
@@ -161,11 +161,11 @@ export default function HomePage() {
             <div className="grid grid-cols-2 gap-4 py-4 border-y border-border-std bg-panel/30 backdrop-blur-sm">
               <div className="px-4 py-2 border-r border-border-std">
                 <div className="text-[10px] text-text-dim font-mono uppercase mb-1">Fast Shipping</div>
-                <div className="text-xl font-display font-bold text-white">24-48h</div>
+                <div className="text-xl font-display font-bold text-text-main">24-48h</div>
               </div>
               <div className="px-4 py-2">
                 <div className="text-[10px] text-text-dim font-mono uppercase mb-1">Satisfaction</div>
-                <div className="text-xl font-display font-bold text-white">100%</div>
+                <div className="text-xl font-display font-bold text-text-main">100%</div>
               </div>
             </div>
 
@@ -245,7 +245,7 @@ export default function HomePage() {
                     EVERYDAY<br />DROP
                   </span>
                   <div className="w-16 h-1 bg-cyan mt-4 opacity-80 shadow-[0_0_10px_#00F0FF]"></div>
-                  <span className="font-mono text-[9px] text-white tracking-[0.3em] uppercase mt-2 opacity-80 font-bold">
+                  <span className="font-mono text-[9px] text-text-main tracking-[0.3em] uppercase mt-2 opacity-80 font-bold">
                     Design. Print. Deliver.
                   </span>
                 </div>
@@ -313,7 +313,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-baseline justify-between mb-12 border-b border-border-std pb-6">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold font-mono text-white tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-bold font-mono text-text-main tracking-tight">
                   <span className="text-cyan">Featured Products</span>
                 </h2>
                 <p className="mt-2 text-text-dim font-mono text-xs uppercase tracking-widest">
@@ -366,7 +366,7 @@ export default function HomePage() {
                       <div className="flex items-end justify-between mt-3">
                         <div className="flex flex-col">
                           <span className="text-[9px] text-text-dim font-mono mb-0.5">Starting at</span>
-                          <span className="text-sm font-bold text-white font-mono tracking-wider">₹{Number(product.base_price).toFixed(0)}</span>
+                          <span className="text-sm font-bold text-text-main font-mono tracking-wider">₹{Number(product.base_price).toFixed(0)}</span>
                         </div>
                         <span className="text-[9px] px-1.5 py-0.5 border border-magenta/30 text-magenta font-mono uppercase bg-magenta/5">
                           {product.category}
@@ -389,7 +389,7 @@ export default function HomePage() {
               <Terminal className="h-4 w-4 text-cyan" />
               <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">OPERATION_MANUAL //</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tighter text-white uppercase">
+            <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tighter text-text-main uppercase">
               How <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">EVERYDAYDROP</span> Works
             </h2>
             <p className="mt-4 text-text-dim font-mono text-sm max-w-2xl mx-auto tracking-wide">
@@ -416,7 +416,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="text-[10px] font-mono font-bold text-magenta mb-2 uppercase tracking-widest">STEP {i + 1}</div>
-                <h3 className="text-lg font-mono font-bold text-white uppercase tracking-tight mb-2">{feature.title}</h3>
+                <h3 className="text-lg font-mono font-bold text-text-main uppercase tracking-tight mb-2">{feature.title}</h3>
                 <p className="text-xs font-mono text-text-dim leading-relaxed">{feature.desc}</p>
 
                 {/* Hover scanline */}
@@ -436,19 +436,19 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/20">
             <div className="py-4 md:py-0 px-4">
-              <Package className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">Bulk Orders</h3>
-              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Order in bulk with ease — corporate branding, events, merch</p>
+              <Package className="h-8 w-8 mx-auto mb-3 text-text-main drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-text-main uppercase tracking-widest">Bulk Orders</h3>
+              <p className="text-xs font-mono text-text-main/80 mt-2 uppercase tracking-wide">Order in bulk with ease — corporate branding, events, merch</p>
             </div>
             <div className="py-4 md:py-0 px-4">
-              <Printer className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">High Quality Printing</h3>
-              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Printed on our own machines — DTF, sublimation, screen print</p>
+              <Printer className="h-8 w-8 mx-auto mb-3 text-text-main drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-text-main uppercase tracking-widest">High Quality Printing</h3>
+              <p className="text-xs font-mono text-text-main/80 mt-2 uppercase tracking-wide">Printed on our own machines — DTF, sublimation, screen print</p>
             </div>
             <div className="py-4 md:py-0 px-4">
-              <Zap className="h-8 w-8 mx-auto mb-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              <h3 className="font-mono font-bold text-lg text-white uppercase tracking-widest">Fast Delivery</h3>
-              <p className="text-xs font-mono text-white/80 mt-2 uppercase tracking-wide">Quick turnaround — shipped across India within 3-5 days</p>
+              <Zap className="h-8 w-8 mx-auto mb-3 text-text-main drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h3 className="font-mono font-bold text-lg text-text-main uppercase tracking-widest">Fast Delivery</h3>
+              <p className="text-xs font-mono text-text-main/80 mt-2 uppercase tracking-wide">Quick turnaround — shipped across India within 3-5 days</p>
             </div>
           </div>
         </div>
@@ -474,7 +474,7 @@ export default function HomePage() {
                 <Star className="h-3 w-3 text-magenta" />
                 <span className="font-mono text-[10px] font-bold text-magenta uppercase tracking-widest">Start for free — AI credits included</span>
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold font-display mb-6 tracking-tighter uppercase text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <h2 className="text-4xl md:text-6xl font-bold font-display mb-6 tracking-tighter uppercase text-text-main drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                 Ready to Create<br />
                 <span className="text-cyan drop-shadow-[0_0_12px_rgba(0,240,255,0.6)]">Something Amazing?</span>
               </h2>

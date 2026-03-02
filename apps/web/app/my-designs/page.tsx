@@ -38,7 +38,7 @@ function MyDesignsContent() {
                             <Sparkles className="h-3 w-3" />
                             <span>MY DESIGNS</span>
                         </div>
-                        <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-white">
+                        <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-text-main">
                             My <span className="text-magenta">Designs</span>
                         </h1>
                         <p className="mt-3 text-text-dim font-mono text-xs uppercase tracking-widest border-l border-border-std pl-3">
@@ -147,7 +147,7 @@ function MyDesignsContent() {
                                     )}
                                 </div>
                                 <div className="p-4 border-t border-border-std bg-void">
-                                    <p className="text-xs font-mono text-white line-clamp-2 mb-2 min-h-[2rem]" title={design.prompt}>
+                                    <p className="text-xs font-mono text-text-main line-clamp-2 mb-2 min-h-[2rem]" title={design.prompt}>
                                         <span className="text-cyan">{">"}</span> {design.prompt}
                                     </p>
                                     {design.style_preset && (
@@ -161,7 +161,7 @@ function MyDesignsContent() {
                                         </span>
                                         <button
                                             onClick={() => togglePublic.mutate({ id: design.id, is_public: !design.is_public })}
-                                            className={`flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase px-2 py-1 border transition ${design.is_public ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-white'
+                                            className={`flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase px-2 py-1 border transition ${design.is_public ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'
                                                 }`}
                                         >
                                             {design.is_public ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
@@ -194,7 +194,7 @@ function MyDesignsContent() {
                         <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-magenta opacity-50 z-20 pointer-events-none"></div>
 
                         <div className="flex items-center justify-between mb-4 sm:mb-6 border-b border-border-std pb-3 sm:pb-4">
-                            <h3 className="font-mono font-bold text-white uppercase tracking-widest text-xs sm:text-sm">APPLY TO PRODUCT</h3>
+                            <h3 className="font-mono font-bold text-text-main uppercase tracking-widest text-xs sm:text-sm">APPLY TO PRODUCT</h3>
                             <button onClick={() => setApplyDesign(null)} className="p-2 border border-border-std hover:bg-cyan/10 hover:border-cyan hover:text-cyan transition bg-void">
                                 <X className="h-4 w-4" />
                             </button>
@@ -213,7 +213,7 @@ function MyDesignsContent() {
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-mono font-bold line-clamp-2 text-white uppercase"><span className="text-cyan">{">"}</span> {selectedDesign.prompt}</p>
+                                <p className="text-xs font-mono font-bold line-clamp-2 text-text-main uppercase"><span className="text-cyan">{">"}</span> {selectedDesign.prompt}</p>
                                 <p className="text-[10px] text-text-dim font-mono tracking-widest mt-1 uppercase">
                                     [{selectedDesign.style_preset || 'RAW'}] Date: {new Date(selectedDesign.created_at).toLocaleDateString('en-IN').replace(/\//g, '.')}
                                 </p>
@@ -242,7 +242,7 @@ function MyDesignsContent() {
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-mono font-bold truncate text-white uppercase group-hover:text-cyan transition">{product.name}</p>
+                                        <p className="text-xs font-mono font-bold truncate text-text-main uppercase group-hover:text-cyan transition">{product.name}</p>
                                         <p className="text-[10px] text-text-dim font-mono tracking-widest mt-1 uppercase">
                                             {product.category} | <span className="text-magenta">INR {Number(product.base_price).toFixed(0)}</span>
                                         </p>

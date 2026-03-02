@@ -47,7 +47,7 @@ function ProfileContent() {
                         <User className="h-3 w-3" />
                         <span>MY ACCOUNT</span>
                     </div>
-                    <h1 className="text-3xl font-bold font-mono text-white uppercase tracking-widest mt-2 border-b border-border-std pb-4">
+                    <h1 className="text-3xl font-bold font-mono text-text-main uppercase tracking-widest mt-2 border-b border-border-std pb-4">
                         USER <span className="text-magenta">PROFILE</span>
                     </h1>
                 </div>
@@ -67,7 +67,7 @@ function ProfileContent() {
                                 </span>
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold font-mono text-white tracking-widest uppercase">{profile?.full_name || profile?.username || 'GUEST'}</h2>
+                                <h2 className="text-2xl font-bold font-mono text-text-main tracking-widest uppercase">{profile?.full_name || profile?.username || 'GUEST'}</h2>
                                 <div className="flex flex-wrap items-center gap-3 mt-3">
                                     <span className="flex items-center gap-2 text-[10px] tracking-widest px-3 py-1 border border-cyan/30 bg-cyan/10 text-cyan font-bold uppercase">
                                         <Shield className="h-3 w-3" />
@@ -86,7 +86,7 @@ function ProfileContent() {
                     {/* Edit Form */}
                     <div className="bg-panel border border-border-std p-8 relative animate-slide-up animation-delay-100 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                         <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan/50"></div>
-                        <h3 className="font-mono font-bold text-white uppercase tracking-widest flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+                        <h3 className="font-mono font-bold text-text-main uppercase tracking-widest flex items-center gap-3 mb-6 border-b border-border-std pb-2">
                             <Terminal className="w-5 h-5 text-cyan" />
                             ACCOUNT DETAILS
                         </h3>
@@ -115,7 +115,7 @@ function ProfileContent() {
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         placeholder="> Enter Name..."
-                                        className="w-full pl-10 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50"
+                                        className="w-full pl-10 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50"
                                     />
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ function ProfileContent() {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         placeholder="> Enter Username..."
-                                        className="w-full pl-10 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors placeholder:normal-case placeholder:text-text-dim/50"
+                                        className="w-full pl-10 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors placeholder:normal-case placeholder:text-text-dim/50"
                                     />
                                 </div>
                             </div>

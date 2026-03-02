@@ -28,7 +28,7 @@ export default function ContactPage() {
                         <Terminal className="h-4 w-4 text-cyan" />
                         <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">CONTACT_US //</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-bold font-display text-text-main uppercase tracking-tighter">
                         Get In <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Touch</span>
                     </h1>
                     <p className="mt-6 text-text-dim max-w-2xl mx-auto font-mono text-sm">
@@ -43,7 +43,7 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
                         {/* Contact Info */}
                         <div className="lg:col-span-2 space-y-6">
-                            <h2 className="text-2xl font-bold text-white font-mono uppercase tracking-wider">Contact Information</h2>
+                            <h2 className="text-2xl font-bold text-text-main font-mono uppercase tracking-wider">Contact Information</h2>
                             <p className="text-sm text-text-dim font-mono">
                                 &gt; Reach out to us for custom orders, bulk pricing, partnerships, or any questions.
                             </p>
@@ -54,7 +54,7 @@ export default function ContactPage() {
                                         <Mail className="h-5 w-5 text-cyan" />
                                     </div>
                                     <div>
-                                        <p className="font-mono font-bold text-white text-sm uppercase">Email</p>
+                                        <p className="font-mono font-bold text-text-main text-sm uppercase">Email</p>
                                         <a href="mailto:contact@everydaydrop.in" className="text-sm text-cyan hover:underline font-mono">contact@everydaydrop.in</a>
                                     </div>
                                 </div>
@@ -64,7 +64,7 @@ export default function ContactPage() {
                                         <Phone className="h-5 w-5 text-cyan" />
                                     </div>
                                     <div>
-                                        <p className="font-mono font-bold text-white text-sm uppercase">Phone / WhatsApp</p>
+                                        <p className="font-mono font-bold text-text-main text-sm uppercase">Phone / WhatsApp</p>
                                         <a href="tel:+917028478109" className="text-sm text-cyan hover:underline font-mono">+91 70284 78109</a>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@ export default function ContactPage() {
                                         <MapPin className="h-5 w-5 text-cyan" />
                                     </div>
                                     <div>
-                                        <p className="font-mono font-bold text-white text-sm uppercase">Address</p>
+                                        <p className="font-mono font-bold text-text-main text-sm uppercase">Address</p>
                                         <p className="text-sm text-text-dim font-mono">Pune, Maharashtra, India</p>
                                     </div>
                                 </div>
@@ -84,7 +84,7 @@ export default function ContactPage() {
                                         <Clock className="h-5 w-5 text-cyan" />
                                     </div>
                                     <div>
-                                        <p className="font-mono font-bold text-white text-sm uppercase">Office Hours</p>
+                                        <p className="font-mono font-bold text-text-main text-sm uppercase">Office Hours</p>
                                         <p className="text-sm text-text-dim font-mono">10 AM to 7 PM (Mon to Sat)</p>
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
 
                             {/* Social Links */}
                             <div>
-                                <p className="font-mono font-bold text-white text-sm mb-3 uppercase tracking-widest">Follow Us</p>
+                                <p className="font-mono font-bold text-text-main text-sm mb-3 uppercase tracking-widest">Follow Us</p>
                                 <div className="flex gap-3">
                                     <a href="#" className="h-10 w-10 border border-border-std bg-panel flex items-center justify-center hover:bg-cyan/10 hover:text-cyan hover:border-cyan transition-colors">
                                         <Instagram className="h-5 w-5" />
@@ -112,7 +112,7 @@ export default function ContactPage() {
                             {sent ? (
                                 <div className="text-center py-12 animate-fade-in">
                                     <div className="text-5xl mb-4">✅</div>
-                                    <h3 className="text-xl font-bold text-white mb-2 font-mono uppercase">Message Sent!</h3>
+                                    <h3 className="text-xl font-bold text-text-main mb-2 font-mono uppercase">Message Sent!</h3>
                                     <p className="text-sm text-text-dim mb-6 font-mono">
                                         &gt; We&apos;ll get back to you within 24 hours.
                                     </p>
@@ -122,7 +122,7 @@ export default function ContactPage() {
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-5">
-                                    <h3 className="text-xl font-bold text-white mb-2 font-mono uppercase tracking-wider">Send us a Message</h3>
+                                    <h3 className="text-xl font-bold text-text-main mb-2 font-mono uppercase tracking-wider">Send us a Message</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-[10px] font-mono text-cyan uppercase tracking-widest mb-1.5">Name</label>

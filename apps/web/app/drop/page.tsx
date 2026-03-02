@@ -70,14 +70,14 @@ export default function DropPage() {
                 <div className="text-center mb-16 max-w-2xl mx-auto space-y-6">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-4 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                         <span className="w-2 h-2 rounded-full bg-cyan animate-pulse"></span>
-                        <span className="text-xs uppercase tracking-[0.3em] text-white/80 font-medium">Limited Edition Run</span>
+                        <span className="text-xs uppercase tracking-[0.3em] text-text-main/80 font-medium">Limited Edition Run</span>
                     </div>
 
-                    <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-tight drop-shadow-2xl">
+                    <h1 className="text-6xl md:text-8xl font-bold text-text-main tracking-tighter leading-tight drop-shadow-2xl">
                         THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">SPRING</span> DROP
                     </h1>
 
-                    <p className="text-lg text-white/60 leading-relaxed font-light">
+                    <p className="text-lg text-text-main/60 leading-relaxed font-light">
                         Our most highly anticipated garments. Premium fabrics. Unseen iterations.
                         Unlocking exactly at the strike of midnight on March 1st.
                     </p>
@@ -93,10 +93,10 @@ export default function DropPage() {
                             { label: 'Seconds', value: timeLeft.seconds }
                         ].map((item, i) => (
                             <div key={i} className="flex flex-col items-center justify-center p-8 md:p-12 relative bg-void/40 hover:bg-white/5 transition-colors duration-500 group">
-                                <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter tabular-nums leading-none">
+                                <span className="text-6xl md:text-8xl font-bold text-text-main tracking-tighter tabular-nums leading-none">
                                     {item.value.toString().padStart(2, '0')}
                                 </span>
-                                <span className="text-sm uppercase tracking-[0.2em] text-white/40 mt-6 font-medium group-hover:text-cyan transition-colors">
+                                <span className="text-sm uppercase tracking-[0.2em] text-text-main/40 mt-6 font-medium group-hover:text-cyan transition-colors">
                                     {item.label}
                                 </span>
                             </div>
@@ -108,7 +108,7 @@ export default function DropPage() {
                 <div className="w-full max-w-md mx-auto relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan/30 to-magenta/30 rounded-2xl blur opacity-25 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
                     <form onSubmit={handleSubscribe} className="relative flex items-center bg-void border border-white/10 rounded-2xl overflow-hidden p-2 shadow-2xl">
-                        <div className="pl-4 text-white/40">
+                        <div className="pl-4 text-text-main/40">
                             <Bell className="w-5 h-5" />
                         </div>
                         <input
@@ -118,13 +118,13 @@ export default function DropPage() {
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={subscribed}
                             required
-                            className="w-full bg-transparent border-none text-white px-4 py-3 placeholder:text-white/30 focus:outline-none disabled:opacity-50 font-light"
+                            className="w-full bg-transparent border-none text-text-main px-4 py-3 placeholder:text-text-main/30 focus:outline-none disabled:opacity-50 font-light"
                         />
                         <button
                             type="submit"
                             disabled={subscribed}
                             className={`px-8 py-3 rounded-xl font-medium tracking-wide transition-all duration-300 ${subscribed
-                                    ? 'bg-white/10 text-white cursor-default'
+                                    ? 'bg-white/10 text-text-main cursor-default'
                                     : 'bg-white text-void hover:bg-gray-100 hover:scale-[0.98]'
                                 }`}
                         >
@@ -135,7 +135,7 @@ export default function DropPage() {
 
                 {/* Footer Link */}
                 <div className="mt-24 pt-8 border-t border-white/5 w-full text-center">
-                    <Link href="/products" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors group text-sm font-medium tracking-wide">
+                    <Link href="/products" className="inline-flex items-center gap-2 text-text-main/50 hover:text-text-main transition-colors group text-sm font-medium tracking-wide">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Return to Standard Collections
                     </Link>

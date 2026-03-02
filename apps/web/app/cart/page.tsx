@@ -16,7 +16,7 @@ export default function CartPage() {
                     <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan/50"></div>
                     <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-magenta/50"></div>
                     <ShoppingBag className="h-12 w-12 text-cyan/30 mx-auto mb-6" />
-                    <h1 className="text-2xl font-bold font-mono tracking-widest text-white uppercase mb-2">CART IS EMPTY</h1>
+                    <h1 className="text-2xl font-bold font-mono tracking-widest text-text-main uppercase mb-2">CART IS EMPTY</h1>
                     <p className="text-[10px] font-mono tracking-widest text-text-dim mb-8 border-l border-border-std pl-3 mx-auto text-left w-fit uppercase">
                         &gt; Your cart is currently empty. <br />
                         &gt; Go to the gallery to add items.
@@ -40,7 +40,7 @@ export default function CartPage() {
                         <ShoppingBag className="h-3 w-3" />
                         <span>YOUR CART</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-white">
+                    <h1 className="text-3xl md:text-5xl font-bold font-display uppercase tracking-wider text-text-main">
                         Shopping <span className="text-magenta">Cart</span>
                     </h1>
                 </div>
@@ -62,7 +62,7 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                                     <div>
-                                        <h3 className="font-mono font-bold text-sm text-white uppercase truncate group-hover:text-cyan transition-colors">
+                                        <h3 className="font-mono font-bold text-sm text-text-main uppercase truncate group-hover:text-cyan transition-colors">
                                             <span className="text-cyan">{">"}</span> {item.productName}
                                         </h3>
                                         <p className="text-[10px] font-mono tracking-widest text-text-dim uppercase mt-1">
@@ -107,15 +107,15 @@ export default function CartPage() {
                     <div>
                         <div className="bg-panel border border-border-std p-6 sticky top-24 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-magenta/50"></div>
-                            <h3 className="font-mono font-bold text-white uppercase tracking-widest mb-6 border-b border-border-std pb-2">ORDER SUMMARY</h3>
+                            <h3 className="font-mono font-bold text-text-main uppercase tracking-widest mb-6 border-b border-border-std pb-2">ORDER SUMMARY</h3>
                             <div className="space-y-4 text-[10px] font-mono tracking-widest uppercase text-text-dim bg-void border border-border-std p-4">
                                 <div className="flex justify-between">
                                     <span>SUBTOTAL</span>
-                                    <span className="text-white">₹{getTotal().toFixed(0)}</span>
+                                    <span className="text-text-main">₹{getTotal().toFixed(0)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>SHIPPING FEE</span>
-                                    <span className="text-white">₹99</span>
+                                    <span className="text-text-main">₹99</span>
                                 </div>
                                 <hr className="border-border-std border-dashed my-2" />
                                 <div className="flex justify-between text-sm font-bold text-cyan">
