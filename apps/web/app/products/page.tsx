@@ -48,14 +48,14 @@ export default function ProductsPage() {
                     </p>
                 </div>
 
-                <div className="mb-8 flex flex-wrap gap-4 border-b border-border-std/50 border-dashed pb-4 opacity-90 relative z-20">
+                <div className="mb-6 sm:mb-8 flex flex-wrap gap-2 sm:gap-4 border-b border-border-std/50 border-dashed pb-4 opacity-90 relative z-20">
                     {['All', 'Cotton', 'Bamboo', 'Hemp'].map((fabric) => (
                         <button
                             key={fabric}
                             onClick={() => setSelectedFabric(fabric)}
-                            className={`px-6 py-2 font-mono text-sm uppercase tracking-widest transition-all duration-300 ${selectedFabric === fabric
-                                    ? 'bg-cyan text-void font-bold shadow-[0_0_15px_rgba(0,240,255,0.4)] translate-y-[-2px]'
-                                    : 'border border-border-std text-text-dim hover:border-cyan/50 hover:text-cyan bg-panel/30 hover:bg-panel/60'
+                            className={`px-3 sm:px-6 py-1.5 sm:py-2 font-mono text-[10px] sm:text-sm uppercase tracking-widest transition-all duration-300 ${selectedFabric === fabric
+                                ? 'bg-cyan text-void font-bold shadow-[0_0_15px_rgba(0,240,255,0.4)] sm:translate-y-[-2px]'
+                                : 'border border-border-std text-text-dim hover:border-cyan/50 hover:text-cyan bg-panel/30 hover:bg-panel/60'
                                 }`}
                         >
                             {fabric}
@@ -63,7 +63,7 @@ export default function ProductsPage() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                     {filteredProducts?.map((product) => (
                         <Link href={`/products/${product.id}`} key={product.id} className="group border border-border-std bg-panel/30 block relative overflow-hidden transition-all duration-300 hover:border-cyan hover:shadow-[0_0_20px_rgba(0,240,255,0.15)] flex flex-col h-full">
                             <div className="aspect-square relative bg-panel-highlight/20 overflow-hidden border-b border-border-std/50 group-hover:border-cyan/50 transition-colors">
@@ -72,6 +72,8 @@ export default function ProductsPage() {
                                         src={product.image_url}
                                         alt={product.name}
                                         fill
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                        unoptimized={true}
                                         className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                     />
                                 ) : (
@@ -80,27 +82,27 @@ export default function ProductsPage() {
                                         <span className="font-mono text-[10px] uppercase tracking-widest">No Preview</span>
                                     </div>
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                                    <span className="flex items-center gap-2 px-4 py-2 bg-cyan text-void font-bold font-mono text-xs uppercase tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)]">
-                                        <PenTool className="w-3.5 h-3.5" />
-                                        Customize
+                                <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3 sm:pb-6">
+                                    <span className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-cyan text-void font-bold font-mono text-[10px] sm:text-xs uppercase tracking-widest translate-y-2 sm:translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)]">
+                                        <PenTool className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                                        <span>Customize</span>
                                     </span>
                                 </div>
                             </div>
-                            <div className="p-5 flex-1 flex flex-col justify-between">
+                            <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
                                 <div>
-                                    <div className="flex justify-between items-start mb-2 gap-4">
-                                        <h3 className="font-mono font-bold text-text-main uppercase text-base tracking-wide line-clamp-1">{product.name}</h3>
-                                        <span className="font-mono text-cyan shrink-0 font-bold">₹{formatPriceINR(product.base_price)}</span>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start mb-1 sm:mb-2 gap-1 sm:gap-4">
+                                        <h3 className="font-mono font-bold text-text-main uppercase text-[11px] sm:text-base tracking-wide line-clamp-2 sm:line-clamp-1">{product.name}</h3>
+                                        <span className="font-mono text-cyan shrink-0 font-bold text-[10px] sm:text-sm">₹{formatPriceINR(product.base_price)}</span>
                                     </div>
-                                    <p className="text-text-dim text-[11px] font-mono mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
+                                    <p className="text-text-dim text-[10px] sm:text-[11px] font-mono mb-3 sm:mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
                                 </div>
-                                <div className="flex flex-wrap gap-2 mt-auto">
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
                                     {product.colors?.slice(0, 3).map((color, idx) => (
-                                        <span key={idx} className="text-[9px] font-mono px-1.5 py-0.5 border border-border-std text-text-dim group-hover:border-cyan/30 transition-colors uppercase">{color}</span>
+                                        <span key={idx} className="text-[9px] font-mono px-1 sm:px-1.5 py-0.5 border border-border-std text-text-dim group-hover:border-cyan/30 transition-colors uppercase">{color}</span>
                                     ))}
                                     {product.colors && product.colors.length > 3 && (
-                                        <span className="text-[9px] font-mono px-1.5 py-0.5 border border-border-std text-text-dim">+{product.colors.length - 3}</span>
+                                        <span className="text-[9px] font-mono px-1 sm:px-1.5 py-0.5 border border-border-std text-text-dim">+{product.colors.length - 3}</span>
                                     )}
                                 </div>
                             </div>
