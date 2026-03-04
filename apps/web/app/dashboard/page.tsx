@@ -189,7 +189,7 @@ function DashboardContent() {
             <Settings className="h-3 w-3" />
             <span>ADMINISTRATOR</span>
           </div>
-          <h1 className="text-3xl font-bold font-mono tracking-widest uppercase text-white">
+          <h1 className="text-3xl font-bold font-mono tracking-widest uppercase text-text-main">
             ADMIN <span className="text-magenta">DASHBOARD</span>
           </h1>
           <p className="mt-2 text-[10px] tracking-widest text-cyan uppercase">&gt; System online</p>
@@ -234,7 +234,7 @@ function DashboardContent() {
                 </div>
                 <span className="text-[10px] tracking-widest text-text-dim uppercase">{card.label}</span>
               </div>
-              <div className="text-2xl font-bold text-white font-mono tracking-wider">{card.value}</div>
+              <div className="text-2xl font-bold text-text-main font-mono tracking-wider">{card.value}</div>
             </div>
           ))}
         </div>
@@ -250,7 +250,7 @@ function DashboardContent() {
               <Printer className="h-6 w-6 text-cyan" />
             </div>
             <div className="relative z-10">
-              <p className="text-2xl font-bold text-white font-mono">{stats.printQueue}</p>
+              <p className="text-2xl font-bold text-text-main font-mono">{stats.printQueue}</p>
               <p className="text-[10px] tracking-widest text-cyan uppercase mt-1">Ready To Print</p>
             </div>
             <ArrowRight className="h-5 w-5 text-cyan ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
@@ -261,7 +261,7 @@ function DashboardContent() {
               <TrendingUp className="h-6 w-6 text-magenta" />
             </div>
             <div className="relative z-10">
-              <p className="text-2xl font-bold text-white font-mono">{stats.printing}</p>
+              <p className="text-2xl font-bold text-text-main font-mono">{stats.printing}</p>
               <p className="text-[10px] tracking-widest text-magenta uppercase mt-1">Currently Printing</p>
             </div>
             <ArrowRight className="h-5 w-5 text-magenta ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
@@ -272,7 +272,7 @@ function DashboardContent() {
               <Truck className="h-6 w-6 text-blue-500" />
             </div>
             <div className="relative z-10">
-              <p className="text-2xl font-bold text-white font-mono">{stats.shipped}</p>
+              <p className="text-2xl font-bold text-text-main font-mono">{stats.shipped}</p>
               <p className="text-[10px] tracking-widest text-blue-500 uppercase mt-1">In Transit</p>
             </div>
             <ArrowRight className="h-5 w-5 text-blue-400 ml-auto opacity-0 group-hover:opacity-100 transition relative z-10" />
@@ -316,7 +316,7 @@ function DashboardContent() {
               <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-magenta/50 translate-x-[2px] translate-y-[2px]"></div>
 
               <div className="flex items-center justify-between mb-6 border-b border-border-std pb-4">
-                <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3">
+                <h3 className="font-mono font-bold text-text-main tracking-widest uppercase flex items-center gap-3">
                   <Package className="h-5 w-5 text-cyan" />
                   RECENT ORDERS
                 </h3>
@@ -347,7 +347,7 @@ function DashboardContent() {
                             </div>
                           )}
                           <div>
-                            <p className="font-mono font-bold text-white tracking-widest text-sm group-hover:text-cyan transition-colors">ORD_{order.id.slice(0, 8)}</p>
+                            <p className="font-mono font-bold text-text-main tracking-widest text-sm group-hover:text-cyan transition-colors">ORD_{order.id.slice(0, 8)}</p>
                             <p className="text-[10px] font-mono text-text-dim tracking-widest uppercase mt-1">
                               TS: {new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '.')}
                             </p>
@@ -357,7 +357,7 @@ function DashboardContent() {
                           <span className={`text-[10px] font-mono tracking-widest uppercase px-3 py-1 border border-dashed ${STATUS_COLOR[order.status] || 'border-text-dim/50 bg-void text-text-dim'}`}>
                             {order.status}
                           </span>
-                          <span className="font-bold font-mono text-white text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
+                          <span className="font-bold font-mono text-text-main text-sm">₹{Number(order.total_amount).toLocaleString()}</span>
                         </div>
                       </Link>
                     );
@@ -373,28 +373,28 @@ function DashboardContent() {
 
             {/* Quick Links */}
             <div className="bg-panel border border-border-std p-6 relative animate-slide-up shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-              <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+              <h3 className="font-mono font-bold text-text-main tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
                 QUICK LINKS
               </h3>
               <div className="grid sm:grid-cols-3 gap-3">
                 <Link href="/dashboard/products" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
                   <Package className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">PRODUCTS</p>
+                    <p className="text-[10px] font-mono tracking-widest text-text-main uppercase font-bold">PRODUCTS</p>
                     <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{products?.length || 0} ITEMS</p>
                   </div>
                 </Link>
                 <Link href="/dashboard/orders" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
                   <Printer className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">PRINT QUEUE</p>
+                    <p className="text-[10px] font-mono tracking-widest text-text-main uppercase font-bold">PRINT QUEUE</p>
                     <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{stats.printQueue} PENDING</p>
                   </div>
                 </Link>
                 <Link href="/studio" className="flex items-center gap-3 p-4 bg-void border border-border-std hover:border-cyan hover:bg-cyan/5 transition-colors group">
                   <Sparkles className="h-5 w-5 text-cyan group-hover:scale-110 transition-transform" />
                   <div>
-                    <p className="text-[10px] font-mono tracking-widest text-white uppercase font-bold">AI STUDIO</p>
+                    <p className="text-[10px] font-mono tracking-widest text-text-main uppercase font-bold">AI STUDIO</p>
                     <p className="text-[9px] font-mono tracking-widest text-text-dim uppercase">{stats.totalDesigns} DESIGNS</p>
                   </div>
                 </Link>
@@ -405,7 +405,7 @@ function DashboardContent() {
           {/* Settings */}
           <div className="bg-panel border border-border-std p-6 relative animate-slide-up animation-delay-200 h-fit shadow-[0_0_20px_rgba(0,0,0,0.5)]">
             <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan/50"></div>
-            <h3 className="font-mono font-bold text-white tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
+            <h3 className="font-mono font-bold text-text-main tracking-widest uppercase flex items-center gap-3 mb-6 border-b border-border-std pb-2">
               <Settings className="h-5 w-5 text-cyan" />
               SETTINGS
             </h3>
@@ -418,7 +418,7 @@ function DashboardContent() {
                   onChange={(e) => setMargin(e.target.value)}
                   min="0"
                   max="50"
-                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors"
+                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors"
                 />
                 <p className="text-[9px] font-mono tracking-widest text-text-dim mt-2 uppercase">&gt; APPLIED TO ALL TRANSACTIONS</p>
               </div>
@@ -429,7 +429,7 @@ function DashboardContent() {
                   type="datetime-local"
                   value={dropDate}
                   onChange={(e) => setDropDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
+                  className="w-full px-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
                 />
                 <p className="text-[9px] font-mono tracking-widest text-text-dim mt-2 uppercase">&gt; COUNTDOWN TARGET DATE & TIME</p>
               </div>

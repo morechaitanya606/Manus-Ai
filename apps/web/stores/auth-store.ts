@@ -43,19 +43,30 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     const supabase = getSupabase();
 
-    // Get initial session
-    const { data: { session } } = await supabase.auth.getSession();
-    set({ session, user: session?.user ?? null, loading: false, initialized: true, _initializing: false } as any);
+    try {
+      // Get initial session
+      const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (session?.user) {
-      get().fetchProfile();
+      if (error) {
+        console.error('Supabase auth error:', error.message);
+      }
+
+      set({ session, user: session?.user ?? null, loading: false, initialized: true, _initializing: false } as any);
+
+      if (session?.user) {
+        get().fetchProfile().catch(console.error);
+      }
+    } catch (err) {
+      console.error('Failed to initialize session (network error):', err);
+      // Complete initialization on network error so the app doesn't stay frozen
+      set({ session: null, user: null, loading: false, initialized: true, _initializing: false } as any);
     }
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange((_event, session) => {
       set({ session, user: session?.user ?? null });
       if (session?.user) {
-        get().fetchProfile();
+        get().fetchProfile().catch(console.error);
       } else {
         set({ profile: null });
       }
@@ -71,14 +82,22 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     if (!user) return;
 
     const supabase = getSupabase();
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    if (data) {
-      set({ profile: data as Profile });
+      if (error) {
+        console.error('Failed to fetch profile:', error.message);
+      }
+
+      if (data) {
+        set({ profile: data as Profile });
+      }
+    } catch (err) {
+      console.error('Failed to fetch profile (network error):', err);
     }
   },
 

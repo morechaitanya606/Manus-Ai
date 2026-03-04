@@ -34,7 +34,7 @@ export default function PricingPage() {
                         <Terminal className="h-4 w-4 text-cyan" />
                         <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">PRICING_TABLE //</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-bold font-display text-text-main uppercase tracking-tighter">
                         Simple, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Transparent</span> Pricing
                     </h1>
                     <p className="mt-6 text-text-dim max-w-2xl mx-auto font-mono text-sm">
@@ -61,7 +61,7 @@ export default function PricingPage() {
                                         ⭐ Most Popular
                                     </div>
                                 )}
-                                <h3 className="text-lg font-bold text-white font-mono uppercase">{p.name}</h3>
+                                <h3 className="text-lg font-bold text-text-main font-mono uppercase">{p.name}</h3>
                                 <div className="flex items-baseline gap-1 mt-2 mb-4">
                                     <span className="text-3xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">₹{p.price}</span>
                                     <span className="text-xs text-text-dim font-mono">per piece</span>
@@ -87,7 +87,7 @@ export default function PricingPage() {
             {/* What's Included */}
             <section className="py-20 bg-panel border-b border-border-std border-dashed">
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold font-display text-center mb-12 text-white uppercase tracking-tighter">
+                    <h2 className="text-3xl font-bold font-display text-center mb-12 text-text-main uppercase tracking-tighter">
                         What&apos;s <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Included</span>
                     </h2>
                     <div className="bg-void border border-border-std p-8">
@@ -108,13 +108,13 @@ export default function PricingPage() {
                         <div className="absolute inset-0 bg-grid-pattern bg-[length:20px_20px] opacity-20 pointer-events-none mix-blend-overlay"></div>
                         <div className="relative z-10">
                             <h3 className="text-xl font-bold mb-2 font-mono uppercase tracking-widest">Flat ₹99 Shipping — All India</h3>
-                            <p className="text-white/80 text-sm font-mono">&gt; Delivered in 3-5 business days with tracking. Free shipping on orders above ₹2,000.</p>
+                            <p className="text-text-main/80 text-sm font-mono">&gt; Delivered in 3-5 business days with tracking. Free shipping on orders above ₹2,000.</p>
                         </div>
                     </div>
 
                     {/* Bulk */}
                     <div className="mt-8 bg-void border border-border-std p-8 text-center">
-                        <h3 className="text-xl font-bold mb-2 text-white font-mono uppercase">🏢 Bulk Orders & Corporate</h3>
+                        <h3 className="text-xl font-bold mb-2 text-text-main font-mono uppercase">🏢 Bulk Orders & Corporate</h3>
                         <p className="text-sm text-text-dim mb-4 font-mono">
                             &gt; Need 50+ pieces with custom branding? We offer volume discounts, custom packaging, and dedicated support.
                         </p>

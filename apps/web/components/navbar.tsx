@@ -45,11 +45,11 @@ export function Navbar() {
         {/* Left: Logo & Title */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="relative flex items-center justify-center h-8 w-8 bg-black border border-cyan/40 overflow-hidden">
-            <BrandLogo className="h-5 w-5 text-white group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
+            <BrandLogo className="h-5 w-5 text-text-main group-hover:text-cyan group-hover:drop-shadow-[0_0_8px_#00F0FF] transition-all" />
             <div className="absolute top-0 right-0 w-1 h-1 bg-cyan"></div>
             <div className="absolute bottom-0 left-0 w-1 h-1 bg-magenta"></div>
           </div>
-          <span className="font-display font-bold text-xl tracking-widest text-white uppercase hidden sm:block">
+          <span className="font-display font-bold text-xl tracking-widest text-text-main uppercase hidden sm:block">
             EVERYDAY<span className="text-cyan">DROP</span>
           </span>
         </Link>
@@ -84,7 +84,7 @@ export function Navbar() {
                 <span className="font-mono text-[10px] text-text-dim uppercase">
                   {profile?.full_name || user.email?.split('@')[0]}
                 </span>
-                <span className="font-mono text-sm font-bold text-white">
+                <span className="font-mono text-sm font-bold text-text-main">
                   {isAdmin() ? 'SYS_ADMIN' : 'USER'}
                 </span>
               </div>
@@ -122,7 +122,7 @@ export function Navbar() {
                   </span>
                 )}
               </Link>
-              <Link href="/login" className="font-mono text-xs text-text-dim hover:text-white transition-colors">
+              <Link href="/login" className="font-mono text-xs text-text-dim hover:text-text-main transition-colors">
                 SIGN IN
               </Link>
             </div>
@@ -176,11 +176,11 @@ export function Navbar() {
                 </Link>
                 {isAdmin() && (
                   <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-white transition-colors uppercase">
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-text-main transition-colors uppercase">
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </Link>
-                    <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-white transition-colors uppercase">
+                    <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-text-main transition-colors uppercase">
                       <Sparkles className="h-4 w-4" />
                       Admin Studio
                     </Link>
@@ -188,7 +188,7 @@ export function Navbar() {
                 )}
                 <button
                   onClick={() => { signOut(); setMobileOpen(false); }}
-                  className="flex w-full items-center gap-2 font-mono text-sm text-red-500 hover:text-white transition-colors uppercase text-left"
+                  className="flex w-full items-center gap-2 font-mono text-sm text-red-500 hover:text-text-main transition-colors uppercase text-left"
                 >
                   <LogOut className="h-4 w-4" />
                   Sign Out
@@ -196,10 +196,10 @@ export function Navbar() {
               </>
             ) : (
               <div className="flex flex-col gap-2">
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-white transition-colors uppercase">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-text-main transition-colors uppercase">
                   Sign In
                 </Link>
-                <Link href="/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-white transition-colors uppercase">
+                <Link href="/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-cyan hover:text-text-main transition-colors uppercase">
                   Start Creating
                 </Link>
               </div>

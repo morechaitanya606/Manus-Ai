@@ -18,7 +18,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 rounded-none border border-border-std bg-[hsl(var(--foreground))] flex items-center justify-center animate-pulse">
-            <span className="text-white font-bold text-lg">.</span>
+            <span className="text-text-main font-bold text-lg">.</span>
           </div>
           <p className="text-sm text-text-dim">Loading...</p>
         </div>

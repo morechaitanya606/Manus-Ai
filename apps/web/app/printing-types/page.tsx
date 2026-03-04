@@ -102,7 +102,7 @@ export default function PrintingTypesPage() {
                             <div className="flex flex-col md:flex-row">
                                 {/* Visual */}
                                 <div className={`md:w-2/5 aspect-[2/1] md:aspect-auto bg-gradient-to-br ${pt.gradient} flex items-center justify-center p-8 ${i % 2 !== 0 ? 'md:order-2' : ''}`}>
-                                    <div className="text-center text-white">
+                                    <div className="text-center text-text-main">
                                         <div className="text-5xl font-bold font-display opacity-30">{String(i + 1).padStart(2, '0')}</div>
                                         <div className="text-xl font-bold mt-2">{pt.name}</div>
                                     </div>
@@ -135,7 +135,7 @@ export default function PrintingTypesPage() {
                                         <p className="text-xs font-bold text-text-dim mb-2">BEST FOR</p>
                                         <div className="flex flex-wrap gap-2">
                                             {pt.best.map((b) => (
-                                                <span key={b} className="px-3 py-1 rounded-none border border-border-std border-dashed text-xs bg-panel-highlight text-white">
+                                                <span key={b} className="px-3 py-1 rounded-none border border-border-std border-dashed text-xs bg-panel-highlight text-text-main">
                                                     {b}
                                                 </span>
                                             ))}
@@ -206,7 +206,7 @@ export default function PrintingTypesPage() {
                     <p className="text-xl md:text-3xl font-bold font-display">
                         ⚡ High Quality Offset Printing ⚡
                     </p>
-                    <p className="mt-3 text-white/80">All printing done in-house — no outsourcing, no compromises</p>
+                    <p className="mt-3 text-text-main/80">All printing done in-house — no outsourcing, no compromises</p>
                 </div>
             </section>
 

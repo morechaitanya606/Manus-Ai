@@ -1,6 +1,6 @@
 import { CreditPackage } from '../config/credits';
 
-export const loadRazorpayScript = () => {
+const loadRazorpayScript = () => {
     return new Promise((resolve) => {
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -43,7 +43,7 @@ export const handleCreditPurchase = async (pkg: CreditPackage, userId: string, o
             currency: orderData.currency,
             name: "Custyle AI",
             description: `Purchase ${pkg.credits} AI Credits`,
-            image: "https://yagpllbgglyhjfnunpvl.supabase.co/storage/v1/object/public/products/logo/custyle_favicon.png", // Replace with actual logo URL if needed
+            image: "https://everydaydrop.jiobase.com/storage/v1/object/public/products/logo/custyle_favicon.png", // Replace with actual logo URL if needed
             order_id: orderData.razorpay_order_id,
             handler: async function (response: any) {
                 try {

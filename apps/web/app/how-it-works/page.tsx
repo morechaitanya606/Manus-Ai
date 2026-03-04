@@ -119,12 +119,12 @@ export default function HowItWorksPage() {
             <section className="py-16 bg-gradient-to-r from-cyan to-magenta text-white text-center">
                 <div className="mx-auto max-w-3xl px-4">
                     <h2 className="text-3xl font-bold font-display mb-4">Ready to Create?</h2>
-                    <p className="text-white/80 mb-8">Start designing your custom apparel today — 5 free AI credits included</p>
+                    <p className="text-text-main/80 mb-8">Start designing your custom apparel today — 5 free AI credits included</p>
                     <div className="flex items-center justify-center gap-4">
                         <Link href="/studio" className="px-8 py-3 bg-panel text-cyan rounded-none border border-border-std border-dashed font-semibold hover:opacity-90 transition shadow-[0_0_15px_rgba(0,240,255,0.15)]">
                             Open AI Studio
                         </Link>
-                        <Link href="/gallery" className="px-8 py-3 bg-white/10 text-white rounded-none border border-border-std border-dashed font-semibold hover:bg-white/20 transition">
+                        <Link href="/gallery" className="px-8 py-3 bg-white/10 text-text-main rounded-none border border-border-std border-dashed font-semibold hover:bg-white/20 transition">
                             Browse Products
                         </Link>
                     </div>

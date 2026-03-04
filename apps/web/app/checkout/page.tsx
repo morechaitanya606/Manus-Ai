@@ -141,7 +141,7 @@ export default function CheckoutPage() {
                     <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan"></div>
 
                     <CheckCircle className="h-16 w-16 text-cyan mx-auto mb-6 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
-                    <h1 className="text-2xl font-bold font-display text-white mb-2 tracking-widest uppercase">Payment Successful!</h1>
+                    <h1 className="text-2xl font-bold font-display text-text-main mb-2 tracking-widest uppercase">Payment Successful!</h1>
                     <p className="text-text-dim text-xs mb-8">
                         Order <span className="text-cyan">#{orderId.slice(0, 8)}</span> has been placed. We&apos;ll start printing soon!
                     </p>
@@ -163,10 +163,10 @@ export default function CheckoutPage() {
 
                 <div className="text-center bg-panel border border-border-std p-8 relative z-10 max-w-md w-full">
                     <ShoppingBag className="h-12 w-12 text-border-std mx-auto mb-4" />
-                    <h1 className="text-xl font-bold mb-2 font-display text-white uppercase tracking-wider">Your cart is empty</h1>
+                    <h1 className="text-xl font-bold mb-2 font-display text-text-main uppercase tracking-wider">Your cart is empty</h1>
                     <p className="text-text-dim text-xs mb-6">Browse our products to add something.</p>
                     <Link href="/gallery">
-                        <Button className="rounded-none bg-transparent border border-text-dim text-white hover:border-cyan hover:text-cyan font-bold text-xs tracking-widest uppercase transition-colors">
+                        <Button className="rounded-none bg-transparent border border-text-dim text-text-main hover:border-cyan hover:text-cyan font-bold text-xs tracking-widest uppercase transition-colors">
                             Browse Products
                         </Button>
                     </Link>
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
                     {/* Header */}
                     <div className="mb-8 border-b border-border-std pb-6 flex items-end justify-between">
                         <div>
-                            <h1 className="text-3xl font-display font-bold text-white uppercase tracking-widest">
+                            <h1 className="text-3xl font-display font-bold text-text-main uppercase tracking-widest">
                                 Checkout <span className="text-cyan animate-pulse">_</span>
                             </h1>
                             <p className="text-xs text-text-dim mt-2 tracking-widest uppercase">&gt; Complete your order securely</p>
@@ -210,7 +210,7 @@ export default function CheckoutPage() {
 
                             <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-2">
                                 <span className="w-2 h-2 bg-cyan"></span>
-                                <h2 className="text-sm font-bold text-white tracking-widest uppercase">Shipping Address</h2>
+                                <h2 className="text-sm font-bold text-text-main tracking-widest uppercase">Shipping Address</h2>
                             </div>
 
                             <div className="space-y-5">
@@ -256,22 +256,22 @@ export default function CheckoutPage() {
                             <div className="bg-panel border border-border-std p-6 sticky top-24 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                                 <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-2">
                                     <span className="w-2 h-2 bg-magenta"></span>
-                                    <h2 className="text-sm font-bold text-white tracking-widest uppercase">Order Summary</h2>
+                                    <h2 className="text-sm font-bold text-text-main tracking-widest uppercase">Order Summary</h2>
                                 </div>
 
                                 <div className="space-y-4 mb-6 pr-2 max-h-[300px] overflow-y-auto custom-scrollbar">
                                     {items.map((item) => (
                                         <div key={item.id} className="flex gap-4 p-3 bg-void border border-border-std group hover:border-magenta/50 transition-colors">
                                             <div className="flex-1">
-                                                <h3 className="text-xs font-bold text-white uppercase truncate">{item.productName}</h3>
+                                                <h3 className="text-xs font-bold text-text-main uppercase truncate">{item.productName}</h3>
                                                 <div className="text-[10px] text-text-dim mt-1.5 flex gap-3">
                                                     <span>SIZE: <span className="text-cyan">{item.size || 'N/A'}</span></span>
                                                     <span>CLR: <span className="text-magenta">{item.color || 'N/A'}</span></span>
-                                                    <span>QTY: <span className="text-white">{item.quantity}</span></span>
+                                                    <span>QTY: <span className="text-text-main">{item.quantity}</span></span>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-xs font-bold text-white">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
+                                                <span className="text-xs font-bold text-text-main">₹{(item.unitPrice * item.quantity).toFixed(0)}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -280,15 +280,15 @@ export default function CheckoutPage() {
                                 <div className="space-y-3 p-4 bg-void border border-border-std border-dashed">
                                     <div className="flex justify-between text-[11px] text-text-dim uppercase tracking-wider">
                                         <span>Subtotal</span>
-                                        <span className="text-white">₹{subtotal.toFixed(0)}</span>
+                                        <span className="text-text-main">₹{subtotal.toFixed(0)}</span>
                                     </div>
                                     <div className="flex justify-between text-[11px] text-text-dim uppercase tracking-wider">
                                         <span>Shipping</span>
-                                        <span className="text-white">₹{shippingCost}</span>
+                                        <span className="text-text-main">₹{shippingCost}</span>
                                     </div>
                                     <div className="h-px bg-border-std my-2"></div>
                                     <div className="flex justify-between items-end">
-                                        <span className="text-xs text-white font-bold uppercase tracking-widest">Total</span>
+                                        <span className="text-xs text-text-main font-bold uppercase tracking-widest">Total</span>
                                         <span className="text-2xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-magenta to-cyan drop-shadow-[0_0_5px_rgba(211,45,255,0.5)]">
                                             ₹{total.toFixed(0)}
                                         </span>

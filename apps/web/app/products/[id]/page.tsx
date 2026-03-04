@@ -10,6 +10,10 @@ export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
     const { data: product, isLoading, error } = useProduct(id);
+    const formatPriceINR = (amount: string | number | null | undefined) => {
+        const value = Number(amount);
+        return Number.isFinite(value) ? value.toFixed(2) : '0.00';
+    };
 
     if (isLoading) {
         return (
@@ -77,8 +81,8 @@ export default function ProductDetailPage() {
                     {/* Right: Details */}
                     <div className="flex flex-col">
                         <div className="border-l-2 border-cyan pl-6 mb-8">
-                            <h1 className="text-3xl md:text-5xl font-mono font-bold text-white mb-2 uppercase tracking-tight leading-none">{product.name}</h1>
-                            <p className="text-cyan font-mono text-xl tracking-widest">${parseFloat(product.base_price).toFixed(2)} Base Price</p>
+                            <h1 className="text-3xl md:text-5xl font-mono font-bold text-text-main mb-2 uppercase tracking-tight leading-none">{product.name}</h1>
+                            <p className="text-cyan font-mono text-xl tracking-widest">₹{formatPriceINR(product.base_price)} Base Price</p>
                         </div>
 
                         <div className="prose prose-invert border-b border-border-std pb-8 mb-8">
@@ -87,17 +91,17 @@ export default function ProductDetailPage() {
 
                         <div className="grid grid-cols-2 gap-8 mb-8 pb-8 border-b border-border-std">
                             <div>
-                                <h3 className="text-white font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <h3 className="text-text-main font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <Shirt className="w-3 h-3 text-cyan" /> Fabric & Fit
                                 </h3>
                                 <ul className="space-y-2 text-text-dim font-mono text-[11px]">
-                                    {product.fabric && <li><span className="text-white">Fabric:</span> {product.fabric}</li>}
-                                    {product.gsm && <li><span className="text-white">Weight:</span> {product.gsm} GSM</li>}
-                                    {product.fit && <li><span className="text-white">Fit:</span> {product.fit}</li>}
+                                    {product.fabric && <li><span className="text-text-main">Fabric:</span> {product.fabric}</li>}
+                                    {product.gsm && <li><span className="text-text-main">Weight:</span> {product.gsm} GSM</li>}
+                                    {product.fit && <li><span className="text-text-main">Fit:</span> {product.fit}</li>}
                                 </ul>
                             </div>
                             <div>
-                                <h3 className="text-white font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <h3 className="text-text-main font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <Ruler className="w-3 h-3 text-cyan" /> Specs
                                 </h3>
                                 <div className="space-y-3">
@@ -105,7 +109,7 @@ export default function ProductDetailPage() {
                                         <span className="text-text-dim font-mono text-[10px] block mb-1">Available Sizes:</span>
                                         <div className="flex flex-wrap gap-2">
                                             {product.sizes?.map(size => (
-                                                <span key={size} className="px-2 py-1 border border-border-std text-white font-mono text-[10px]">{size}</span>
+                                                <span key={size} className="px-2 py-1 border border-border-std text-text-main font-mono text-[10px]">{size}</span>
                                             ))}
                                         </div>
                                     </div>

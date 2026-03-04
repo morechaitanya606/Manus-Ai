@@ -43,7 +43,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center h-14 w-14 border border-cyan bg-cyan/10 mb-4 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
             <Lock className="h-6 w-6 text-cyan" />
           </div>
-          <h1 className="text-3xl font-bold font-mono tracking-widest uppercase text-white">SIGN IN</h1>
+          <h1 className="text-3xl font-bold font-mono tracking-widest uppercase text-text-main">SIGN IN</h1>
           <p className="text-[10px] font-mono tracking-widest text-cyan mt-2 uppercase">
             &gt; Sign in to your account
           </p>
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="> user@example.com"
                   required
-                  className="w-full pl-3 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50"
+                  className="w-full pl-3 pr-4 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors uppercase placeholder:normal-case placeholder:text-text-dim/50"
                 />
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function LoginPage() {
                   placeholder="> •••••••••"
                   required
                   minLength={6}
-                  className="w-full pl-3 pr-10 py-3 bg-void border border-border-std font-mono text-xs text-white focus:outline-none focus:border-cyan focus:ring-0 transition-colors"
+                  className="w-full pl-3 pr-10 py-3 bg-void border border-border-std font-mono text-xs text-text-main focus:outline-none focus:border-cyan focus:ring-0 transition-colors"
                 />
                 <button
                   type="button"
@@ -116,7 +116,7 @@ export default function LoginPage() {
 
           <button
             onClick={handleGoogle}
-            className="w-full flex items-center justify-center gap-3 py-3 border border-border-std bg-void hover:border-text-dim transition-colors text-xs font-mono font-bold uppercase tracking-widest text-text-dim hover:text-white"
+            className="w-full flex items-center justify-center gap-3 py-3 border border-border-std bg-void hover:border-text-dim transition-colors text-xs font-mono font-bold uppercase tracking-widest text-text-dim hover:text-text-main"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />

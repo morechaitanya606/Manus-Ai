@@ -52,7 +52,7 @@ function DashboardProductsContent() {
                             <Package className="h-3 w-3" />
                             <span>INVENTORY</span>
                         </div>
-                        <h1 className="text-3xl font-bold font-mono tracking-widest text-white uppercase mt-2">
+                        <h1 className="text-3xl font-bold font-mono tracking-widest text-text-main uppercase mt-2">
                             PRODUCT <span className="text-magenta">CATALOG</span>
                         </h1>
                         <p className="mt-2 text-[10px] tracking-widest text-cyan uppercase">
@@ -91,7 +91,7 @@ function DashboardProductsContent() {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-mono font-bold text-white tracking-widest uppercase text-sm group-hover:text-cyan transition-colors">{product.name}</p>
+                                            <p className="font-mono font-bold text-text-main tracking-widest uppercase text-sm group-hover:text-cyan transition-colors">{product.name}</p>
                                             <p className="text-[10px] text-text-dim font-mono tracking-widest uppercase mt-1">
                                                 CAT: {product.category} | <span className="font-bold text-magenta">₹{Number(product.base_price).toFixed(0)}</span> | VARIANTS: {product.colors.length} COL, {product.sizes.length} SIZ
                                             </p>

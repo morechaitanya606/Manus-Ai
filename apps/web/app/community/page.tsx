@@ -132,7 +132,7 @@ export default function CommunityGalleryPage() {
                                 <Sparkles className="h-4 w-4" />
                                 <span>PUBLIC DESIGNS</span>
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-bold font-display text-white uppercase glitch-text tracking-wider" data-text="Community Gallery">
+                            <h1 className="text-4xl md:text-6xl font-bold font-display text-text-main uppercase glitch-text tracking-wider" data-text="Community Gallery">
                                 Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Gallery</span>
                             </h1>
                             <p className="text-text-dim mt-4 text-sm md:text-base font-mono border-l-2 border-border-std pl-4 uppercase tracking-widest">
@@ -141,19 +141,19 @@ export default function CommunityGalleryPage() {
                             <div className="mt-5 flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setSortMode('trending')}
-                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'trending' ? 'border-cyan bg-cyan/10 text-cyan' : 'border-border-std text-text-dim hover:border-cyan/40 hover:text-white'}`}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'trending' ? 'border-cyan bg-cyan/10 text-cyan' : 'border-border-std text-text-dim hover:border-cyan/40 hover:text-text-main'}`}
                                 >
                                     <Flame className="h-3.5 w-3.5" /> Trending
                                 </button>
                                 <button
                                     onClick={() => setSortMode('loved')}
-                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'loved' ? 'border-magenta bg-magenta/10 text-magenta' : 'border-border-std text-text-dim hover:border-magenta/40 hover:text-white'}`}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'loved' ? 'border-magenta bg-magenta/10 text-magenta' : 'border-border-std text-text-dim hover:border-magenta/40 hover:text-text-main'}`}
                                 >
                                     <Heart className="h-3.5 w-3.5" /> Most Loved
                                 </button>
                                 <button
                                     onClick={() => setSortMode('latest')}
-                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'latest' ? 'border-white/70 bg-white/5 text-white' : 'border-border-std text-text-dim hover:border-white/40 hover:text-white'}`}
+                                    className={`px-3 py-1.5 border text-[10px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1 ${sortMode === 'latest' ? 'border-white/70 bg-white/5 text-text-main' : 'border-border-std text-text-dim hover:border-white/40 hover:text-text-main'}`}
                                 >
                                     <Clock3 className="h-3.5 w-3.5" /> Latest
                                 </button>
@@ -234,7 +234,7 @@ export default function CommunityGalleryPage() {
                                         )}
                                         {/* Overlay with prompt snippet */}
                                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pt-12 translate-y-full group-hover:translate-y-0 transition-transform duration-300 border-t border-cyan/20">
-                                            <p className="text-xs text-white line-clamp-2 font-mono tracking-wide">
+                                            <p className="text-xs text-text-main line-clamp-2 font-mono tracking-wide">
                                                 <span className="text-cyan">{">"}</span> {design.prompt}
                                             </p>
                                         </div>
@@ -246,7 +246,7 @@ export default function CommunityGalleryPage() {
                         <div className="text-center py-20 bg-panel border border-border-std relative overflow-hidden">
                             <div className="absolute inset-0 scanline opacity-20" />
                             <Sparkles className="h-12 w-12 text-cyan/30 mx-auto mb-4" />
-                            <h3 className="text-lg font-mono font-bold uppercase tracking-widest text-white mb-2">NO DESIGNS FOUND</h3>
+                            <h3 className="text-lg font-mono font-bold uppercase tracking-widest text-text-main mb-2">NO DESIGNS FOUND</h3>
                             <p className="text-text-dim mb-6 max-w-md mx-auto text-sm font-mono leading-relaxed border-l-2 border-border-std pl-4">
                                 &gt; Be the first to generate a design and share it with the community.
                             </p>
@@ -291,7 +291,7 @@ export default function CommunityGalleryPage() {
 
                         {/* Right: Info & Actions */}
                         <div className="md:w-1/2 p-6 md:p-8 flex flex-col h-[50vh] md:h-auto bg-panel/50 relative">
-                            <h3 className="text-xl md:text-2xl font-bold font-mono tracking-widest text-white mb-2 uppercase border-b border-border-std pb-2">COMMUNITY DESIGN</h3>
+                            <h3 className="text-xl md:text-2xl font-bold font-mono tracking-widest text-text-main mb-2 uppercase border-b border-border-std pb-2">COMMUNITY DESIGN</h3>
                             <p className="text-cyan text-sm font-mono italic mb-6 leading-relaxed border-l-2 border-cyan pl-3 bg-cyan/5 p-2 tracking-wide">
                                 &gt; &quot;{selectedDesign.prompt}&quot;
                             </p>
@@ -334,7 +334,7 @@ export default function CommunityGalleryPage() {
                                             </div>
                                         )}
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-mono font-bold truncate text-white group-hover:text-cyan transition uppercase">{p.name}</p>
+                                            <p className="text-xs font-mono font-bold truncate text-text-main group-hover:text-cyan transition uppercase">{p.name}</p>
                                             <p className="text-[9px] text-text-dim font-mono uppercase tracking-widest mt-1">[{p.category}]</p>
                                         </div>
                                     </Link>

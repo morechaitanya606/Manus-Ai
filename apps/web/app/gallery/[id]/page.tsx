@@ -12,10 +12,14 @@ import { Button } from '../../../components/ui/button';
 import { ShoppingCart, ArrowLeft, Loader2, Sparkles, Check, Upload, X, ImagePlus, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MockupEditor } from '../../../components/mockup-editor';
 
+const normalizeColorToken = (value: string): string =>
+    value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
     const searchParams = useSearchParams();
     const designParam = searchParams.get('design');
+    const colorParam = searchParams.get('color') || '';
     const { data: product, isLoading } = useProduct(id);
     const { data: linkedDesign } = useDesign(designParam || '');
     const addItem = useCartStore((s) => s.addItem);
@@ -42,6 +46,24 @@ export default function ProductDetailPage() {
             setIsAiDesign(true);
         }
     }, [linkedDesign]);
+
+    useEffect(() => {
+        if (!product || !product.colors?.length) return;
+
+        const defaultColor = product.colors[0]?.name || '';
+        if (!defaultColor) return;
+
+        if (!colorParam) {
+            setSelectedColor((prev) => prev || defaultColor);
+            return;
+        }
+
+        const requestedColor = normalizeColorToken(colorParam);
+        const matchedColor = product.colors.find(
+            (color) => normalizeColorToken(color.name) === requestedColor
+        );
+        setSelectedColor(matchedColor?.name || defaultColor);
+    }, [product, colorParam]);
 
     if (isLoading) {
         return (
@@ -275,7 +297,7 @@ export default function ProductDetailPage() {
                             <span className="text-[10px] px-2 py-1 bg-cyan/10 text-cyan font-mono uppercase tracking-widest border border-cyan/30">
                                 {product.category}
                             </span>
-                            <h1 className="text-3xl md:text-5xl font-bold font-display mt-4 uppercase tracking-tight text-white">
+                            <h1 className="text-3xl md:text-5xl font-bold font-display mt-4 uppercase tracking-tight text-text-main">
                                 {product.name}
                             </h1>
                             <p className="text-text-dim mt-4 text-sm font-mono leading-relaxed border-l border-border-std pl-3">
@@ -283,7 +305,7 @@ export default function ProductDetailPage() {
                             </p>
                         </div>
 
-                        <div className="text-4xl font-mono font-bold text-white mb-8 flex items-baseline gap-2">
+                        <div className="text-4xl font-mono font-bold text-text-main mb-8 flex items-baseline gap-2">
                             <span className="text-magenta">₹</span>{Number(displayPrice).toFixed(0)}
                             <span className="text-xs text-text-dim font-mono uppercase tracking-widest font-normal">/ BASE PRICE</span>
                         </div>
@@ -365,7 +387,7 @@ export default function ProductDetailPage() {
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="flex-1 rounded-none border border-text-dim text-white hover:bg-white/10 font-mono font-bold tracking-widest uppercase h-14"
+                                    className="flex-1 rounded-none border border-text-dim text-text-main hover:bg-white/10 font-mono font-bold tracking-widest uppercase h-14"
                                     onClick={handleAddToCart}
                                 >
                                     <ShoppingBag className="mr-3 h-5 w-5" /> BUY PLAIN
@@ -405,7 +427,7 @@ function RecommendedProducts({ currentProductId, category }: { currentProductId:
 
     return (
         <section className="mt-16 col-span-full animate-fade-in border-t border-border-std pt-12 relative">
-            <h2 className="text-2xl font-bold font-display mb-8 text-white uppercase tracking-widest">
+            <h2 className="text-2xl font-bold font-display mb-8 text-text-main uppercase tracking-widest">
                 SIMILAR <span className="text-magenta">PRODUCTS</span>
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -431,7 +453,7 @@ function RecommendedProducts({ currentProductId, category }: { currentProductId:
                             )}
                         </div>
                         <div className="p-4 border-t border-border-std">
-                            <h3 className="font-mono text-xs font-bold text-white group-hover:text-cyan transition-colors truncate uppercase">
+                            <h3 className="font-mono text-xs font-bold text-text-main group-hover:text-cyan transition-colors truncate uppercase">
                                 {p.name}
                             </h3>
                             <div className="flex items-center justify-between mt-3">

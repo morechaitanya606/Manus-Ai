@@ -232,7 +232,7 @@ export default function GalleryPage() {
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Marketplace</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold font-display text-white uppercase glitch-text tracking-wider" data-text="Surf & Shop">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold font-display text-text-main uppercase glitch-text tracking-wider" data-text="Surf & Shop">
                 Surf & <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Shop</span>
               </h1>
               <p className="text-text-dim mt-3 text-[11px] sm:text-sm md:text-base font-mono border-l-2 border-border-std pl-3 uppercase tracking-widest">
@@ -270,7 +270,7 @@ export default function GalleryPage() {
                   setCategory('all');
                   setSearch('');
                 }}
-                className="h-10 px-3 border border-border-std text-text-dim hover:text-white hover:border-cyan transition-colors font-mono text-[10px] uppercase tracking-widest flex items-center gap-1"
+                className="h-10 px-3 border border-border-std text-text-dim hover:text-text-main hover:border-cyan transition-colors font-mono text-[10px] uppercase tracking-widest flex items-center gap-1"
               >
                 <X className="h-3.5 w-3.5" />
                 Clear
@@ -285,7 +285,7 @@ export default function GalleryPage() {
                 onClick={() => setCategory(cat.key)}
                 className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${category === cat.key
                   ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
-                  : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-white'
+                  : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-text-main'
                   }`}
               >
                 {cat.label}
@@ -414,7 +414,7 @@ export default function GalleryPage() {
                           </div>
 
                           <div className="mt-2 sm:mt-3 flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-white transition-colors">
+                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-text-main transition-colors">
                               Customize / Buy Plain
                               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                             </span>
@@ -475,7 +475,7 @@ export default function GalleryPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex items-center justify-center gap-3 sm:gap-5 text-center">
             <span className="text-lg sm:text-3xl text-magenta font-bold">*</span>
-            <h2 className="text-base sm:text-2xl font-bold uppercase text-white font-mono tracking-[0.15em]">
+            <h2 className="text-base sm:text-2xl font-bold uppercase text-text-main font-mono tracking-[0.15em]">
               High Quality <span className="text-cyan">Offset Printing</span>
             </h2>
             <span className="text-lg sm:text-3xl text-magenta font-bold">*</span>
@@ -486,7 +486,7 @@ export default function GalleryPage() {
       <section className="bg-void py-10 md:py-20 relative overflow-hidden border-b border-border-std">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-cyan/10 blur-[100px] rounded-full pointer-events-none" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center text-white border border-border-std bg-panel/50 backdrop-blur-md p-6 sm:p-10 md:p-14 relative">
+          <div className="text-center text-text-main border border-border-std bg-panel/50 backdrop-blur-md p-6 sm:p-10 md:p-14 relative">
             <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-4 border-l-4 border-cyan"></div>
             <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-4 border-r-4 border-magenta"></div>
 
@@ -526,7 +526,7 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
                 <Package className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Bulk Order</h3>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Bulk Order</h3>
               <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
                 Order in bulk for events, teams, and brands.
               </p>
@@ -537,7 +537,7 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
                 <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Pan-India Shipping</h3>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Pan-India Shipping</h3>
               <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
                 Fast shipping within 3-5 working days.
               </p>
@@ -548,7 +548,7 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
                 <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">Multiple Printing</h3>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Multiple Printing</h3>
               <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
                 DTF, sublimation, and screen print options.
               </p>
@@ -559,7 +559,7 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
                 <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-white mb-2 sm:mb-3">AI Design Studio</h3>
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">AI Design Studio</h3>
               <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
                 Generate or upload designs and buy instantly.
               </p>

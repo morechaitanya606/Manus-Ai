@@ -126,14 +126,14 @@ export default function ShopDropPage() {
                         <div className="text-center mb-16 max-w-2xl mx-auto space-y-6">
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-4 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                                 <span className="w-2 h-2 rounded-full bg-cyan animate-pulse"></span>
-                                <span className="text-xs uppercase tracking-[0.3em] text-white/80 font-medium">Limited Edition Run</span>
+                                <span className="text-xs uppercase tracking-[0.3em] text-text-main/80 font-medium">Limited Edition Run</span>
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-tight drop-shadow-2xl">
+                            <h1 className="text-6xl md:text-8xl font-bold text-text-main tracking-tighter leading-tight drop-shadow-2xl">
                                 THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">SPRING</span> DROP
                             </h1>
 
-                            <p className="text-lg text-white/60 leading-relaxed font-light">
+                            <p className="text-lg text-text-main/60 leading-relaxed font-light">
                                 Our most highly anticipated garments. Premium fabrics. Unseen iterations.
                                 Unlocking exactly at the strike of midnight on {dropDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.
                             </p>
@@ -149,10 +149,10 @@ export default function ShopDropPage() {
                                     { label: 'Seconds', value: timeLeft.seconds }
                                 ].map((item, i) => (
                                     <div key={i} className="flex flex-col items-center justify-center p-8 md:p-12 relative bg-void/40 hover:bg-white/5 transition-colors duration-500 group">
-                                        <span className="text-6xl md:text-8xl font-bold text-white tracking-tighter tabular-nums leading-none">
+                                        <span className="text-6xl md:text-8xl font-bold text-text-main tracking-tighter tabular-nums leading-none">
                                             {item.value.toString().padStart(2, '0')}
                                         </span>
-                                        <span className="text-sm uppercase tracking-[0.2em] text-white/40 mt-6 font-medium group-hover:text-cyan transition-colors">
+                                        <span className="text-sm uppercase tracking-[0.2em] text-text-main/40 mt-6 font-medium group-hover:text-cyan transition-colors">
                                             {item.label}
                                         </span>
                                     </div>
@@ -164,7 +164,7 @@ export default function ShopDropPage() {
                         <div className="w-full max-w-md mx-auto relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan/30 to-magenta/30 rounded-2xl blur opacity-25 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
                             <form onSubmit={handleSubscribe} className="relative flex items-center bg-void border border-white/10 rounded-2xl overflow-hidden p-2 shadow-2xl">
-                                <div className="pl-4 text-white/40">
+                                <div className="pl-4 text-text-main/40">
                                     <Bell className="w-5 h-5" />
                                 </div>
                                 <input
@@ -174,13 +174,13 @@ export default function ShopDropPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled={subscribed}
                                     required
-                                    className="w-full bg-transparent border-none text-white px-4 py-3 placeholder:text-white/30 focus:outline-none disabled:opacity-50 font-light"
+                                    className="w-full bg-transparent border-none text-text-main px-4 py-3 placeholder:text-text-main/30 focus:outline-none disabled:opacity-50 font-light"
                                 />
                                 <button
                                     type="submit"
                                     disabled={subscribed}
                                     className={`px-8 py-3 rounded-xl font-medium tracking-wide transition-all duration-300 ${subscribed
-                                        ? 'bg-white/10 text-white cursor-default'
+                                        ? 'bg-white/10 text-text-main cursor-default'
                                         : 'bg-white text-void hover:bg-gray-100 hover:scale-[0.98]'
                                         }`}
                                 >
@@ -199,10 +199,10 @@ export default function ShopDropPage() {
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                                 <span className="text-xs uppercase tracking-[0.2em] text-red-500 font-bold">24 HOUR DROP LIVE</span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
+                            <h1 className="text-5xl md:text-7xl font-bold text-text-main tracking-tighter">
                                 THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">SPRING</span> DROP
                             </h1>
-                            <p className="text-white/60 font-light max-w-xl mx-auto">
+                            <p className="text-text-main/60 font-light max-w-xl mx-auto">
                                 The vault is open. These exclusive blanks are available for exactly 24 hours. Once the timer ends, they return to the archives.
                             </p>
                         </div>
@@ -226,7 +226,7 @@ export default function ShopDropPage() {
                                             />
                                             {product.category && (
                                                 <div className="absolute top-4 right-4 z-20">
-                                                    <span className="inline-block border border-white/20 bg-void/80 backdrop-blur-md px-2 py-1 text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-white">
+                                                    <span className="inline-block border border-white/20 bg-void/80 backdrop-blur-md px-2 py-1 text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-text-main">
                                                         {product.category}
                                                     </span>
                                                 </div>
@@ -234,7 +234,7 @@ export default function ShopDropPage() {
                                         </div>
 
                                         <div className="mt-4 flex flex-col flex-grow relative z-20">
-                                            <h3 className="text-lg sm:text-xl font-display font-medium text-white group-hover:text-cyan transition-colors">
+                                            <h3 className="text-lg sm:text-xl font-display font-medium text-text-main group-hover:text-cyan transition-colors">
                                                 {product.name}
                                             </h3>
 
@@ -264,7 +264,7 @@ export default function ShopDropPage() {
                                             </div>
 
                                             <div className="mt-4 sm:mt-5 flex items-center justify-between pt-3 border-t border-white/10 mt-auto">
-                                                <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
+                                                <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-text-main/50 group-hover:text-text-main transition-colors">
                                                     Customize / Buy Plain
                                                     <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                                                 </span>
@@ -281,12 +281,12 @@ export default function ShopDropPage() {
                 {dropState === 'ended' && (
                     <div className="w-full flex flex-col items-center animate-fade-in text-center max-w-2xl mx-auto">
                         <div className="h-24 w-24 border border-white/10 bg-white/5 rounded-full flex items-center justify-center mb-8 mx-auto shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-                            <ArrowLeft className="h-8 w-8 text-white/40" />
+                            <ArrowLeft className="h-8 w-8 text-text-main/40" />
                         </div>
-                        <h1 className="text-5xl font-bold text-white tracking-tighter mb-4">
+                        <h1 className="text-5xl font-bold text-text-main tracking-tighter mb-4">
                             THE DROP HAS <span className="text-transparent bg-clip-text bg-gradient-to-r from-magenta to-white">ENDED</span>
                         </h1>
-                        <p className="text-white/60 font-light mb-12">
+                        <p className="text-text-main/60 font-light mb-12">
                             The 24-hour window for this exclusive collection has closed.
                             Stay tuned for future drops or browse our standard collections.
                         </p>
@@ -300,7 +300,7 @@ export default function ShopDropPage() {
                 {/* Footer Link (Show on countdown & ended, optional on live) */}
                 {dropState !== 'live' && (
                     <div className="mt-24 pt-8 border-t border-white/5 w-full text-center">
-                        <Link href="/products" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors group text-sm font-medium tracking-wide">
+                        <Link href="/products" className="inline-flex items-center gap-2 text-text-main/50 hover:text-text-main transition-colors group text-sm font-medium tracking-wide">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             Return to Standard Collections
                         </Link>
