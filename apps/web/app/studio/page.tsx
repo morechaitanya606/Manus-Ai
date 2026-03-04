@@ -803,7 +803,7 @@ function StudioContent() {
           <h1 className="text-xl font-mono font-bold text-text-main mb-2 uppercase tracking-widest">Sign in to start creating</h1>
           <p className="text-text-dim font-mono text-xs mb-8">Create an account to access the AI Design Studio and generate custom designs.</p>
           <div className="flex gap-4 justify-center">
-            <Link href="/login" className="px-6 py-2 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest">
+            <Link href="/login" className="px-6 py-3 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest">
               Sign In
             </Link>
           </div>
@@ -901,7 +901,7 @@ function StudioContent() {
       {/* LEFT PANEL: TOOLS & ASSETS */}
       <aside
         style={{ ['--left-panel-width' as string]: `${leftPanelWidth}px` } as CSSProperties}
-        className="w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full"
+        className="order-2 lg:order-none w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full"
       >
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
           <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Design Prompt</span>
@@ -909,8 +909,8 @@ function StudioContent() {
         </div>
 
         {/* Prompt Input Area */}
-        <div className="p-4 border-b border-border-std max-h-[52vh] overflow-y-auto custom-scrollbar">
-          <div className="space-y-3">
+        <div className="p-3 lg:p-4 border-b border-border-std overflow-y-auto custom-scrollbar">
+          <div className="space-y-2 lg:space-y-3">
             <div className="relative group">
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <label className="font-mono text-[10px] text-cyan uppercase tracking-widest">
@@ -931,7 +931,7 @@ function StudioContent() {
                   {promptReferenceImage && (
                     <button
                       onClick={() => setPromptReferenceImage(null)}
-                      className="font-mono text-[9px] border border-red-400/60 bg-red-500/10 text-red-300 hover:text-red-200 hover:border-red-300 uppercase tracking-widest transition-colors px-2 py-1"
+                      className="font-mono text-[9px] border border-red-400/60 bg-red-500/10 text-red-300 hover:text-red-200 hover:border-red-300 uppercase tracking-widest transition-colors px-3 py-3"
                     >
                       Delete
                     </button>
@@ -941,7 +941,7 @@ function StudioContent() {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="w-full h-36 bg-void border border-border-std p-3 font-mono text-[11px] text-text-main focus:border-cyan focus:ring-0 focus:outline-none resize-none rounded-none placeholder-text-dim/50 transition-colors overflow-y-auto"
+                className="w-full h-24 lg:h-36 bg-void border border-border-std p-2.5 lg:p-3 font-mono text-[11px] text-text-main focus:border-cyan focus:ring-0 focus:outline-none resize-none rounded-none placeholder-text-dim/50 transition-colors overflow-y-auto"
                 placeholder="> For new design: describe full idea&#10;> For edit: describe exact changes (text, style, effects)&#10;> e.g. Keep logo, add EVERYDAYDROP at bottom in white, anime style"
               />
               {promptReferenceImage && (
@@ -971,7 +971,7 @@ function StudioContent() {
               <div className="absolute bottom-3 right-3 w-1.5 h-3 bg-cyan/50 animate-pulse"></div>
             </div>
 
-            <div className="border border-border-std bg-void/70 p-2 space-y-2">
+            <div className="border border-border-std bg-void/70 p-1.5 lg:p-2 space-y-1.5 lg:space-y-2">
               <p className="font-mono text-[9px] text-magenta uppercase tracking-widest">Design Upload (Library)</p>
               <p className="font-mono text-[9px] text-text-dim">
                 Upload one or multiple images directly into generated designs panel.
@@ -996,10 +996,10 @@ function StudioContent() {
             </p>
           </div>
 
-          <div className="flex gap-2 mt-3">
+          <div className="flex gap-2 mt-2 lg:mt-3">
             <button
               onClick={handleShufflePrompt}
-              className="flex-shrink-0 bg-transparent border border-border-std hover:border-text-dim text-text-dim hover:text-text-main font-mono text-xs py-2 px-3 transition-colors flex items-center justify-center gap-1"
+              className="flex-shrink-0 bg-transparent border border-border-std hover:border-text-dim text-text-dim hover:text-text-main font-mono text-xs py-3 px-3 transition-colors flex items-center justify-center gap-1"
               title="Random Prompt"
             >
               <Shuffle className="h-3 w-3" />
@@ -1007,7 +1007,7 @@ function StudioContent() {
             <button
               onClick={handleGenerate}
               disabled={generateDesign.isPending || isUploading || isReferenceUploading || !canGenerate}
-              className="flex-1 bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void disabled:opacity-50 disabled:hover:bg-cyan/10 disabled:hover:text-cyan font-mono text-[10px] sm:text-[11px] font-bold py-2 transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
+              className="flex-1 bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void disabled:opacity-50 disabled:hover:bg-cyan/10 disabled:hover:text-cyan font-mono text-[10px] sm:text-[11px] font-bold py-3 transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan/20 to-transparent translate-y-[-100%] group-hover:animate-[scanline_2s_linear_infinite]" />
 
@@ -1022,7 +1022,7 @@ function StudioContent() {
           <button
             onClick={handleEditActive}
             disabled={generateDesign.isPending || isUploading || isReferenceUploading || !canEditActive}
-            className="w-full mt-2 bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void disabled:opacity-50 disabled:hover:bg-magenta/10 disabled:hover:text-magenta font-mono text-[10px] sm:text-[11px] font-bold py-2 transition-all shadow-[0_0_15px_rgba(255,0,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
+            className="w-full mt-1.5 lg:mt-2 bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void disabled:opacity-50 disabled:hover:bg-magenta/10 disabled:hover:text-magenta font-mono text-[10px] sm:text-[11px] font-bold py-2 lg:py-3 transition-all shadow-[0_0_15px_rgba(255,0,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-magenta/20 to-transparent translate-y-[-100%] group-hover:animate-[scanline_2s_linear_infinite]" />
             {generateDesign.isPending ? (
@@ -1034,7 +1034,7 @@ function StudioContent() {
 
           <button
             onClick={() => setShowAdvancedSettings((prev) => !prev)}
-            className="w-full mt-2 bg-panel/40 border border-border-std text-text-dim hover:border-cyan/70 hover:text-cyan font-mono text-[10px] sm:text-[11px] py-2 px-3 transition-colors flex items-center justify-between tracking-widest uppercase"
+            className="w-full mt-1.5 lg:mt-2 bg-panel/40 border border-border-std text-text-dim hover:border-cyan/70 hover:text-cyan font-mono text-[10px] sm:text-[11px] py-2 lg:py-3 px-3 transition-colors flex items-center justify-between tracking-widest uppercase"
           >
             <span>Advanced Settings</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedSettings ? 'rotate-180 text-cyan' : ''}`} />
@@ -1062,7 +1062,7 @@ function StudioContent() {
                     <select
                       value={stylePreset}
                       onChange={(e) => setStylePreset(e.target.value)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-2 py-1 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       {STYLE_PRESETS.map((style) => (
                         <option key={style.value} value={style.value}>
@@ -1077,7 +1077,7 @@ function StudioContent() {
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                       placeholder="e.g. EVERYDAYDROP"
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-2 py-1 tracking-widest focus:border-cyan focus:outline-none placeholder-text-dim/50"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 tracking-widest focus:border-cyan focus:outline-none placeholder-text-dim/50"
                     />
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -1085,7 +1085,7 @@ function StudioContent() {
                     <select
                       value={editPosition}
                       onChange={(e) => setEditPosition(e.target.value as EditPosition)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-2 py-1 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       <option value="top">Top</option>
                       <option value="center">Center</option>
@@ -1112,7 +1112,7 @@ function StudioContent() {
                     <select
                       value={editAddonIcon}
                       onChange={(e) => setEditAddonIcon(e.target.value as AddonIcon)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-2 py-1 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       {ADDON_ICON_OPTIONS.map((icon) => (
                         <option key={icon.value} value={icon.value}>
@@ -1213,8 +1213,8 @@ function StudioContent() {
       </div>
 
       {/* CENTER PANEL: THE STAGE */}
-      <section className="w-full lg:flex-1 flex flex-col relative bg-void/50 min-h-[360px] sm:min-h-[500px]">
-        <div className="min-h-10 shrink-0 border-b border-border-std flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-2 bg-panel/30 z-20">
+      <section className="order-1 lg:order-none w-full lg:flex-1 flex flex-col relative bg-void/50 min-h-[360px] sm:min-h-[500px]">
+        <div className="min-h-10 shrink-0 border-b border-border-std flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-3 bg-panel/30 z-20">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <span className="font-mono text-[10px] sm:text-[11px] tracking-widest text-text-dim uppercase truncate">Live Customizer</span>
             <span className="h-3 w-px bg-border-std"></span>
@@ -1253,7 +1253,7 @@ function StudioContent() {
           </div>
         </div>
 
-        <div className="flex-1 relative flex items-center justify-center overflow-hidden group/canvas bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.03)_0%,transparent_70%)] p-4 sm:p-8">
+        <div className="flex-1 relative flex items-center justify-center overflow-hidden group/canvas bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.03)_0%,transparent_70%)] p-2 sm:p-8 sticky top-0 lg:static z-10 h-[50vh] lg:h-auto min-h-[300px]">
           <div className="absolute inset-0 z-0 opacity-10 bg-[linear-gradient(#33333E_1px,transparent_1px),linear-gradient(90deg,#33333E_1px,transparent_1px)] bg-[length:100px_100px]"></div>
 
           <motion.div
@@ -1331,7 +1331,7 @@ function StudioContent() {
       </section>
 
       {/* RIGHT PANEL: CONFIGURATION */}
-      <aside className="w-full lg:w-[300px] shrink-0 lg:border-l border-t lg:border-t-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10">
+      <aside className="order-3 lg:order-none w-full lg:w-[300px] shrink-0 lg:border-l border-t lg:border-t-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10">
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
           <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Settings</span>
           <LayersIcon className="text-text-dim h-4 w-4" />
@@ -1413,7 +1413,7 @@ function StudioContent() {
                   <button
                     key={type.id}
                     onClick={() => setGarmentType(type.id)}
-                    className={`flex-1 flex gap-1 items-center justify-center py-2 border transition-all text-[9px] font-mono uppercase tracking-widest ${garmentType === type.id ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]' : 'border-border-std text-text-dim hover:text-text-main hover:border-cyan/50'}`}
+                    className={`flex-1 flex gap-1 items-center justify-center py-3 border transition-all text-[9px] font-mono uppercase tracking-widest ${garmentType === type.id ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]' : 'border-border-std text-text-dim hover:text-text-main hover:border-cyan/50'}`}
                   >
                     {type.icon} {type.label}
                   </button>
@@ -1437,8 +1437,8 @@ function StudioContent() {
               {printPlacement === 'both' && (
                 <div className="flex gap-2 mt-2 pt-2 border-t border-dashed border-border-std">
                   <span className="text-[9px] text-text-dim flex items-center shrink-0">EDITING:</span>
-                  <button onClick={() => setGarmentView('front')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'front' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>FRONT</button>
-                  <button onClick={() => setGarmentView('back')} className={`flex-1 px-2 py-1.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'back' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>BACK</button>
+                  <button onClick={() => setGarmentView('front')} className={`flex-1 px-3 py-3.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'front' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>FRONT</button>
+                  <button onClick={() => setGarmentView('back')} className={`flex-1 px-3 py-3.5 border text-[9px] font-mono uppercase tracking-widest transition-colors ${garmentView === 'back' ? 'border-cyan text-cyan bg-cyan/10' : 'border-border-std text-text-dim hover:text-text-main'}`}>BACK</button>
                 </div>
               )}
             </div>
@@ -1627,14 +1627,14 @@ function StudioContent() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 shrink-0">
-              <button onClick={() => setModalOpen(false)} className="flex-1 py-2 font-mono text-xs uppercase tracking-widest border border-border-std text-text-dim hover:text-text-main hover:border-text-dim transition-all">
+              <button onClick={() => setModalOpen(false)} className="flex-1 py-3 font-mono text-xs uppercase tracking-widest border border-border-std text-text-dim hover:text-text-main hover:border-text-dim transition-all">
                 Dismiss
               </button>
               {previewImages.front && (
                 <a
                   href={previewImages.front}
                   download={`atelier_render_front_${Date.now()}.png`}
-                  className="sm:flex-[2] py-2 font-mono text-xs uppercase tracking-widest bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void transition-all flex items-center justify-center gap-2"
+                  className="sm:flex-[2] py-3 font-mono text-xs uppercase tracking-widest bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void transition-all flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" /> Download Front Composite
                 </a>
@@ -1643,7 +1643,7 @@ function StudioContent() {
                 <a
                   href={previewImages.back}
                   download={`atelier_render_back_${Date.now()}.png`}
-                  className="sm:flex-[2] py-2 font-mono text-xs uppercase tracking-widest bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void transition-all flex items-center justify-center gap-2"
+                  className="sm:flex-[2] py-3 font-mono text-xs uppercase tracking-widest bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void transition-all flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" /> Download Back Composite
                 </a>
