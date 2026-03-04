@@ -275,142 +275,36 @@ async function generateWithLeonardo(prompt: string, apiKey: string) {
 }
 
 
-// Leonardo Image-to-Image (Image Guidance)
+// Segmind Image-to-Image
 
-async function uploadImageToLeonardo(imageUrl: string, apiKey: string): Promise<string> {
-    // Step 1: Get a presigned URL from Leonardo
-    const initRes = await fetch(`${LEONARDO_BASE_URL}/init-image`, {
+async function generateWithSegmindImg2Img(
+    prompt: string,
+    imageBuffer: Buffer,
+    apiKey: string,
+    strength: number = 0.75
+): Promise<Blob> {
+    const formData = new FormData();
+    formData.append('prompt', prompt);
+    const mimeType = 'image/png';
+    const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: mimeType });
+    formData.append('image', imageBlob, 'image.png');
+    formData.append('strength', strength.toString());
+
+    const response = await fetch('https://api.segmind.com/v1/sdxl-img2img', {
         method: 'POST',
         headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-            accept: 'application/json',
+            'x-api-key': apiKey,
         },
-        body: JSON.stringify({ extension: 'png' }),
-    });
-
-    if (!initRes.ok) {
-        const text = await initRes.text();
-        throw new Error(withLeonardoAuthHint(`Leonardo init-image failed: ${text || initRes.status}`));
-    }
-
-    const initData = await initRes.json();
-    const presignedFields = initData?.uploadInitImage?.fields;
-    const presignedUrl = initData?.uploadInitImage?.url;
-    const initImageId = initData?.uploadInitImage?.id;
-
-    if (!presignedUrl || !initImageId) {
-        throw new Error('Leonardo did not return presigned upload URL');
-    }
-
-    // Step 2: Download the reference image
-    const imageData = await fetchReferenceImage(imageUrl, { strict: true });
-    if (!imageData) throw new Error('Failed to fetch reference image for Leonardo upload');
-    const imageBuffer = imageData.buffer;
-
-    // Step 3: Upload to Leonardo's presigned URL using multipart form data
-    const formData = new FormData();
-    // Add presigned fields first
-    if (presignedFields && typeof presignedFields === 'string') {
-        try {
-            const fields = JSON.parse(presignedFields);
-            for (const [key, value] of Object.entries(fields)) {
-                formData.append(key, String(value));
-            }
-        } catch {
-            // Fields might already be an object
-        }
-    } else if (presignedFields && typeof presignedFields === 'object') {
-        for (const [key, value] of Object.entries(presignedFields)) {
-            formData.append(key, String(value));
-        }
-    }
-    formData.append('file', new Blob([new Uint8Array(imageBuffer)], { type: 'image/png' }), 'reference.png');
-
-    const uploadRes = await fetch(presignedUrl, {
-        method: 'POST',
         body: formData,
     });
 
-    if (!uploadRes.ok && uploadRes.status !== 204) {
-        throw new Error(`Leonardo image upload failed: ${uploadRes.status}`);
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Segmind img2img generation failed: ${text || response.status}`);
     }
 
-    return initImageId;
+    return await response.blob();
 }
-
-async function generateWithLeonardoImg2Img(
-    prompt: string,
-    initImageId: string,
-    apiKey: string,
-    initStrength: number = LEONARDO_IMG2IMG_STRENGTH
-): Promise<string> {
-    const start = Date.now();
-    const createRes = await fetch(`${LEONARDO_BASE_URL}/generations`, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-        },
-        body: JSON.stringify({
-            prompt,
-            modelId: LEONARDO_MODEL_ID, // Use base model as Vision XL rejects init_image_id
-            num_images: 1,
-            width: 1024,
-            height: 1024,
-            init_image_id: initImageId,
-            init_strength: initStrength,
-        }),
-    });
-
-    if (!createRes.ok) {
-        const text = await createRes.text();
-        throw new Error(withLeonardoAuthHint(`Leonardo img2img generation failed: ${text || createRes.status}`));
-    }
-
-    const createData = await createRes.json();
-    const generationId = createData?.sdGenerationJob?.generationId;
-    if (!generationId) {
-        throw new Error('Leonardo img2img did not return generationId');
-    }
-
-    // Poll for completion
-    while (Date.now() - start < 90000) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-
-        const getRes = await fetch(`${LEONARDO_BASE_URL}/generations/${generationId}`, {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                accept: 'application/json',
-            },
-        });
-
-        if (!getRes.ok) {
-            if (getRes.status === 401 || getRes.status === 403) {
-                const text = await getRes.text();
-                throw new Error(withLeonardoAuthHint(`Leonardo img2img polling failed: ${text || getRes.status}`));
-            }
-            continue;
-        }
-
-        const getData = await getRes.json();
-        const status = getData?.generations_by_pk?.status;
-
-        if (status === 'COMPLETE') {
-            const resultUrl = getData?.generations_by_pk?.generated_images?.[0]?.url;
-            if (resultUrl) return resultUrl;
-            throw new Error('Leonardo img2img returned complete status without image URL');
-        }
-
-        if (status === 'FAILED') {
-            throw new Error('Leonardo img2img generation failed');
-        }
-    }
-
-    throw new Error('Leonardo img2img generation timed out');
-}
-
 type OverlayPosition = 'top' | 'bottom' | 'center';
 type AddonIcon = 'none' | 'star' | 'lightning' | 'crown' | 'heart' | 'fire';
 type StructuredEditOptions = {
@@ -742,45 +636,47 @@ export async function POST(request: Request) {
         }
 
         // If reference image provided but deterministic edit didn't apply,
-        // use Leonardo Image-to-Image (Image Guidance) to modify the actual image
+        // use Segmind Image-to-Image to modify the actual image
         if (!imageBlob && normalizedReferenceUrl) {
-            const leonardoApiKey = getLeonardoApiKey();
-            try {
-                console.log('[img2img] Uploading reference image to Leonardo...');
-                const initImageId = await uploadImageToLeonardo(normalizedReferenceUrl, leonardoApiKey);
-                console.log('[img2img] Upload complete, init_image_id:', initImageId);
+            const segmindApiKey = process.env.SEGMIND_API_KEY?.trim();
 
-                // Build the edit prompt
-                const img2imgPrompt = [
-                    normalizedPrompt || 'Improve and enhance this design while preserving its core elements',
-                    normalizedStyle ? `, in ${normalizedStyle} style` : '',
-                    '. High quality, print-ready for apparel, clean composition, no mockup, no watermark.',
-                    referenceDescription ? ` Original design: ${referenceDescription}.` : '',
-                ].join('');
+            if (!segmindApiKey) {
+                console.error('[img2img] SEGMIND_API_KEY is not defined');
+            } else {
+                try {
+                    // Download the reference image
+                    console.log('[img2img] Fetching reference image...');
+                    const imageData = await fetchReferenceImage(normalizedReferenceUrl, { strict: true });
+                    if (!imageData) throw new Error('Failed to fetch reference image for Segmind');
 
-                // Determine init_strength based on prompt intent
-                // Higher strength = more faithful to original, lower = more creative
-                let strength = LEONARDO_IMG2IMG_STRENGTH;
-                const promptLower = normalizedPrompt.toLowerCase();
-                if (promptLower.includes('change') || promptLower.includes('replace') || promptLower.includes('transform')) {
-                    strength = 0.4; // More creative freedom for explicit change requests
-                } else if (promptLower.includes('better') || promptLower.includes('improve') || promptLower.includes('enhance') || promptLower.includes('nice')) {
-                    strength = 0.7; // Keep most of original, refine quality
-                } else if (promptLower.includes('keep') || promptLower.includes('preserve') || promptLower.includes('same')) {
-                    strength = 0.85; // Very faithful to original
+                    // Build the edit prompt
+                    const img2imgPrompt = [
+                        normalizedPrompt || 'Improve and enhance this design while preserving its core elements',
+                        normalizedStyle ? `, in ${normalizedStyle} style` : '',
+                        '. High quality, print-ready for apparel, clean composition, no mockup, no watermark.',
+                        referenceDescription ? ` Original design: ${referenceDescription}.` : '',
+                    ].join('');
+
+                    // Determine init_strength based on prompt intent
+                    // Higher strength = more faithful to original, lower = more creative
+                    let strength = 0.75;
+                    const promptLower = normalizedPrompt.toLowerCase();
+                    if (promptLower.includes('change') || promptLower.includes('replace') || promptLower.includes('transform')) {
+                        strength = 0.6; // More creative freedom for explicit change requests
+                    } else if (promptLower.includes('better') || promptLower.includes('improve') || promptLower.includes('enhance') || promptLower.includes('nice')) {
+                        strength = 0.75; // Keep most of original, refine quality
+                    } else if (promptLower.includes('keep') || promptLower.includes('preserve') || promptLower.includes('same')) {
+                        strength = 0.9; // Very faithful to original
+                    }
+
+                    console.log(`[img2img] Generating with Segmind strength: ${strength}`);
+                    imageBlob = await generateWithSegmindImg2Img(img2imgPrompt, imageData.buffer, segmindApiKey, strength);
+                    provider = 'Segmind';
+                    console.log('[img2img] Segmind Image-to-Image generation successful');
+                } catch (error) {
+                    console.error('[img2img] Segmind Image-to-Image failed:', error);
+                    // Fall through to regular Leonardo/Pollinations generation
                 }
-
-                console.log(`[img2img] Generating with init_strength: ${strength}`);
-                const resultUrl = await generateWithLeonardoImg2Img(img2imgPrompt, initImageId, leonardoApiKey, strength);
-                const imageRes = await fetch(resultUrl);
-                if (imageRes.ok) {
-                    imageBlob = await imageRes.blob();
-                    provider = 'Leonardo-Img2Img';
-                    console.log('[img2img] Leonardo Image-to-Image generation successful');
-                }
-            } catch (error) {
-                console.error('[img2img] Leonardo Image-to-Image failed:', error);
-                // Fall through to regular Leonardo/Pollinations generation
             }
         }
 

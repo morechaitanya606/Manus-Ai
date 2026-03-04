@@ -25,7 +25,7 @@ module.exports = {
         "magenta": "#D32DFF",
         "purple": "#7000FF",
         "text-main": "#EEEEF0",
-        "text-dim": "#7A7A85",
+        "text-dim": "#A1A1AA",
         "border-std": "#33333E",
       },
       borderRadius: {
