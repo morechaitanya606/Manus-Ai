@@ -4,16 +4,23 @@ import { useProduct } from '../../../hooks/use-products';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { Loader2, ArrowLeft, PenTool, Shirt, Ruler } from 'lucide-react';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
     const { data: product, isLoading, error } = useProduct(id);
+    const [selectedSize, setSelectedSize] = useState('');
     const formatPriceINR = (amount: string | number | null | undefined) => {
         const value = Number(amount);
         return Number.isFinite(value) ? value.toFixed(2) : '0.00';
     };
+
+    useEffect(() => {
+        if (!product) return;
+        setSelectedSize(product.sizes?.[0] || '');
+    }, [product]);
 
     if (isLoading) {
         return (
@@ -43,7 +50,11 @@ export default function ProductDetailPage() {
 
     const handleDesignClick = () => {
         const garmentType = mapCategoryToGarmentType(product.category);
-        router.push(`/studio?product=${garmentType}`);
+        const sizeParam = selectedSize || product.sizes?.[0] || '';
+        const query = sizeParam
+            ? `/studio?product=${garmentType}&size=${encodeURIComponent(sizeParam)}`
+            : `/studio?product=${garmentType}`;
+        router.push(query);
     };
 
     return (
@@ -89,7 +100,7 @@ export default function ProductDetailPage() {
                             <p className="text-text-dim font-mono text-sm leading-relaxed">{product.description}</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8 mb-8 pb-8 border-b border-border-std">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-border-std">
                             <div>
                                 <h3 className="text-text-main font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <Shirt className="w-3 h-3 text-cyan" /> Fabric & Fit
@@ -109,9 +120,25 @@ export default function ProductDetailPage() {
                                         <span className="text-text-dim font-mono text-[10px] block mb-1">Available Sizes:</span>
                                         <div className="flex flex-wrap gap-2">
                                             {product.sizes?.map(size => (
-                                                <span key={size} className="px-2 py-1 border border-border-std text-text-main font-mono text-[10px]">{size}</span>
+                                                <button
+                                                    key={size}
+                                                    type="button"
+                                                    onClick={() => setSelectedSize(size)}
+                                                    className={`h-8 min-w-[40px] px-3 font-mono text-[10px] uppercase border transition-all ${selectedSize === size
+                                                        ? 'border-magenta bg-magenta/10 text-magenta'
+                                                        : 'border-border-std text-text-main hover:border-cyan hover:text-cyan'
+                                                        }`}
+                                                    aria-pressed={selectedSize === size}
+                                                >
+                                                    {size}
+                                                </button>
                                             ))}
                                         </div>
+                                        {selectedSize && (
+                                            <p className="text-[10px] font-mono text-cyan mt-2 uppercase tracking-widest">
+                                                Selected: {selectedSize}
+                                            </p>
+                                        )}
                                     </div>
                                     {product.features && product.features.length > 0 && (
                                         <div>

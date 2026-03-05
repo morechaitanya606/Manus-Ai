@@ -188,6 +188,7 @@ function StudioContent() {
   const initGarmentType = searchParams.get('product') || 'tshirt';
   const initGarmentColor = searchParams.get('color') || 'BLK';
   const initProductId = searchParams.get('productId') || undefined;
+  const initGarmentSize = (searchParams.get('size') || 'M').toUpperCase();
 
   const { session, profile } = useAuthStore();
   const { data: allProducts } = useProducts();
@@ -202,7 +203,7 @@ function StudioContent() {
   const [printPlacement, setPrintPlacement] = useState<'front' | 'back' | 'both'>('front');
   const [garmentView, setGarmentView] = useState<'front' | 'back'>('front');
   const [garmentColor, setGarmentColor] = useState(initGarmentColor);
-  const [garmentSize, setGarmentSize] = useState('M');
+  const [garmentSize, setGarmentSize] = useState(SIZES.includes(initGarmentSize) ? initGarmentSize : 'M');
   const [stylePreset, setStylePreset] = useState('none');
   const [editText, setEditText] = useState('');
   const [editPosition, setEditPosition] = useState<EditPosition>('bottom');
@@ -551,10 +552,11 @@ function StudioContent() {
         }
       } else {
         console.error('Invalid generate-design response:', result);
-        alert('Design generated but image data was missing. Please try again.');
+        toast.error('Design generated but image data was missing. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generation error:', error);
+      toast.error(error?.message || 'Failed to generate design.');
     } finally {
       clearInterval(stepInterval);
       setGenerationStep(0);
@@ -901,7 +903,7 @@ function StudioContent() {
       {/* LEFT PANEL: TOOLS & ASSETS */}
       <aside
         style={{ ['--left-panel-width' as string]: `${leftPanelWidth}px` } as CSSProperties}
-        className="order-2 lg:order-none w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full"
+        className="order-2 lg:order-none w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full lg:min-h-0"
       >
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
           <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Design Prompt</span>
@@ -909,7 +911,7 @@ function StudioContent() {
         </div>
 
         {/* Prompt Input Area */}
-        <div className="p-3 lg:p-4 border-b border-border-std overflow-y-auto custom-scrollbar">
+        <div className="p-3 lg:p-4 border-b border-border-std overflow-y-auto custom-scrollbar max-h-[56vh] lg:max-h-[52vh]">
           <div className="space-y-2 lg:space-y-3">
             <div className="relative group">
               <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -1138,12 +1140,12 @@ function StudioContent() {
         </div>
 
         {/* Asset Library */}
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex flex-col min-h-0 lg:flex-1">
           <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
             <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Generated Designs</span>
             <span className="font-mono text-[10px] text-cyan">{generatedDesigns.length} READY</span>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="overflow-y-auto p-4 custom-scrollbar max-h-[44vh] lg:max-h-none lg:flex-1">
             <div className="grid grid-cols-2 gap-3">
               {generateDesign.isPending && (
                 <div className="col-span-2 aspect-[2/1] bg-void border border-dashed border-cyan/30 flex flex-col items-center justify-center gap-2">
