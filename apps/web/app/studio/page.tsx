@@ -264,7 +264,7 @@ function StudioContent() {
     if (productColorNames.includes(currentCanonical)) return;
     // Otherwise set to first product color
     setGarmentColor(selectedProduct.colors[0].name);
-  }, [selectedProduct]);
+  }, [selectedProduct, garmentColor]);
 
   const resolveDesignImageUrl = (design: any): string | null => {
     return (

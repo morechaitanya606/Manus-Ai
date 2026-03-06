@@ -145,7 +145,20 @@ export default function GalleryPage() {
 
       return true;
     });
-  }, [products, category, search]);
+  }, [
+    products,
+    category,
+    search,
+    filters.availability,
+    filters.color,
+    filters.fabric,
+    filters.fit,
+    filters.neck,
+    filters.pattern,
+    filters.price,
+    filters.size,
+    filters.sleeve
+  ]);
 
   const getPrice = (product: Product) => {
     const value = Number(product.base_price);
@@ -309,8 +322,8 @@ export default function GalleryPage() {
               <button
                 onClick={() => setShowMobileFilters(true)}
                 className={`lg:hidden flex items-center gap-1.5 px-3 py-1.5 border font-mono text-xs uppercase tracking-wider transition-all ${Object.values(filters).some(a => a.length > 0)
-                    ? 'border-cyan text-cyan bg-cyan/10'
-                    : 'border-border-std text-text-main/50 hover:border-cyan/50'
+                  ? 'border-cyan text-cyan bg-cyan/10'
+                  : 'border-border-std text-text-main/50 hover:border-cyan/50'
                   }`}
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -461,7 +474,7 @@ export default function GalleryPage() {
                       </div>
                     ) : sortedProducts.length > PAGE_SIZE ? (
                       <div className="text-xs font-mono uppercase tracking-widest text-text-main/60 border border-border-std px-3 py-1.5">
-                        You've seen all products
+                        You&apos;ve seen all products
                       </div>
                     ) : null}
                   </div>

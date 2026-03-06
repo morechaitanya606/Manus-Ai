@@ -203,7 +203,7 @@ export default function ShopDropPage() {
                                 THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">SPRING</span> DROP
                             </h1>
                             <p className="text-text-main/60 font-light max-w-xl mx-auto">
-                                This exclusive collection is available for 24 hours only. Grab your favourite before it's gone!
+                                This exclusive collection is available for 24 hours only. Grab your favourite before it&apos;s gone!
                             </p>
                         </div>
 
@@ -288,7 +288,7 @@ export default function ShopDropPage() {
                         </h1>
                         <p className="text-text-main/60 font-light mb-12">
                             This exclusive sale has ended.
-                            Don't worry — check out our regular collection or wait for the next sale!
+                            Don&apos;t worry — check out our regular collection or wait for the next sale!
                         </p>
 
                         <Link href="/products" className="px-8 py-4 bg-white text-void font-bold font-mono tracking-widest uppercase hover:bg-gray-200 hover:scale-[0.98] transition-all duration-300 rounded-lg">
