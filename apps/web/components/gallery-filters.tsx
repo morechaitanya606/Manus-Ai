@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ChevronDown, ChevronUp, X, SlidersHorizontal } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export interface FilterState {
     price: string[];
@@ -141,7 +141,7 @@ interface GalleryFiltersProps {
 }
 
 export function GalleryFilters({ filters, onFilterChange, products, open, onClose }: GalleryFiltersProps) {
-    const getCounts = (extractFn: (p: any) => string[]) => {
+    const getCounts = useCallback((extractFn: (p: any) => string[]) => {
         const counts: Record<string, number> = {};
         products.forEach(p => {
             extractFn(p).forEach(v => {
@@ -149,9 +149,9 @@ export function GalleryFilters({ filters, onFilterChange, products, open, onClos
             });
         });
         return counts;
-    };
+    }, [products]);
 
-    const getPriceCounts = () => {
+    const getPriceCounts = useCallback(() => {
         const c = { lt500: 0, '500-1000': 0, '1000-1500': 0, '1500-2000': 0, gt2000: 0 };
         products.forEach(p => {
             const price = Number(p.base_price || 0);
@@ -162,21 +162,21 @@ export function GalleryFilters({ filters, onFilterChange, products, open, onClos
             else c.gt2000++;
         });
         return c;
-    };
+    }, [products]);
 
-    const priceCounts = useMemo(getPriceCounts, [products]);
-    const sizeCounts = useMemo(() => getCounts(p => p.sizes || []), [products]);
+    const priceCounts = useMemo(getPriceCounts, [getPriceCounts]);
+    const sizeCounts = useMemo(() => getCounts(p => p.sizes || []), [getCounts]);
 
     // FIXED: properly extract color names from objects or strings
     const colorCounts = useMemo(() => getCounts(p => {
         const colors = p.colors || [];
         return (Array.isArray(colors) ? colors : [colors]).map(extractColorName).filter(Boolean);
-    }), [products]);
+    }), [getCounts]);
 
-    const neckCounts = useMemo(() => getCounts(p => (p.features || []).filter((f: string) => f.toLowerCase().includes('neck'))), [products]);
-    const sleeveCounts = useMemo(() => getCounts(p => (p.features || []).filter((f: string) => f.toLowerCase().includes('sleeve'))), [products]);
-    const fitCounts = useMemo(() => getCounts(p => p.fit ? [p.fit] : []), [products]);
-    const fabricCounts = useMemo(() => getCounts(p => p.fabric ? [p.fabric] : []), [products]);
+    const neckCounts = useMemo(() => getCounts(p => (p.features || []).filter((f: string) => f.toLowerCase().includes('neck'))), [getCounts]);
+    const sleeveCounts = useMemo(() => getCounts(p => (p.features || []).filter((f: string) => f.toLowerCase().includes('sleeve'))), [getCounts]);
+    const fitCounts = useMemo(() => getCounts(p => p.fit ? [p.fit] : []), [getCounts]);
+    const fabricCounts = useMemo(() => getCounts(p => p.fabric ? [p.fabric] : []), [getCounts]);
 
     const hasActiveFilters = Object.values(filters).some(arr => arr.length > 0);
     const totalActive = Object.values(filters).reduce((acc, arr) => acc + arr.length, 0);
@@ -224,8 +224,7 @@ export function GalleryFilters({ filters, onFilterChange, products, open, onClos
             {/* Scrollable filter body */}
             <div
                 className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6"
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                style={{ WebkitOverflowScrolling: 'touch' } as any}
+                style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
             >
                 <FilterSection
                     title="Price"
