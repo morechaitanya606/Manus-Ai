@@ -158,15 +158,15 @@ export default function ProductsPage() {
     const filteredProducts = products?.filter(p => p.is_active && (selectedFabric === 'All' || p.fabric === selectedFabric));
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] bg-void text-text-main p-8 relative overflow-hidden">
+        <div className="min-h-[calc(100vh-4rem)] bg-void text-text-main p-4 sm:p-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.05] pointer-events-none" />
             <div className="absolute inset-0 crt-overlay pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-8 border-l-4 border-cyan pl-6 py-2 bg-gradient-to-r from-panel/80 to-transparent w-full md:w-3/4 lg:w-1/2">
-                    <h1 className="text-4xl font-mono font-bold text-text-main mb-2 uppercase tracking-tight">Select a Blank</h1>
-                    <p className="text-text-dim text-sm font-mono max-w-2xl">
-                        Choose a premium blank garment to start your design journey. Our high-quality canvases are built to make your art pop.
+                    <h1 className="text-2xl sm:text-4xl font-mono font-bold text-text-main mb-2 uppercase tracking-tight">Choose Your Product</h1>
+                    <p className="text-text-main/70 text-sm sm:text-sm font-mono max-w-2xl">
+                        Pick a product and start designing. Premium quality fabrics, ready for your custom artwork.
                     </p>
                 </div>
 
@@ -175,9 +175,9 @@ export default function ProductsPage() {
                         <button
                             key={fabric}
                             onClick={() => setSelectedFabric(fabric)}
-                            className={`px-3 sm:px-6 py-1.5 sm:py-2 font-mono text-[10px] sm:text-sm uppercase tracking-widest transition-all duration-300 ${selectedFabric === fabric
+                            className={`px-4 sm:px-6 py-2 sm:py-2 font-mono text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 ${selectedFabric === fabric
                                 ? 'bg-cyan text-void font-bold shadow-[0_0_15px_rgba(0,240,255,0.4)] sm:translate-y-[-2px]'
-                                : 'border border-border-std text-text-dim hover:border-cyan/50 hover:text-cyan bg-panel/30 hover:bg-panel/60'
+                                : 'border border-border-std text-text-main/60 hover:border-cyan/50 hover:text-cyan bg-panel/30 hover:bg-panel/60'
                                 }`}
                         >
                             {fabric}
@@ -188,17 +188,17 @@ export default function ProductsPage() {
                 {recommendationData.recommendations.length > 0 && (
                     <section className="mb-6 sm:mb-8 border border-border-std bg-panel/30 p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-3 mb-2">
-                            <h2 className="font-mono text-[11px] sm:text-sm font-bold uppercase tracking-widest text-text-main">
+                            <h2 className="font-mono text-sm sm:text-sm font-bold uppercase tracking-widest text-text-main">
                                 Recommended For You
                             </h2>
-                            <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-cyan">
+                            <span className="font-mono text-[11px] sm:text-[10px] uppercase tracking-widest text-cyan">
                                 {recommendationData.hasSignal ? 'Personalized' : 'Popular'}
                             </span>
                         </div>
-                        <p className="text-[10px] sm:text-[11px] font-mono text-text-dim mb-3">
+                        <p className="text-xs sm:text-[11px] font-mono text-text-main/60 mb-3">
                             {recommendationData.hasSignal
-                                ? 'Ranked from your cart and order activity.'
-                                : 'Add to cart or place orders to unlock personalized picks.'}
+                                ? 'Based on your recent orders and cart items.'
+                                : 'Start shopping to get personalised suggestions.'}
                         </p>
                         <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
                             {recommendationData.recommendations.map((product) => (
@@ -224,17 +224,17 @@ export default function ProductsPage() {
                                         )}
                                     </div>
                                     <div className="p-2.5 sm:p-3">
-                                        <p className="font-mono text-[10px] uppercase tracking-widest text-cyan mb-1 truncate">
-                                            {recommendationData.reasonById.get(product.id) || 'Recommended for you'}
+                                        <p className="font-mono text-[11px] uppercase tracking-widest text-cyan mb-1 truncate">
+                                            {recommendationData.reasonById.get(product.id) || 'Picked for you'}
                                         </p>
-                                        <h3 className="font-mono font-bold text-text-main uppercase text-[11px] sm:text-xs truncate">
+                                        <h3 className="font-mono font-bold text-text-main uppercase text-xs sm:text-xs truncate">
                                             {product.name}
                                         </h3>
                                         <div className="mt-2 flex items-center justify-between">
-                                            <span className="font-mono text-[10px] text-text-dim uppercase truncate pr-2">
+                                            <span className="font-mono text-[11px] text-text-main/60 uppercase truncate pr-2">
                                                 {product.category}
                                             </span>
-                                            <span className="font-mono text-[10px] text-cyan font-bold">
+                                            <span className="font-mono text-xs text-cyan font-bold">
                                                 â‚¹{formatPriceINR(product.base_price)}
                                             </span>
                                         </div>
@@ -261,7 +261,7 @@ export default function ProductsPage() {
                                 ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center text-text-dim">
                                         <Shirt className="w-12 h-12 mb-2 opacity-50" />
-                                        <span className="font-mono text-[10px] uppercase tracking-widest">No Preview</span>
+                                        <span className="font-mono text-xs uppercase tracking-widest">No Image</span>
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3 sm:pb-6">
@@ -274,17 +274,17 @@ export default function ProductsPage() {
                             <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
                                 <div>
                                     <div className="flex flex-col sm:flex-row justify-between items-start mb-1 sm:mb-2 gap-1 sm:gap-4">
-                                        <h3 className="font-mono font-bold text-text-main uppercase text-[11px] sm:text-base tracking-wide line-clamp-2 sm:line-clamp-1">{product.name}</h3>
-                                        <span className="font-mono text-cyan shrink-0 font-bold text-[10px] sm:text-sm">₹{formatPriceINR(product.base_price)}</span>
+                                        <h3 className="font-mono font-bold text-text-main uppercase text-sm sm:text-base tracking-wide line-clamp-2 sm:line-clamp-1">{product.name}</h3>
+                                        <span className="font-mono text-cyan shrink-0 font-bold text-sm sm:text-sm">₹{formatPriceINR(product.base_price)}</span>
                                     </div>
-                                    <p className="text-text-dim text-[10px] sm:text-[11px] font-mono mb-3 sm:mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
+                                    <p className="text-text-main/60 text-xs sm:text-[11px] font-mono mb-3 sm:mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
                                     {product.colors?.slice(0, 3).map((color, idx) => (
-                                        <span key={idx} className="text-[9px] font-mono px-1 sm:px-1.5 py-0.5 border border-border-std text-text-dim group-hover:border-cyan/30 transition-colors uppercase">{color}</span>
+                                        <span key={idx} className="text-[11px] font-mono px-1.5 sm:px-1.5 py-0.5 border border-border-std text-text-main/60 group-hover:border-cyan/30 transition-colors uppercase">{color}</span>
                                     ))}
                                     {product.colors && product.colors.length > 3 && (
-                                        <span className="text-[9px] font-mono px-1 sm:px-1.5 py-0.5 border border-border-std text-text-dim">+{product.colors.length - 3}</span>
+                                        <span className="text-[11px] font-mono px-1.5 sm:px-1.5 py-0.5 border border-border-std text-text-main/60">+{product.colors.length - 3}</span>
                                     )}
                                 </div>
                             </div>
@@ -293,7 +293,7 @@ export default function ProductsPage() {
 
                     {filteredProducts?.length === 0 && (
                         <div className="col-span-full py-12 text-center border border-dashed border-border-std">
-                            <p className="text-text-dim font-mono uppercase tracking-widest text-sm">No blanks available in this category</p>
+                            <p className="text-text-main/60 font-mono uppercase tracking-widest text-sm">No products found in this category</p>
                         </div>
                     )}
                 </div>

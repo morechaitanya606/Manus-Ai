@@ -5,19 +5,19 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useProducts } from '../../hooks/use-products';
 import { Button } from '../../components/ui/button';
-import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Package, Truck, Printer, Layers, X, Filter } from 'lucide-react';
+import { Search, Loader2, ShoppingBag, ArrowRight, Sparkles, Package, Truck, Printer, Layers, X, SlidersHorizontal } from 'lucide-react';
 import type { Product } from '../../hooks/use-products';
 import { GalleryFilters, FilterState, initialFilterState } from '../../components/gallery-filters';
 
 const CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'tshirt', label: 'T-Shirts' },
-  { key: 'shirt', label: 'Shirts' },
-  { key: 'hoodie', label: 'Hoodies' },
-  { key: 'pants', label: 'Pants' },
-  { key: 'cap', label: 'Caps' },
-  { key: 'tote', label: 'Totes' },
-  { key: 'poster', label: 'Posters' },
+  { key: 'all', label: 'All', emoji: '🛍️' },
+  { key: 'tshirt', label: 'T-Shirts', emoji: '👕' },
+  { key: 'shirt', label: 'Shirts', emoji: '👔' },
+  { key: 'hoodie', label: 'Hoodies', emoji: '🧥' },
+  { key: 'pants', label: 'Pants', emoji: '👖' },
+  { key: 'cap', label: 'Caps', emoji: '🧢' },
+  { key: 'tote', label: 'Totes', emoji: '👜' },
+  { key: 'poster', label: 'Posters', emoji: '🖼️' },
 ];
 
 type SortMode = 'newest' | 'price_low_high' | 'price_high_low';
@@ -228,15 +228,15 @@ export default function GalleryPage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-14">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 text-cyan font-mono text-[10px] sm:text-xs tracking-widest uppercase bg-cyan/5 px-2 py-1 w-fit border border-cyan/20 mb-3">
+              <div className="inline-flex items-center gap-2 text-cyan font-mono text-xs sm:text-xs tracking-widest uppercase bg-cyan/5 px-2 py-1 w-fit border border-cyan/20 mb-3">
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Marketplace</span>
               </div>
               <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold font-display text-text-main uppercase glitch-text tracking-wider" data-text="Surf & Shop">
                 Surf & <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">Shop</span>
               </h1>
-              <p className="text-text-dim mt-3 text-[11px] sm:text-sm md:text-base font-mono border-l-2 border-border-std pl-3 uppercase tracking-widest">
-                &gt; Browse blanks fast. Pick product. Start purchase.
+              <p className="text-text-main/60 mt-3 text-xs sm:text-sm md:text-base font-mono border-l-2 border-border-std pl-3 uppercase tracking-widest">
+                Browse our collection. Choose your favourite. Order online.
               </p>
             </div>
 
@@ -251,60 +251,80 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      <section className="sticky top-16 z-30 border-b border-border-std bg-panel/90 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
+      <section className="sticky top-16 z-30 border-b border-border-std bg-panel/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+
+          {/* Row 1: Search */}
+          <div className="py-3 border-b border-border-std/40">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-dim" />
               <input
                 type="text"
-                placeholder="Search by product or category..."
+                placeholder="Search products..."
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 border border-border-std bg-void text-sm focus:outline-none focus:border-cyan transition-colors"
+                className="w-full pl-9 pr-10 py-3 border border-border-std bg-void text-sm text-text-main placeholder:text-text-main/30 focus:outline-none focus:border-cyan transition-colors rounded-none"
               />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-main/40 hover:text-text-main transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
-            {hasActiveFilters && (
-              <button
-                onClick={() => {
-                  setCategory('all');
-                  setSearch('');
-                }}
-                className="h-10 px-3 border border-border-std text-text-dim hover:text-text-main hover:border-cyan transition-colors font-mono text-[10px] uppercase tracking-widest flex items-center gap-1"
-              >
-                <X className="h-3.5 w-3.5" />
-                Clear
-              </button>
-            )}
           </div>
 
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide">
-            {CATEGORIES.map((cat) => (
+          {/* Row 2: Category chips */}
+          <div className="py-2.5 border-b border-border-std/40">
+            <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.key}
+                  onClick={() => setCategory(cat.key)}
+                  className={`snap-start shrink-0 flex items-center gap-1.5 px-3 py-2 sm:px-4 border font-mono text-xs sm:text-xs uppercase tracking-wider transition-all ${category === cat.key
+                    ? 'border-cyan bg-cyan/15 text-cyan shadow-[0_0_12px_rgba(0,240,255,0.25)] font-bold'
+                    : 'border-border-std text-text-main/50 hover:border-cyan/40 hover:text-text-main hover:bg-white/5'
+                    }`}
+                >
+                  <span className="text-base leading-none">{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                  {category === cat.key && cat.key !== 'all' && (
+                    <span className="ml-1 text-cyan/60 text-[10px]">{sortedProducts.length}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 3: Count + Sort + Filter button */}
+          <div className="py-2 flex items-center justify-between gap-2">
+            <span className="text-text-main/50 font-mono text-xs whitespace-nowrap">
+              <span className="text-cyan font-bold">{sortedProducts.length}</span> items
+              {category !== 'all' && <span className="text-text-main/30"> in {activeCategoryLabel}</span>}
+            </span>
+            <div className="flex items-center gap-2">
+              {/* Mobile: open filter drawer */}
               <button
-                key={cat.key}
-                onClick={() => setCategory(cat.key)}
-                className={`snap-start shrink-0 px-3 py-1.5 border text-[10px] sm:text-xs font-mono uppercase tracking-widest transition-all ${category === cat.key
-                  ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
-                  : 'border-border-std text-text-dim hover:border-cyan/50 hover:text-text-main'
+                onClick={() => setShowMobileFilters(true)}
+                className={`lg:hidden flex items-center gap-1.5 px-3 py-1.5 border font-mono text-xs uppercase tracking-wider transition-all ${Object.values(filters).some(a => a.length > 0)
+                    ? 'border-cyan text-cyan bg-cyan/10'
+                    : 'border-border-std text-text-main/50 hover:border-cyan/50'
                   }`}
               >
-                {cat.label}
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                Filter
+                {Object.values(filters).some(a => a.length > 0) && (
+                  <span className="bg-cyan text-void text-[10px] font-bold px-1 rounded-sm">
+                    {Object.values(filters).reduce((acc, a) => acc + a.length, 0)}
+                  </span>
+                )}
               </button>
-            ))}
-          </div>
-
-          <div className="mt-2 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-widest">
-            <span className="text-text-dim whitespace-nowrap">
-              {sortedProducts.length} Items
-            </span>
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-cyan hidden sm:inline whitespace-nowrap">
-                Category: {activeCategoryLabel}
-              </span>
               <select
                 value={sortMode}
                 onChange={(event) => setSortMode(event.target.value as SortMode)}
-                className="min-w-[150px] sm:min-w-[170px] bg-void border border-border-std text-text-main text-[10px] font-mono px-2 py-1.5 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                className="bg-void border border-border-std text-text-main text-xs font-mono px-2 py-1.5 focus:border-cyan focus:outline-none max-w-[160px] sm:max-w-none"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -314,6 +334,7 @@ export default function GalleryPage() {
               </select>
             </div>
           </div>
+
         </div>
       </section>
 
@@ -321,17 +342,14 @@ export default function GalleryPage() {
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8 items-start relative">
 
-            {/* Mobile Filter Toggle */}
-            <div className="lg:hidden w-full flex justify-end">
-              <button onClick={() => setShowMobileFilters(!showMobileFilters)} className="flex items-center gap-2 border border-border-std px-4 py-2 font-mono text-xs text-text-dim hover:text-cyan hover:border-cyan uppercase tracking-widest transition-colors bg-panel/50">
-                <Filter className="w-4 h-4" /> Filters {Object.values(filters).some(arr => arr.length > 0) && '(Active)'}
-              </button>
-            </div>
-
-            {/* Sidebar Filters */}
-            <aside className={`lg:sticky lg:top-36 lg:h-[calc(100vh-160px)] z-40 lg:w-64 shrink-0 transition-all ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
-              <GalleryFilters filters={filters} onFilterChange={setFilters} products={products || []} />
-            </aside>
+            {/* GalleryFilters — renders as bottom drawer on mobile, sidebar on desktop */}
+            <GalleryFilters
+              filters={filters}
+              onFilterChange={setFilters}
+              products={products || []}
+              open={showMobileFilters}
+              onClose={() => setShowMobileFilters(false)}
+            />
 
             {/* Product Grid */}
             <div className="flex-1 w-full min-w-0">
@@ -357,7 +375,7 @@ export default function GalleryPage() {
                         className="group bg-panel border border-border-std overflow-hidden hover:border-cyan/70 hover:shadow-[0_0_15px_rgba(0,240,255,0.12)] transition-all duration-300"
                       >
                         <div className="aspect-square bg-panel-highlight relative overflow-hidden">
-                          <span className="absolute top-2 left-2 z-20 text-[9px] font-mono uppercase tracking-widest bg-void/80 border border-border-std px-1.5 py-0.5 text-text-dim">
+                          <span className="absolute top-2 left-2 z-20 text-[11px] font-mono uppercase tracking-widest bg-void/80 border border-border-std px-1.5 py-0.5 text-text-main/70">
                             {product.category}
                           </span>
                           {product.image_url ? (
@@ -377,7 +395,7 @@ export default function GalleryPage() {
                         </div>
 
                         <div className="p-2.5 sm:p-4">
-                          <h3 className="font-bold text-[11px] sm:text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
+                          <h3 className="font-bold text-sm sm:text-sm uppercase tracking-wide group-hover:text-cyan transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[2.5rem]">
                             {product.name}
                           </h3>
 
@@ -385,13 +403,13 @@ export default function GalleryPage() {
                             <span className="text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">
                               ₹{Number(product.base_price).toFixed(0)}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] font-mono text-text-dim uppercase tracking-widest">
+                            <span className="text-[11px] sm:text-[10px] font-mono text-text-main/60 uppercase tracking-widest">
                               {(product.sizes || []).length} sizes
                             </span>
                           </div>
 
                           {(product.fabric || product.gsm) && (
-                            <div className="mt-1.5 flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-text-dim uppercase tracking-widest">
+                            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] sm:text-[9px] font-mono text-text-main/60 uppercase tracking-widest">
                               {product.fabric && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.fabric}</span>}
                               {product.gsm && <span className="border border-border-std bg-void px-1.5 py-0.5">{product.gsm} GSM</span>}
                             </div>
@@ -407,15 +425,15 @@ export default function GalleryPage() {
                               />
                             ))}
                             {(product.colors || []).length > 4 && (
-                              <span className="text-[9px] sm:text-[10px] text-text-dim ml-1 font-mono">
+                              <span className="text-[11px] sm:text-[10px] text-text-main/60 ml-1 font-mono">
                                 +{product.colors.length - 4}
                               </span>
                             )}
                           </div>
 
                           <div className="mt-2 sm:mt-3 flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-text-main transition-colors">
-                              Customize / Buy Plain
+                            <span className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-mono uppercase tracking-widest text-cyan group-hover:text-text-main transition-colors">
+                              View Details
                               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                             </span>
                           </div>
@@ -442,8 +460,8 @@ export default function GalleryPage() {
                         {isLoadingNextBatch ? 'Loading More' : 'Scroll For More'}
                       </div>
                     ) : sortedProducts.length > PAGE_SIZE ? (
-                      <div className="text-[10px] font-mono uppercase tracking-widest text-text-dim border border-border-std px-3 py-1.5">
-                        You reached the end
+                      <div className="text-xs font-mono uppercase tracking-widest text-text-main/60 border border-border-std px-3 py-1.5">
+                        You've seen all products
                       </div>
                     ) : null}
                   </div>
@@ -493,11 +511,11 @@ export default function GalleryPage() {
             <h2 className="text-xl sm:text-3xl md:text-5xl font-bold font-display tracking-tight uppercase mb-3 sm:mb-4">
               Experience <span className="text-magenta">Superior Quality</span>
             </h2>
-            <p className="text-cyan font-mono text-[10px] sm:text-xs uppercase tracking-widest mb-4 sm:mb-6 border-y border-cyan/20 py-2 inline-block">
-              With our premium printing services
+            <p className="text-cyan font-mono text-xs sm:text-xs uppercase tracking-widest mb-4 sm:mb-6 border-y border-cyan/20 py-2 inline-block">
+              With our premium printing technology
             </p>
-            <p className="text-text-dim max-w-2xl mx-auto mb-8 text-xs sm:text-sm font-mono leading-relaxed">
-              &gt; Build your brand with AI designs, ready templates, and custom uploads.
+            <p className="text-text-main/60 max-w-2xl mx-auto mb-8 text-xs sm:text-sm font-mono leading-relaxed">
+              Design with AI, use ready templates, or upload your own artwork. We handle the rest.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
               <Link href="/studio">
@@ -526,9 +544,9 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
                 <Package className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Bulk Order</h3>
-              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
-                Order in bulk for events, teams, and brands.
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Bulk Orders</h3>
+              <p className="text-xs sm:text-xs text-text-main/60 border-l border-border-std pl-3 font-mono leading-relaxed">
+                Great discounts on bulk orders for events, teams, and businesses.
               </p>
             </div>
 
@@ -537,9 +555,9 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
                 <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Pan-India Shipping</h3>
-              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
-                Fast shipping within 3-5 working days.
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">All India Shipping</h3>
+              <p className="text-xs sm:text-xs text-text-main/60 border-l border-border-std pl-3 font-mono leading-relaxed">
+                Delivered to your doorstep in 3-5 working days, anywhere in India.
               </p>
             </div>
 
@@ -548,9 +566,9 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-cyan/30 bg-cyan/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-cyan/20 transition-colors">
                 <Layers className="h-5 w-5 sm:h-6 sm:w-6 text-cyan" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Multiple Printing</h3>
-              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
-                DTF, sublimation, and screen print options.
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">Premium Printing</h3>
+              <p className="text-xs sm:text-xs text-text-main/60 border-l border-border-std pl-3 font-mono leading-relaxed">
+                DTF, sublimation, and screen print — vibrant colours that last.
               </p>
             </div>
 
@@ -559,9 +577,9 @@ export default function GalleryPage() {
               <div className="h-10 w-10 sm:h-12 sm:w-12 border border-magenta/30 bg-magenta/5 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-magenta/20 transition-colors">
                 <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-magenta" />
               </div>
-              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">AI Design Studio</h3>
-              <p className="text-[11px] sm:text-xs text-text-dim border-l border-border-std pl-3 font-mono leading-relaxed">
-                Generate or upload designs and buy instantly.
+              <h3 className="font-mono font-bold text-xs sm:text-sm uppercase text-text-main mb-2 sm:mb-3">AI Design Tool</h3>
+              <p className="text-xs sm:text-xs text-text-main/60 border-l border-border-std pl-3 font-mono leading-relaxed">
+                Create designs with AI or upload your own and buy instantly.
               </p>
             </div>
           </div>

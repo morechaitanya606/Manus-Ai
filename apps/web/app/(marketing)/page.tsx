@@ -50,7 +50,7 @@ export default function HomePage() {
             {/* System Ready Badge */}
             <div className="inline-flex items-center gap-2 border border-green-500/30 bg-green-500/10 px-3 py-1.5 w-fit">
               <Terminal className="h-4 w-4 text-green-500" />
-              <span className="font-mono text-[10px] font-bold text-green-500 uppercase tracking-widest">SYSTEM_READY // PRINTERS_ONLINE</span>
+              <span className="font-mono text-xs font-bold text-green-500 uppercase tracking-widest">Ready to Print • Order Now</span>
             </div>
           </div>
 
@@ -91,7 +91,7 @@ export default function HomePage() {
                     EVERYDAY<br />DROP
                   </span>
                   <div className="w-16 h-1 bg-blue-700 mt-4 opacity-100"></div>
-                  <span className="font-mono text-[8px] text-text-main tracking-[0.4em] uppercase mt-3 opacity-90 font-bold">
+                  <span className="font-mono text-[10px] text-text-main tracking-[0.4em] uppercase mt-3 opacity-90 font-bold">
                     EST. 2026
                   </span>
                 </div>
@@ -100,30 +100,30 @@ export default function HomePage() {
 
             {/* Top Right Text */}
             <div className="absolute top-3 right-3 text-right z-20">
-              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">RENDER_SCALE</div>
-              <div className="font-mono text-[12px] text-cyan font-bold leading-tight">1:1</div>
-              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">NODE_LOCATION</div>
-              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">MUM-01</div>
+              <div className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Quality</div>
+              <div className="font-mono text-sm text-cyan font-bold leading-tight">Premium</div>
+              <div className="font-mono text-xs text-text-main/60 uppercase tracking-widest mt-2">Ships From</div>
+              <div className="font-mono text-sm text-text-main font-bold leading-tight">India</div>
             </div>
 
             {/* Bottom Left Text */}
             <div className="absolute bottom-3 left-3 text-left z-20">
-              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest">PIPELINE_LATENCY</div>
-              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">0.02ms</div>
-              <div className="font-mono text-[9px] text-text-dim uppercase tracking-widest mt-2">FABRIC_STOCK</div>
-              <div className="font-mono text-[12px] text-text-main font-bold leading-tight">98.4%</div>
+              <div className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Delivery</div>
+              <div className="font-mono text-sm text-text-main font-bold leading-tight">3-5 Days</div>
+              <div className="font-mono text-xs text-text-main/60 uppercase tracking-widest mt-2">In Stock</div>
+              <div className="font-mono text-sm text-text-main font-bold leading-tight">Yes ✓</div>
             </div>
           </div>
 
           {/* CTA Button */}
           <Link href="/studio" className="w-full shrink-0 z-20 relative">
             <button className="w-full bg-cyan hover:bg-white transition-colors h-16 flex items-center justify-between px-6 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
-              <span className="font-mono font-bold text-base text-black tracking-widest uppercase">[ INITIALIZE PROJECT ]</span>
+              <span className="font-mono font-bold text-base text-black tracking-widest uppercase">Start Designing Now</span>
               <ArrowRight className="h-6 w-6 text-black" />
             </button>
           </Link>
-          <div className="mt-3 font-mono text-[9px] text-text-dim tracking-[0.3em] z-20 relative">
-            RATION_V4.2_STABLE ///
+          <div className="mt-3 font-mono text-xs text-text-main/50 tracking-[0.2em] z-20 relative">
+            Free AI Design Credits Included
           </div>
         </div>
 
@@ -152,19 +152,19 @@ export default function HomePage() {
                 DESIGN. PRINT.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">DELIVER.</span>
               </h1>
-              <p className="text-text-dim font-mono text-sm lg:text-base mt-4 max-w-md leading-relaxed border-l-2 border-border-std pl-4">
-                &gt; Create custom merchandise in minutes. Upload your designs, launch your store, and let us handle the printing and fulfillment.
+              <p className="text-text-main/70 font-mono text-sm lg:text-base mt-4 max-w-md leading-relaxed border-l-2 border-border-std pl-4">
+                Create custom t-shirts, hoodies & more in minutes. Design with AI or upload your own artwork. We print & deliver across India.
               </p>
             </div>
 
             {/* Specs Grid (Mini) */}
             <div className="grid grid-cols-2 gap-4 py-4 border-y border-border-std bg-panel/30 backdrop-blur-sm">
               <div className="px-4 py-2 border-r border-border-std">
-                <div className="text-[10px] text-text-dim font-mono uppercase mb-1">Fast Shipping</div>
-                <div className="text-xl font-display font-bold text-text-main">24-48h</div>
+                <div className="text-xs text-text-main/60 font-mono uppercase mb-1">Delivery</div>
+                <div className="text-xl font-display font-bold text-text-main">3-5 Days</div>
               </div>
               <div className="px-4 py-2">
-                <div className="text-[10px] text-text-dim font-mono uppercase mb-1">Satisfaction</div>
+                <div className="text-xs text-text-main/60 font-mono uppercase mb-1">Satisfaction</div>
                 <div className="text-xl font-display font-bold text-text-main">100%</div>
               </div>
             </div>
@@ -188,8 +188,8 @@ export default function HomePage() {
             </Link>
           </motion.div>
 
-          <div className="absolute bottom-6 left-6 font-mono text-[10px] text-text-dim opacity-50 hidden md:block">
-            COORD: 34.0522° N, 118.2437° W
+          <div className="absolute bottom-6 left-6 font-mono text-xs text-text-main/40 opacity-50 hidden md:block">
+            Made with ❤️ in Pune, India
           </div>
         </div>
 
@@ -260,14 +260,14 @@ export default function HomePage() {
               transition={{ repeat: Infinity, duration: 4, delay: 1 }}
               className="absolute top-[20%] right-[10%] bg-panel/80 border border-cyan/30 backdrop-blur px-2 py-1 text-[10px] font-mono text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]"
             >
-              MESH_DENSITY: HIGH
+              Premium Cotton
             </motion.div>
             <motion.div
               animate={{ y: [5, -5, 5] }}
               transition={{ repeat: Infinity, duration: 5 }}
               className="absolute bottom-[25%] left-[5%] bg-panel/80 border border-magenta/30 backdrop-blur px-2 py-1 text-[10px] font-mono text-magenta shadow-[0_0_10px_rgba(211,45,255,0.2)]"
             >
-              UV_MAP: UNWRAPPED
+              Print Ready
             </motion.div>
 
             {/* Crosshairs */}
@@ -316,8 +316,8 @@ export default function HomePage() {
                 <h2 className="text-2xl md:text-3xl font-bold font-mono text-text-main tracking-tight">
                   <span className="text-cyan">Featured Products</span>
                 </h2>
-                <p className="mt-2 text-text-dim font-mono text-xs uppercase tracking-widest">
-                  &gt; Check out some of our most popular items ready for you to customize.
+                <p className="mt-2 text-text-main/60 font-mono text-sm uppercase tracking-widest">
+                  Our most popular products — ready for you to customise
                 </p>
               </div>
               <Link href="/gallery" className="mt-4 md:mt-0 group flex items-center text-xs font-mono text-magenta border border-magenta px-4 py-2 hover:bg-magenta hover:text-white transition-all shadow-[0_0_10px_rgba(211,45,255,0.2)]">
@@ -339,8 +339,8 @@ export default function HomePage() {
                     href={`/gallery/${product.id}`}
                     className="group flex flex-col bg-panel border border-border-std hover:border-cyan transition-colors overflow-hidden relative"
                   >
-                    <div className="absolute top-2 left-2 z-10 bg-black/60 px-1.5 py-0.5 text-[9px] font-mono text-cyan border border-cyan/30 backdrop-blur">
-                      ID: {product.id.split('-')[0]}
+                    <div className="absolute top-2 left-2 z-10 bg-black/60 px-2 py-0.5 text-[11px] font-mono text-cyan border border-cyan/30 backdrop-blur">
+                      New
                     </div>
 
                     <div className="aspect-square bg-grid-pattern bg-[length:20px_20px] bg-panel-highlight relative overflow-hidden flex items-center justify-center p-6">
@@ -360,15 +360,15 @@ export default function HomePage() {
                     </div>
 
                     <div className="p-4 border-t border-border-std">
-                      <h3 className="font-mono text-xs font-bold text-text-main group-hover:text-cyan transition-colors truncate uppercase">
+                      <h3 className="font-mono text-sm font-bold text-text-main group-hover:text-cyan transition-colors truncate uppercase">
                         {product.name}
                       </h3>
                       <div className="flex items-end justify-between mt-3">
                         <div className="flex flex-col">
-                          <span className="text-[9px] text-text-dim font-mono mb-0.5">Starting at</span>
+                          <span className="text-xs text-text-main/60 font-mono mb-0.5">Starting at</span>
                           <span className="text-sm font-bold text-text-main font-mono tracking-wider">₹{Number(product.base_price).toFixed(0)}</span>
                         </div>
-                        <span className="text-[9px] px-1.5 py-0.5 border border-magenta/30 text-magenta font-mono uppercase bg-magenta/5">
+                        <span className="text-[11px] px-1.5 py-0.5 border border-magenta/30 text-magenta font-mono uppercase bg-magenta/5">
                           {product.category}
                         </span>
                       </div>
@@ -387,13 +387,13 @@ export default function HomePage() {
           <div className="flex flex-col items-center text-center mb-16 border-b border-border-std pb-8">
             <div className="inline-flex items-center gap-2 border border-cyan/30 bg-cyan/5 px-3 py-1.5 mb-6">
               <Terminal className="h-4 w-4 text-cyan" />
-              <span className="font-mono text-[10px] font-bold text-cyan uppercase tracking-widest">OPERATION_MANUAL //</span>
+              <span className="font-mono text-xs font-bold text-cyan uppercase tracking-widest">How It Works</span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tighter text-text-main uppercase">
               How <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">EVERYDAYDROP</span> Works
             </h2>
-            <p className="mt-4 text-text-dim font-mono text-sm max-w-2xl mx-auto tracking-wide">
-              &gt; From imagination to doorstep — create, customize, and get it printed on premium products.
+            <p className="mt-4 text-text-main/60 font-mono text-sm max-w-2xl mx-auto tracking-wide">
+              From your idea to your doorstep — design, customise, and get it printed on premium products.
             </p>
           </div>
 
@@ -407,8 +407,8 @@ export default function HomePage() {
                 <div className="absolute top-0 right-0 h-4 w-4 border-t border-r border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="absolute bottom-0 left-0 h-4 w-4 border-b border-l border-cyan/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                <div className="absolute top-2 right-2 text-[8px] font-mono text-cyan/50 tracking-widest">
-                  PHASE_0{i + 1}
+                <div className="absolute top-2 right-2 text-[10px] font-mono text-cyan/50 tracking-widest">
+                  {i + 1}/4
                 </div>
 
                 <div className="flex items-center justify-center h-12 w-12 border border-cyan/30 bg-cyan/10 text-cyan mb-4 group-hover:bg-cyan group-hover:text-void transition-colors shadow-[0_0_10px_rgba(0,240,255,0.1)] group-hover:shadow-[0_0_15px_rgba(0,240,255,0.4)]">
@@ -417,7 +417,7 @@ export default function HomePage() {
 
                 <div className="text-[10px] font-mono font-bold text-magenta mb-2 uppercase tracking-widest">STEP {i + 1}</div>
                 <h3 className="text-lg font-mono font-bold text-text-main uppercase tracking-tight mb-2">{feature.title}</h3>
-                <p className="text-xs font-mono text-text-dim leading-relaxed">{feature.desc}</p>
+                <p className="text-sm font-mono text-text-main/60 leading-relaxed">{feature.desc}</p>
 
                 {/* Hover scanline */}
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan shadow-[0_0_10px_#00F0FF] opacity-0 group-hover:opacity-50 group-hover:animate-scan"></div>
@@ -472,27 +472,27 @@ export default function HomePage() {
             <div className="relative z-10 flex flex-col items-center text-center">
               <div className="inline-flex items-center gap-2 border border-magenta/50 bg-magenta/10 px-3 py-1 mb-6">
                 <Star className="h-3 w-3 text-magenta" />
-                <span className="font-mono text-[10px] font-bold text-magenta uppercase tracking-widest">Start for free — AI credits included</span>
+                <span className="font-mono text-xs font-bold text-magenta uppercase tracking-widest">Start for Free — AI Credits Included</span>
               </div>
               <h2 className="text-4xl md:text-6xl font-bold font-display mb-6 tracking-tighter uppercase text-text-main drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                 Ready to Create<br />
                 <span className="text-cyan drop-shadow-[0_0_12px_rgba(0,240,255,0.6)]">Something Amazing?</span>
               </h2>
-              <p className="text-text-dim max-w-xl mx-auto mb-10 font-mono text-sm tracking-wide">
-                &gt; Join creators and brands who are designing and selling custom apparel with AI — printed in India, shipped to your doorstep.
+              <p className="text-text-main/60 max-w-xl mx-auto mb-10 font-mono text-sm tracking-wide">
+                Join thousands of creators designing and selling custom apparel with AI — printed in India, delivered to your doorstep.
               </p>
 
               <Link href="/signup">
                 <button className="relative group/btn bg-cyan hover:bg-white transition-colors h-16 px-10 flex items-center justify-between gap-6 shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] border-none outline-none">
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                   <span className="relative z-10 font-mono font-bold text-base text-black tracking-widest uppercase">
-                    [ Get Started Free ]
+                    Get Started Free
                   </span>
                   <ArrowRight className="relative z-10 h-6 w-6 text-black group-hover/btn:translate-x-1 transition-transform" />
 
                   {/* Glitch sub-text */}
-                  <div className="absolute -bottom-6 right-0 font-mono text-[8px] text-cyan uppercase tracking-widest opacity-70">
-                    AUTH_REQUIRED //
+                  <div className="absolute -bottom-6 right-0 font-mono text-xs text-cyan uppercase tracking-widest opacity-70">
+                    Sign up in 30 seconds
                   </div>
                 </button>
               </Link>

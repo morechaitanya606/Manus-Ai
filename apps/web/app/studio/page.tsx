@@ -25,10 +25,10 @@ const MockupViewer3D = dynamic(() => import('../../components/mockup-viewer-3d')
 });
 
 const GENERATION_STEPS = [
-  'Allocating Neural Nodes...',
-  'Synthesizing Pixels...',
-  'Refining Output Array...',
-  'Finalizing Asset...',
+  'Starting design...',
+  'Creating your artwork...',
+  'Adding finishing touches...',
+  'Almost done...',
 ];
 
 const normalizeColorToken = (value: string): string => value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -131,12 +131,20 @@ const isLightColor = (value: string): boolean => {
 };
 
 const FALLBACK_COLORS = [
-  { name: 'BLK', hex: '#16161A' },
-  { name: 'WHT', hex: '#F5F5F5' },
-  { name: 'GRY', hex: '#2A2A35' },
-  { name: 'NVY', hex: '#1B2A4A' },
-  { name: 'RED', hex: '#8B1A1A' },
-  { name: 'GRN', hex: '#1A3C2A' },
+  { name: 'Black', hex: '#16161A' },
+  { name: 'White', hex: '#F5F5F5' },
+  { name: 'Gray', hex: '#2A2A35' },
+  { name: 'Navy', hex: '#1B2A4A' },
+  { name: 'Red', hex: '#8B1A1A' },
+  { name: 'Green', hex: '#1A3C2A' },
+  { name: 'Yellow', hex: '#B7791F' },
+  { name: 'Orange', hex: '#C05621' },
+  { name: 'Pink', hex: '#97266D' },
+  { name: 'Purple', hex: '#44337A' },
+  { name: 'Blue', hex: '#1A365D' },
+  { name: 'Brown', hex: '#5E4028' },
+  { name: 'Olive', hex: '#3B4A31' },
+  { name: 'Cream', hex: '#FFFDD0' },
 ];
 
 const GARMENT_TYPES = [
@@ -186,7 +194,18 @@ const ADDON_ICON_OPTIONS: Array<{ value: AddonIcon; label: string }> = [
 function StudioContent() {
   const searchParams = useSearchParams();
   const initGarmentType = searchParams.get('product') || 'tshirt';
-  const initGarmentColor = searchParams.get('color') || 'BLK';
+  const rawColor = searchParams.get('color') || 'BLK';
+  // Handle color param being a JSON object like {"name":"Yellow","hex":""} or a plain string like "Yellow"
+  let initGarmentColor = rawColor;
+  try {
+    const parsed = JSON.parse(rawColor);
+    if (parsed && typeof parsed === 'object' && parsed.name) {
+      initGarmentColor = parsed.name;
+    }
+  } catch {
+    // Not JSON, use as-is (plain color name like "Yellow" or "BLK")
+    initGarmentColor = rawColor;
+  }
   const initProductId = searchParams.get('productId') || undefined;
   const initGarmentSize = (searchParams.get('size') || 'M').toUpperCase();
 
@@ -235,6 +254,17 @@ function StudioContent() {
   useEffect(() => {
     generatedDesignsRef.current = generatedDesigns;
   }, [generatedDesigns]);
+
+  // Sync garment color when selectedProduct loads — use URL color if it matches a product color
+  useEffect(() => {
+    if (!selectedProduct?.colors?.length) return;
+    const productColorNames = selectedProduct.colors.map((c: any) => canonicalizeColorToken(c.name));
+    const currentCanonical = canonicalizeColorToken(garmentColor);
+    // If current color already matches a product color, keep it
+    if (productColorNames.includes(currentCanonical)) return;
+    // Otherwise set to first product color
+    setGarmentColor(selectedProduct.colors[0].name);
+  }, [selectedProduct]);
 
   const resolveDesignImageUrl = (design: any): string | null => {
     return (
@@ -724,7 +754,14 @@ function StudioContent() {
   };
 
   const handleShufflePrompt = () => {
-    const ideas = ['Cyberpunk samurai cat, neon noir', 'Digital data rain matrix style', 'Abstract neon liquid swirls in dark void'];
+    const ideas = [
+      'A tiger wearing sunglasses, cool street style',
+      'Minimalist mountain landscape with sunset',
+      'Abstract colourful paint splashes on dark background',
+      'Vintage Indian street food illustration',
+      'Floral mandala pattern, vibrant colours',
+      'Cool astronaut floating in space with planets',
+    ];
     setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
   };
 
@@ -803,7 +840,7 @@ function StudioContent() {
 
           <Terminal className="h-12 w-12 text-cyan mx-auto mb-4" />
           <h1 className="text-xl font-mono font-bold text-text-main mb-2 uppercase tracking-widest">Sign in to start creating</h1>
-          <p className="text-text-dim font-mono text-xs mb-8">Create an account to access the AI Design Studio and generate custom designs.</p>
+          <p className="text-text-main/70 font-mono text-sm mb-8">Create your free account to start designing custom t-shirts, hoodies and more.</p>
           <div className="flex gap-4 justify-center">
             <Link href="/login" className="px-6 py-3 border border-cyan text-cyan font-mono text-xs hover:bg-cyan hover:text-void transition-colors uppercase font-bold tracking-widest">
               Sign In
@@ -906,7 +943,7 @@ function StudioContent() {
         className="order-2 lg:order-none w-full lg:w-[var(--left-panel-width)] shrink-0 lg:border-r border-b lg:border-b-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10 max-h-none lg:max-h-full lg:min-h-0"
       >
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
-          <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Design Prompt</span>
+          <span className="font-mono text-xs tracking-widest text-text-main/70 uppercase">Design Prompt</span>
           <Terminal className="text-text-dim h-4 w-4" />
         </div>
 
@@ -915,11 +952,11 @@ function StudioContent() {
           <div className="space-y-2 lg:space-y-3">
             <div className="relative group">
               <div className="flex items-center justify-between gap-2 mb-1.5">
-                <label className="font-mono text-[10px] text-cyan uppercase tracking-widest">
-                  Prompt (Generate New / Edit Image)
+                <label className="font-mono text-xs text-cyan uppercase tracking-widest">
+                  Your Design Idea (Type below or upload an image)
                 </label>
                 <div className="flex items-center gap-2">
-                  <label className="inline-flex cursor-pointer bg-transparent border border-border-std hover:border-cyan text-text-dim hover:text-cyan font-mono text-[9px] py-1 px-2 transition-colors items-center justify-center gap-1 uppercase tracking-widest">
+                  <label className="inline-flex cursor-pointer bg-transparent border border-border-std hover:border-cyan text-text-main/60 hover:text-cyan font-mono text-[11px] py-1.5 px-2.5 transition-colors items-center justify-center gap-1 uppercase tracking-widest">
                     <input
                       type="file"
                       accept="image/png, image/jpeg, image/webp"
@@ -943,8 +980,8 @@ function StudioContent() {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="w-full h-24 lg:h-36 bg-void border border-border-std p-2.5 lg:p-3 font-mono text-[11px] text-text-main focus:border-cyan focus:ring-0 focus:outline-none resize-none rounded-none placeholder-text-dim/50 transition-colors overflow-y-auto"
-                placeholder="> For new design: describe full idea&#10;> For edit: describe exact changes (text, style, effects)&#10;> e.g. Keep logo, add EVERYDAYDROP at bottom in white, anime style"
+                className="w-full h-24 lg:h-36 bg-void border border-border-std p-2.5 lg:p-3 font-mono text-sm lg:text-[11px] text-text-main focus:border-cyan focus:ring-0 focus:outline-none resize-none rounded-none placeholder-text-dim/50 transition-colors overflow-y-auto"
+                placeholder="> Describe your design idea here&#10;> Example: A tiger wearing sunglasses, cool street style&#10;> Or describe changes: Add EVERYDAYDROP text at the bottom in white"
               />
               {promptReferenceImage && (
                 <div className="mt-2 flex items-center gap-2 border border-cyan/30 bg-cyan/5 p-1.5 relative">
@@ -974,11 +1011,11 @@ function StudioContent() {
             </div>
 
             <div className="border border-border-std bg-void/70 p-1.5 lg:p-2 space-y-1.5 lg:space-y-2">
-              <p className="font-mono text-[9px] text-magenta uppercase tracking-widest">Design Upload (Library)</p>
-              <p className="font-mono text-[9px] text-text-dim">
+              <p className="font-mono text-[11px] text-magenta uppercase tracking-widest">Design Upload (Library)</p>
+              <p className="font-mono text-[11px] text-text-main/60">
                 Upload one or multiple images directly into generated designs panel.
               </p>
-              <label className="inline-flex cursor-pointer bg-transparent border border-border-std hover:border-magenta text-text-dim hover:text-magenta font-mono text-[10px] py-1.5 px-2 transition-colors items-center justify-center gap-1 uppercase tracking-widest">
+              <label className="inline-flex cursor-pointer bg-transparent border border-border-std hover:border-magenta text-text-main/60 hover:text-magenta font-mono text-xs py-2 px-3 transition-colors items-center justify-center gap-1.5 uppercase tracking-widest">
                 <input
                   type="file"
                   multiple
@@ -992,9 +1029,9 @@ function StudioContent() {
               </label>
             </div>
 
-            <p className="font-mono text-[9px] text-text-dim leading-relaxed">
-              Single prompt flow: write prompt {'->'} optional reference upload {'->'} click <span className="text-cyan">GENERATE NEW</span>.
-              Use <span className="text-magenta">EDIT ACTIVE IMAGE</span> to force edit on active layer/reference source.
+            <p className="font-mono text-[11px] text-text-main/60 leading-relaxed">
+              How to use: Type your idea above → Click <span className="text-cyan">GENERATE NEW</span> to create a design.
+              Use <span className="text-magenta">EDIT ACTIVE IMAGE</span> to modify your existing design.
             </p>
           </div>
 
@@ -1009,7 +1046,7 @@ function StudioContent() {
             <button
               onClick={handleGenerate}
               disabled={generateDesign.isPending || isUploading || isReferenceUploading || !canGenerate}
-              className="flex-1 bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void disabled:opacity-50 disabled:hover:bg-cyan/10 disabled:hover:text-cyan font-mono text-[10px] sm:text-[11px] font-bold py-3 transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
+              className="flex-1 bg-cyan/10 border border-cyan text-cyan hover:bg-cyan hover:text-void disabled:opacity-50 disabled:hover:bg-cyan/10 disabled:hover:text-cyan font-mono text-xs sm:text-[11px] font-bold py-3 transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan/20 to-transparent translate-y-[-100%] group-hover:animate-[scanline_2s_linear_infinite]" />
 
@@ -1024,7 +1061,7 @@ function StudioContent() {
           <button
             onClick={handleEditActive}
             disabled={generateDesign.isPending || isUploading || isReferenceUploading || !canEditActive}
-            className="w-full mt-1.5 lg:mt-2 bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void disabled:opacity-50 disabled:hover:bg-magenta/10 disabled:hover:text-magenta font-mono text-[10px] sm:text-[11px] font-bold py-2 lg:py-3 transition-all shadow-[0_0_15px_rgba(255,0,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
+            className="w-full mt-1.5 lg:mt-2 bg-magenta/10 border border-magenta text-magenta hover:bg-magenta hover:text-void disabled:opacity-50 disabled:hover:bg-magenta/10 disabled:hover:text-magenta font-mono text-xs sm:text-[11px] font-bold py-2 lg:py-3 transition-all shadow-[0_0_15px_rgba(255,0,255,0.15)] flex items-center justify-center gap-2 group relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-magenta/20 to-transparent translate-y-[-100%] group-hover:animate-[scanline_2s_linear_infinite]" />
             {generateDesign.isPending ? (
@@ -1036,7 +1073,7 @@ function StudioContent() {
 
           <button
             onClick={() => setShowAdvancedSettings((prev) => !prev)}
-            className="w-full mt-1.5 lg:mt-2 bg-panel/40 border border-border-std text-text-dim hover:border-cyan/70 hover:text-cyan font-mono text-[10px] sm:text-[11px] py-2 lg:py-3 px-3 transition-colors flex items-center justify-between tracking-widest uppercase"
+            className="w-full mt-1.5 lg:mt-2 bg-panel/40 border border-border-std text-text-main/60 hover:border-cyan/70 hover:text-cyan font-mono text-xs sm:text-[11px] py-2 lg:py-3 px-3 transition-colors flex items-center justify-between tracking-widest uppercase"
           >
             <span>Advanced Settings</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedSettings ? 'rotate-180 text-cyan' : ''}`} />
@@ -1060,11 +1097,11 @@ function StudioContent() {
                   className="mt-3 space-y-2 pb-1"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="font-mono text-[10px] text-text-dim uppercase tracking-widest">Style Mode</label>
+                    <label className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Style Mode</label>
                     <select
                       value={stylePreset}
                       onChange={(e) => setStylePreset(e.target.value)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-xs px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       {STYLE_PRESETS.map((style) => (
                         <option key={style.value} value={style.value}>
@@ -1074,20 +1111,20 @@ function StudioContent() {
                     </select>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="font-mono text-[10px] text-text-dim uppercase tracking-widest">Edit Text</label>
+                    <label className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Edit Text</label>
                     <input
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                       placeholder="e.g. EVERYDAYDROP"
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 tracking-widest focus:border-cyan focus:outline-none placeholder-text-dim/50"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-xs px-3 py-3 tracking-widest focus:border-cyan focus:outline-none placeholder-text-dim/50"
                     />
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="font-mono text-[10px] text-text-dim uppercase tracking-widest">Text Position</label>
+                    <label className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Text Position</label>
                     <select
                       value={editPosition}
                       onChange={(e) => setEditPosition(e.target.value as EditPosition)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-xs px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       <option value="top">Top</option>
                       <option value="center">Center</option>
@@ -1095,7 +1132,7 @@ function StudioContent() {
                     </select>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="font-mono text-[10px] text-text-dim uppercase tracking-widest">Text Color</label>
+                    <label className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Text Color</label>
                     <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                       <input
                         type="color"
@@ -1104,17 +1141,17 @@ function StudioContent() {
                         className="w-8 h-6 p-0 bg-transparent border border-border-std cursor-pointer"
                         title="Text color"
                       />
-                      <span className="font-mono text-[10px] text-text-dim uppercase tracking-widest w-[64px] text-right">
+                      <span className="font-mono text-xs text-text-main/60 uppercase tracking-widest w-[64px] text-right">
                         {editColor}
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="font-mono text-[10px] text-text-dim uppercase tracking-widest">Add-on Icon</label>
+                    <label className="font-mono text-xs text-text-main/60 uppercase tracking-widest">Add-on Icon</label>
                     <select
                       value={editAddonIcon}
                       onChange={(e) => setEditAddonIcon(e.target.value as AddonIcon)}
-                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-[10px] px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
+                      className="w-full sm:w-[180px] bg-void border border-border-std text-text-main font-mono text-xs px-3 py-3 uppercase tracking-widest focus:border-cyan focus:outline-none"
                     >
                       {ADDON_ICON_OPTIONS.map((icon) => (
                         <option key={icon.value} value={icon.value}>
@@ -1123,8 +1160,8 @@ function StudioContent() {
                       ))}
                     </select>
                   </div>
-                  <p className="font-mono text-[9px] text-text-dim">
-                    Explicit controls are used for in-image edits. Prompt remains optional for extra direction.
+                  <p className="font-mono text-[11px] text-text-main/60">
+                    These settings let you add text, icons, and style to your design. The prompt above is optional for extra ideas.
                   </p>
                 </motion.div>
               </motion.div>
@@ -1132,7 +1169,7 @@ function StudioContent() {
           </AnimatePresence>
 
           {generateDesign.isError && (
-            <div className="mt-2 text-[10px] font-mono text-red-500 border border-red-500 bg-red-500/10 p-2 flex items-start gap-1">
+            <div className="mt-2 text-xs font-mono text-red-500 border border-red-500 bg-red-500/10 p-2 flex items-start gap-1">
               <AlertCircle className="w-3 h-3 shrink-0 mt-0.5" />
               <span>{generateDesign.error.message}</span>
             </div>
@@ -1142,8 +1179,8 @@ function StudioContent() {
         {/* Asset Library */}
         <div className="flex flex-col min-h-0 lg:flex-1">
           <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
-            <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Generated Designs</span>
-            <span className="font-mono text-[10px] text-cyan">{generatedDesigns.length} READY</span>
+            <span className="font-mono text-xs tracking-widest text-text-main/70 uppercase">Generated Designs</span>
+            <span className="font-mono text-xs text-cyan">{generatedDesigns.length} READY</span>
           </div>
           <div className="overflow-y-auto p-4 custom-scrollbar max-h-[44vh] lg:max-h-none lg:flex-1">
             <div className="grid grid-cols-2 gap-3">
@@ -1194,8 +1231,8 @@ function StudioContent() {
               ))}
 
               {!generateDesign.isPending && generatedDesigns.length === 0 && (
-                <div className="col-span-2 border border-dashed border-border-std p-3 text-center font-mono text-[10px] text-text-dim">
-                  Upload or generate designs to build your library.
+                <div className="col-span-2 border border-dashed border-border-std p-3 text-center font-mono text-xs text-text-main/60">
+                  No designs yet. Create or upload your first design above!
                 </div>
               )}
             </div>
@@ -1218,10 +1255,10 @@ function StudioContent() {
       <section className="order-1 lg:order-none w-full lg:flex-1 flex flex-col relative bg-void/50 min-h-[360px] sm:min-h-[500px]">
         <div className="min-h-10 shrink-0 border-b border-border-std flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-3 bg-panel/30 z-20">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <span className="font-mono text-[10px] sm:text-[11px] tracking-widest text-text-dim uppercase truncate">Live Customizer</span>
+            <span className="font-mono text-xs sm:text-[11px] tracking-widest text-text-main/70 uppercase truncate">Live Customizer</span>
             <span className="h-3 w-px bg-border-std"></span>
             <div className="flex items-center gap-1">
-              <span className="font-mono text-[10px] text-text-dim whitespace-nowrap">ZOOM: {canvasZoom}%</span>
+              <span className="font-mono text-xs text-text-main/60 whitespace-nowrap">ZOOM: {canvasZoom}%</span>
               <button
                 onClick={handleZoomOut}
                 className="h-6 w-6 border border-border-std text-text-dim hover:text-cyan hover:border-cyan/70 flex items-center justify-center transition-colors"
@@ -1247,7 +1284,7 @@ function StudioContent() {
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[9px] sm:text-[10px] text-magenta uppercase">CREDIT_BALANCE:</span>
+              <span className="font-mono text-xs sm:text-[10px] text-magenta uppercase">Credits:</span>
               <span className="font-mono text-[11px] sm:text-xs text-text-main font-bold whitespace-nowrap">
                 {isUnlimitedCreditsUser ? 'UNLIMITED' : `${currentCredits} CR`}
               </span>
@@ -1335,7 +1372,7 @@ function StudioContent() {
       {/* RIGHT PANEL: CONFIGURATION */}
       <aside className="order-3 lg:order-none w-full lg:w-[300px] shrink-0 lg:border-l border-t lg:border-t-0 border-border-std bg-panel/50 backdrop-blur-sm flex flex-col z-10">
         <div className="h-10 border-b border-border-std flex items-center px-4 justify-between bg-panel-highlight/30">
-          <span className="font-mono text-[11px] tracking-widest text-text-dim uppercase">Settings</span>
+          <span className="font-mono text-xs tracking-widest text-text-main/70 uppercase">Settings</span>
           <LayersIcon className="text-text-dim h-4 w-4" />
         </div>
 
@@ -1387,7 +1424,7 @@ function StudioContent() {
                   </div>
                 </div>
               ) : (
-                <div className="text-[10px] font-mono text-text-dim p-2 border border-dashed border-border-std text-center">
+                <div className="text-xs font-mono text-text-main/60 p-2 border border-dashed border-border-std text-center">
                   No Active Design
                 </div>
               )}
@@ -1409,7 +1446,7 @@ function StudioContent() {
             <h3 className="font-display font-bold text-xs text-text-main uppercase tracking-widest mb-4">Garment Options</h3>
 
             <div className="mb-6">
-              <label className="block font-mono text-[10px] text-text-dim mb-2 uppercase tracking-widest">Type & Print Placement</label>
+              <label className="block font-mono text-xs text-text-main/60 mb-2 uppercase tracking-widest">Type & Print Placement</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
                 {GARMENT_TYPES.map(type => (
                   <button
@@ -1446,8 +1483,8 @@ function StudioContent() {
             </div>
 
             <div className="mb-4">
-              <label className="block font-mono text-[10px] text-text-dim mb-2 uppercase tracking-widest border-l-2 border-cyan pl-2">GARMENT COLOR</label>
-              <div className="flex gap-2">
+              <label className="block font-mono text-xs text-text-main/60 mb-2 uppercase tracking-widest border-l-2 border-cyan pl-2">GARMENT COLOR</label>
+              <div className="flex flex-wrap gap-3">
                 {availableColors.map((colorOption) => {
                   const colorName = colorOption.name;
                   const hexCode = colorOption.hex || getColorHexFromName(colorName);
@@ -1458,14 +1495,17 @@ function StudioContent() {
                     <button
                       key={colorName}
                       onClick={() => setGarmentColor(colorName)}
-                      className={`group relative w-8 h-8 rounded-sm border transition-all ${isActive
-                        ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110 z-10'
-                        : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
-                        }`}
-                      style={{ backgroundColor: hexCode }}
+                      className={`group flex flex-col items-center gap-1 transition-all`}
                       title={colorName}
                     >
-                      <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono text-cyan uppercase opacity-0 group-hover:opacity-100 transition-opacity">{colorName}</span>
+                      <div
+                        className={`w-10 h-10 rounded-sm border-2 transition-all ${isActive
+                          ? 'border-cyan shadow-[0_0_10px_rgba(0,240,255,0.4)] scale-110'
+                          : `border-border-std opacity-70 hover:opacity-100 ${isLight ? 'border-gray-300' : ''}`
+                          }`}
+                        style={{ backgroundColor: hexCode }}
+                      />
+                      <span className={`text-[10px] font-mono uppercase ${isActive ? 'text-cyan' : 'text-text-main/50'}`}>{colorName}</span>
                     </button>
                   );
                 })}
@@ -1473,7 +1513,7 @@ function StudioContent() {
             </div>
 
             <div className="mb-6 mt-8">
-              <label className="block font-mono text-[10px] text-text-dim mb-2 uppercase tracking-widest border-l-2 border-magenta pl-2">GARMENT SIZE</label>
+              <label className="block font-mono text-xs text-text-main/60 mb-2 uppercase tracking-widest border-l-2 border-magenta pl-2">GARMENT SIZE</label>
               <div className="grid grid-cols-4 gap-2">
                 {SIZES.map(size => (
                   <button
@@ -1503,12 +1543,12 @@ function StudioContent() {
         {/* Pricing / CTA */}
         <div className="p-4 border-t border-border-std bg-panel-highlight/10">
           <div className="space-y-1 mb-4">
-            <div className="flex justify-between font-mono text-[10px] tracking-widest">
+            <div className="flex justify-between font-mono text-xs tracking-widest">
               <span className="text-text-dim uppercase">Base Price</span>
               <span className="text-text-main">₹ {resolvedCheckoutBasePrice.toFixed(0)}</span>
             </div>
             {currentActiveDesign && (
-              <div className="flex justify-between font-mono text-[10px] text-cyan tracking-widest">
+              <div className="flex justify-between font-mono text-xs text-cyan tracking-widest">
                 <span className="uppercase">Print Fee</span>
                 <span>₹ 500</span>
               </div>

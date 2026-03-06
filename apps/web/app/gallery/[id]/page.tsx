@@ -356,10 +356,10 @@ export default function ProductDetailPage() {
 
                         {/* Product Details */}
                         <div className="mt-8 space-y-3 text-xs font-mono text-text-dim border-t border-border-std pt-6 bg-panel/30 p-4">
-                            {(product as any).fabric && <p><span className="text-cyan">FABRIC //</span> {(product as any).fabric}</p>}
-                            {(product as any).fit && <p><span className="text-magenta">FIT //</span> {(product as any).fit}</p>}
+                            {(product as any).fabric && <p><span className="text-cyan">Fabric:</span> {(product as any).fabric}</p>}
+                            {(product as any).fit && <p><span className="text-magenta">Fit:</span> {(product as any).fit}</p>}
                             {(product as any).printing_methods?.length > 0 && (
-                                <p><span className="text-cyan">PRINTING //</span> {(product as any).printing_methods.join(', ')}</p>
+                                <p><span className="text-cyan">Printing:</span> {(product as any).printing_methods.join(', ')}</p>
                             )}
                             {(product as any).features?.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-3">
@@ -380,7 +380,7 @@ export default function ProductDetailPage() {
                                 {added ? (
                                     <><Check className="mr-3 h-5 w-5" /> ADDED TO CART</>
                                 ) : (
-                                    <><ShoppingCart className="mr-3 h-5 w-5" /> CUSTOMIZE & BUY</>
+                                    <><ShoppingCart className="mr-3 h-5 w-5" /> Add to Cart</>
                                 )}
                             </Button>
                             {!designImage && (
@@ -390,7 +390,7 @@ export default function ProductDetailPage() {
                                     className="flex-1 rounded-none border border-text-dim text-text-main hover:bg-white/10 font-mono font-bold tracking-widest uppercase h-14"
                                     onClick={handleAddToCart}
                                 >
-                                    <ShoppingBag className="mr-3 h-5 w-5" /> BUY PLAIN
+                                    <ShoppingBag className="mr-3 h-5 w-5" /> Buy Without Design
                                 </Button>
                             )}
                         </div>
@@ -401,7 +401,7 @@ export default function ProductDetailPage() {
                             </p>
                         ) : (
                             <p className="text-xs text-text-dim mt-2 text-center">
-                                You are purchasing a blank, uncustomized product.
+                                No design selected. You are buying a plain product.
                             </p>
                         )}
                     </div>

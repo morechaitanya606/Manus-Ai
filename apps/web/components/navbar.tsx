@@ -81,11 +81,11 @@ export function Navbar() {
             <div className="hidden md:flex items-center gap-4">
               {/* Profile/Credits */}
               <div className="flex flex-col items-end mr-2">
-                <span className="font-mono text-[10px] text-text-dim uppercase">
+                <span className="font-mono text-xs text-text-main/70 uppercase">
                   {profile?.full_name || user.email?.split('@')[0]}
                 </span>
                 <span className="font-mono text-sm font-bold text-text-main">
-                  {isAdmin() ? 'SYS_ADMIN' : 'USER'}
+                  {isAdmin() ? 'Admin' : ''}
                 </span>
               </div>
 
@@ -131,7 +131,7 @@ export function Navbar() {
           <div className="hidden md:block h-8 w-px bg-border-std mx-2"></div>
 
           {/* User Profile Link */}
-          <Link href={session ? "/profile" : "/login"} className="flex bg-cyan/10 hover:bg-cyan/20 border border-cyan/30 text-cyan text-[10px] sm:text-xs font-mono font-bold px-2 sm:px-3 py-1.5 rounded-none items-center gap-1.5 sm:gap-2 transition-colors">
+          <Link href={session ? "/profile" : "/login"} className="flex bg-cyan/10 hover:bg-cyan/20 border border-cyan/30 text-cyan text-xs sm:text-xs font-mono font-bold px-2.5 sm:px-3 py-1.5 rounded-none items-center gap-1.5 sm:gap-2 transition-colors">
             <div className="w-1.5 h-1.5 rounded-none border border-cyan/50 border-dashed bg-cyan animate-pulse shrink-0"></div>
             <span className="hidden sm:inline">USER PROFILE</span>
             <span className="sm:hidden">PROFILE</span>
@@ -149,38 +149,38 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileOpen && (
-        <div className="absolute top-16 left-0 w-full bg-panel border-b border-border-std px-4 py-4 space-y-4 md:hidden z-50">
-          <nav className="flex flex-col gap-4">
+        <div className="absolute top-16 left-0 w-full bg-panel border-b border-border-std px-4 py-5 space-y-1 md:hidden z-50">
+          <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase"
+                className="font-mono text-base text-text-main/80 hover:text-cyan transition-colors uppercase py-2.5 border-b border-border-std/50"
               >
                 {link.label}
               </Link>
             ))}
-            <hr className="border-border-std" />
+            <hr className="border-border-std my-1" />
 
-            <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase">
+            <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 font-mono text-base text-text-main/80 hover:text-cyan transition-colors uppercase py-2.5">
               <ShoppingCart className="h-4 w-4" />
               Cart ({itemCount})
             </Link>
 
             {session ? (
               <>
-                <Link href="/orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-text-dim hover:text-cyan transition-colors uppercase">
+                <Link href="/orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 font-mono text-base text-text-main/80 hover:text-cyan transition-colors uppercase py-2.5">
                   <Package className="h-4 w-4" />
                   My Orders
                 </Link>
                 {isAdmin() && (
                   <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-text-main transition-colors uppercase">
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 font-mono text-base text-magenta hover:text-text-main transition-colors uppercase py-2.5">
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </Link>
-                    <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-mono text-sm text-magenta hover:text-text-main transition-colors uppercase">
+                    <Link href="/admin/studio" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 font-mono text-base text-magenta hover:text-text-main transition-colors uppercase py-2.5">
                       <Sparkles className="h-4 w-4" />
                       Admin Studio
                     </Link>
@@ -188,7 +188,7 @@ export function Navbar() {
                 )}
                 <button
                   onClick={() => { signOut(); setMobileOpen(false); }}
-                  className="flex w-full items-center gap-2 font-mono text-sm text-red-500 hover:text-text-main transition-colors uppercase text-left"
+                  className="flex w-full items-center gap-3 font-mono text-base text-red-500 hover:text-text-main transition-colors uppercase text-left py-2.5"
                 >
                   <LogOut className="h-4 w-4" />
                   Sign Out

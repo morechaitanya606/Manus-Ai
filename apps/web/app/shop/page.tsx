@@ -116,7 +116,7 @@ export default function ShopDropPage() {
 
                 {dropState === 'loading' && (
                     <div className="animate-pulse text-cyan font-mono text-sm tracking-widest uppercase">
-                        INITIALIZING SECURE CONNECTION...
+                        Loading products...
                     </div>
                 )}
 
@@ -134,8 +134,8 @@ export default function ShopDropPage() {
                             </h1>
 
                             <p className="text-lg text-text-main/60 leading-relaxed font-light">
-                                Our most highly anticipated garments. Premium fabrics. Unseen iterations.
-                                Unlocking exactly at the strike of midnight on {dropDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.
+                                Our most awaited collection. Premium fabrics. Fresh designs.
+                                Available from {dropDate?.toLocaleDateString('en-IN', { month: 'long', day: 'numeric' })}.
                             </p>
                         </div>
 
@@ -169,7 +169,7 @@ export default function ShopDropPage() {
                                 </div>
                                 <input
                                     type="email"
-                                    placeholder={subscribed ? "You're on the list!" : "Enter email for early access..."}
+                                    placeholder={subscribed ? "You're on the list!" : "Enter your email for updates..."}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled={subscribed}
@@ -197,13 +197,13 @@ export default function ShopDropPage() {
                         <div className="text-center mb-12 space-y-4">
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 mb-2">
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-xs uppercase tracking-[0.2em] text-red-500 font-bold">24 HOUR DROP LIVE</span>
+                                <span className="text-xs uppercase tracking-[0.2em] text-red-500 font-bold">SALE IS LIVE NOW</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-bold text-text-main tracking-tighter">
                                 THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-magenta">SPRING</span> DROP
                             </h1>
                             <p className="text-text-main/60 font-light max-w-xl mx-auto">
-                                The vault is open. These exclusive blanks are available for exactly 24 hours. Once the timer ends, they return to the archives.
+                                This exclusive collection is available for 24 hours only. Grab your favourite before it's gone!
                             </p>
                         </div>
 
@@ -226,7 +226,7 @@ export default function ShopDropPage() {
                                             />
                                             {product.category && (
                                                 <div className="absolute top-4 right-4 z-20">
-                                                    <span className="inline-block border border-white/20 bg-void/80 backdrop-blur-md px-2 py-1 text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-text-main">
+                                                    <span className="inline-block border border-white/20 bg-void/80 backdrop-blur-md px-2 py-1 text-xs sm:text-xs font-mono uppercase tracking-[0.2em] text-text-main">
                                                         {product.category}
                                                     </span>
                                                 </div>
@@ -234,7 +234,7 @@ export default function ShopDropPage() {
                                         </div>
 
                                         <div className="mt-4 flex flex-col flex-grow relative z-20">
-                                            <h3 className="text-lg sm:text-xl font-display font-medium text-text-main group-hover:text-cyan transition-colors">
+                                            <h3 className="text-lg sm:text-xl font-display font-medium text-text-main group-hover:text-cyan transition-colors leading-tight">
                                                 {product.name}
                                             </h3>
 
@@ -242,7 +242,7 @@ export default function ShopDropPage() {
                                                 <span className="text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan to-magenta">
                                                     ₹{Number(product.base_price).toFixed(0)}
                                                 </span>
-                                                <span className="text-[9px] sm:text-[10px] font-mono text-text-dim uppercase tracking-widest">
+                                                <span className="text-xs sm:text-[10px] font-mono text-text-main/60 uppercase tracking-widest">
                                                     {(product.sizes || []).length} sizes
                                                 </span>
                                             </div>
@@ -257,15 +257,15 @@ export default function ShopDropPage() {
                                                     />
                                                 ))}
                                                 {(product.colors || []).length > 4 && (
-                                                    <span className="text-[9px] sm:text-[10px] text-text-dim ml-1 font-mono">
+                                                    <span className="text-[11px] sm:text-[10px] text-text-main/60 ml-1 font-mono">
                                                         +{product.colors.length - 4}
                                                     </span>
                                                 )}
                                             </div>
 
                                             <div className="mt-4 sm:mt-5 flex items-center justify-between pt-3 border-t border-white/10 mt-auto">
-                                                <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-text-main/50 group-hover:text-text-main transition-colors">
-                                                    Customize / Buy Plain
+                                                <span className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-mono uppercase tracking-widest text-text-main/50 group-hover:text-text-main transition-colors">
+                                                    View Details
                                                     <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                                                 </span>
                                             </div>
@@ -287,12 +287,12 @@ export default function ShopDropPage() {
                             THE DROP HAS <span className="text-transparent bg-clip-text bg-gradient-to-r from-magenta to-white">ENDED</span>
                         </h1>
                         <p className="text-text-main/60 font-light mb-12">
-                            The 24-hour window for this exclusive collection has closed.
-                            Stay tuned for future drops or browse our standard collections.
+                            This exclusive sale has ended.
+                            Don't worry — check out our regular collection or wait for the next sale!
                         </p>
 
                         <Link href="/products" className="px-8 py-4 bg-white text-void font-bold font-mono tracking-widest uppercase hover:bg-gray-200 hover:scale-[0.98] transition-all duration-300 rounded-lg">
-                            Shop Standard Collections
+                            Browse All Products
                         </Link>
                     </div>
                 )}
@@ -302,7 +302,7 @@ export default function ShopDropPage() {
                     <div className="mt-24 pt-8 border-t border-white/5 w-full text-center">
                         <Link href="/products" className="inline-flex items-center gap-2 text-text-main/50 hover:text-text-main transition-colors group text-sm font-medium tracking-wide">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Return to Standard Collections
+                            Return to All Products
                         </Link>
                     </div>
                 )}

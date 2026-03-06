@@ -17,7 +17,7 @@ export default function CartPage() {
                     <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-magenta/50"></div>
                     <ShoppingBag className="h-12 w-12 text-cyan/30 mx-auto mb-6" />
                     <h1 className="text-2xl font-bold font-mono tracking-widest text-text-main uppercase mb-2">CART IS EMPTY</h1>
-                    <p className="text-[10px] font-mono tracking-widest text-text-dim mb-8 border-l border-border-std pl-3 mx-auto text-left w-fit uppercase">
+                    <p className="text-sm font-mono tracking-widest text-text-main/60 mb-8 border-l border-border-std pl-3 mx-auto text-left w-fit uppercase">
                         &gt; Your cart is currently empty. <br />
                         &gt; Go to the gallery to add items.
                     </p>
@@ -36,7 +36,7 @@ export default function CartPage() {
             <div className="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] opacity-[0.03] pointer-events-none" />
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
                 <div className="mb-8 animate-fade-in">
-                    <div className="inline-flex items-center gap-2 text-cyan font-mono text-[10px] tracking-widest uppercase bg-cyan/5 px-2 py-1 border border-cyan/20 mb-3">
+                    <div className="inline-flex items-center gap-2 text-cyan font-mono text-xs tracking-widest uppercase bg-cyan/5 px-2 py-1 border border-cyan/20 mb-3">
                         <ShoppingBag className="h-3 w-3" />
                         <span>YOUR CART</span>
                     </div>
@@ -65,10 +65,10 @@ export default function CartPage() {
                                         <h3 className="font-mono font-bold text-sm text-text-main uppercase truncate group-hover:text-cyan transition-colors">
                                             <span className="text-cyan">{">"}</span> {item.productName}
                                         </h3>
-                                        <p className="text-[10px] font-mono tracking-widest text-text-dim uppercase mt-1 flex flex-wrap gap-x-1.5 gap-y-1">
-                                            [{item.color.slice(0, 3)}] <span className="text-magenta mx-1">|</span> [{item.size}]
+                                        <p className="text-xs font-mono tracking-widest text-text-main/60 uppercase mt-1 flex flex-wrap gap-x-1.5 gap-y-1">
+                                            Color: {item.color} <span className="text-magenta mx-1">|</span> Size: {item.size}
                                             {!item.designImage && (
-                                                <span className="ml-2 text-cyan">| PLAIN BLANK</span>
+                                                <span className="ml-2 text-cyan">| Plain</span>
                                             )}
                                         </p>
                                     </div>
@@ -108,7 +108,7 @@ export default function CartPage() {
                         <div className="bg-panel border border-border-std p-4 sm:p-6 lg:sticky lg:top-24 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-magenta/50"></div>
                             <h3 className="font-mono font-bold text-text-main uppercase tracking-widest mb-6 border-b border-border-std pb-2">ORDER SUMMARY</h3>
-                            <div className="space-y-4 text-[10px] font-mono tracking-widest uppercase text-text-dim bg-void border border-border-std p-4">
+                            <div className="space-y-4 text-xs font-mono tracking-widest uppercase text-text-main/60 bg-void border border-border-std p-4">
                                 <div className="flex justify-between">
                                     <span>SUBTOTAL</span>
                                     <span className="text-text-main">₹{getTotal().toFixed(0)}</span>
@@ -131,7 +131,7 @@ export default function CartPage() {
                             </Link>
                             <button
                                 onClick={clearCart}
-                                className="w-full mt-4 text-[10px] font-mono tracking-widest uppercase text-text-dim border border-border-std py-2 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 transition"
+                                className="w-full mt-4 text-xs font-mono tracking-widest uppercase text-text-main/60 border border-border-std py-2.5 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 transition"
                             >
                                 CLEAR CART
                             </button>

@@ -12,6 +12,7 @@ export default function ProductDetailPage() {
     const router = useRouter();
     const { data: product, isLoading, error } = useProduct(id);
     const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
     const formatPriceINR = (amount: string | number | null | undefined) => {
         const value = Number(amount);
         return Number.isFinite(value) ? value.toFixed(2) : '0.00';
@@ -20,6 +21,7 @@ export default function ProductDetailPage() {
     useEffect(() => {
         if (!product) return;
         setSelectedSize(product.sizes?.[0] || '');
+        setSelectedColor(typeof product.colors?.[0] === 'string' ? product.colors[0] : product.colors?.[0]?.name || '');
     }, [product]);
 
     if (isLoading) {
@@ -35,7 +37,7 @@ export default function ProductDetailPage() {
             <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-void text-text-main gap-4">
                 <p className="text-red-400 font-mono text-sm uppercase tracking-widest">[{error ? 'Error loading product' : 'Product not found'}]</p>
                 <Link href="/products" className="px-6 py-2 border border-cyan text-cyan hover:bg-cyan hover:text-void font-bold font-mono text-xs uppercase tracking-widest transition-colors">
-                    Back to Blanks
+                    Back to Products
                 </Link>
             </div>
         );
@@ -51,9 +53,9 @@ export default function ProductDetailPage() {
     const handleDesignClick = () => {
         const garmentType = mapCategoryToGarmentType(product.category);
         const sizeParam = selectedSize || product.sizes?.[0] || '';
-        const query = sizeParam
-            ? `/studio?product=${garmentType}&size=${encodeURIComponent(sizeParam)}`
-            : `/studio?product=${garmentType}`;
+        const colorName = selectedColor || (typeof product.colors?.[0] === 'string' ? product.colors[0] : product.colors?.[0]?.name) || 'Black';
+        let query = `/studio?productId=${product.id}&product=${garmentType}&color=${encodeURIComponent(colorName)}`;
+        if (sizeParam) query += `&size=${encodeURIComponent(sizeParam)}`;
         router.push(query);
     };
 
@@ -63,8 +65,8 @@ export default function ProductDetailPage() {
             <div className="absolute inset-0 crt-overlay pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <Link href="/products" className="inline-flex items-center gap-2 text-text-dim hover:text-cyan font-mono text-[10px] uppercase tracking-widest mb-8 transition-colors">
-                    <ArrowLeft className="w-3 h-3" /> Back to Blanks
+                <Link href="/products" className="inline-flex items-center gap-2 text-text-dim hover:text-cyan font-mono text-xs uppercase tracking-widest mb-8 transition-colors">
+                    <ArrowLeft className="w-3 h-3" /> Back to Products
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -97,23 +99,23 @@ export default function ProductDetailPage() {
                         </div>
 
                         <div className="prose prose-invert border-b border-border-std pb-8 mb-8">
-                            <p className="text-text-dim font-mono text-sm leading-relaxed">{product.description}</p>
+                            <p className="text-text-main/60 font-mono text-sm leading-relaxed">{product.description}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-border-std">
                             <div>
-                                <h3 className="text-text-main font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <h3 className="text-text-main font-mono text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <Shirt className="w-3 h-3 text-cyan" /> Fabric & Fit
                                 </h3>
-                                <ul className="space-y-2 text-text-dim font-mono text-[11px]">
+                                <ul className="space-y-2 text-text-main/60 font-mono text-xs">
                                     {product.fabric && <li><span className="text-text-main">Fabric:</span> {product.fabric}</li>}
                                     {product.gsm && <li><span className="text-text-main">Weight:</span> {product.gsm} GSM</li>}
                                     {product.fit && <li><span className="text-text-main">Fit:</span> {product.fit}</li>}
                                 </ul>
                             </div>
                             <div>
-                                <h3 className="text-text-main font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
-                                    <Ruler className="w-3 h-3 text-cyan" /> Specs
+                                <h3 className="text-text-main font-mono text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <Ruler className="w-3 h-3 text-cyan" /> Details
                                 </h3>
                                 <div className="space-y-3">
                                     <div>
@@ -149,6 +151,30 @@ export default function ProductDetailPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Color Selector */}
+                        {product.colors && product.colors.length > 0 && (
+                            <div className="mb-8 pb-8 border-b border-border-std">
+                                <h3 className="text-text-main font-mono text-xs uppercase tracking-widest mb-3">Colour: <span className="text-cyan">{selectedColor}</span></h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.colors.map((color: any) => {
+                                        const name = typeof color === 'string' ? color : color.name;
+                                        return (
+                                            <button
+                                                key={name}
+                                                onClick={() => setSelectedColor(name)}
+                                                className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all ${selectedColor === name
+                                                        ? 'border-cyan bg-cyan/10 text-cyan shadow-[0_0_10px_rgba(0,240,255,0.2)]'
+                                                        : 'border-border-std text-text-main/60 hover:border-cyan/50'
+                                                    }`}
+                                            >
+                                                {name}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="mt-auto">
                             <button
